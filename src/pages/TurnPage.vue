@@ -190,43 +190,67 @@
     </div>
 
     <!-- Result -->
-    <div v-else class="col column items-center justify-center q-gutter-y-md text-center">
-      <div class="text-h5 text-weight-bold">{{ t('turn.resultTitle') }}</div>
-      <div v-if="!isMulti && word && shown.length === 0" class="text-subtitle1">
-        {{ t('turn.wordWas', { word }) }}
+    <div v-else class="col column no-wrap">
+      <div class="col column q-gutter-y-md q-pt-md">
+        <div class="text-h5 text-weight-bold text-center">{{ t('turn.resultTitle') }}</div>
+
+        <q-card flat bordered class="q-pa-md">
+          <div
+            v-for="line in resultLines"
+            :key="line.teamId"
+            class="row items-center no-wrap justify-between q-mb-sm"
+          >
+            <div class="team-pill text-subtitle1 text-weight-bold" :style="pillStyle(line.teamId)">
+              {{ nameOf(line.teamId) }}
+            </div>
+            <div class="text-h5 text-weight-bold" :class="line.points < 0 ? 'text-negative' : ''">
+              {{ t('board.points', { n: signed(line.points) }) }}
+            </div>
+          </div>
+          <div v-if="resultLines.length === 0" class="text-grey-7">{{ t('turn.noPoints') }}</div>
+          <template v-if="breakdown.length > 0">
+            <q-separator class="q-my-md" />
+            <div class="column q-gutter-y-xs">
+              <div v-for="b in breakdown" :key="b.icon" class="row items-center no-wrap">
+                <q-icon :name="b.icon" :color="b.color" size="sm" class="q-mr-sm" />
+                <span class="col">{{ b.label }}</span>
+                <span dir="ltr" class="text-weight-bold">{{ b.value }}</span>
+              </div>
+            </div>
+          </template>
+        </q-card>
+
+        <q-card v-if="shown.length > 0 || word || noWords" flat bordered>
+          <div v-if="shown.length > 0" class="q-pa-md q-pb-none text-subtitle2 text-grey-7">
+            {{ t('turn.wordsShown') }}
+          </div>
+          <q-list v-if="shown.length > 0" separator>
+            <q-item v-for="w in shown" :key="w">
+              <q-item-section class="text-subtitle1">{{ w }}</q-item-section>
+              <q-item-section side>
+                <q-btn
+                  flat
+                  no-caps
+                  size="sm"
+                  :icon="hiddenNow[w] ? 'undo' : 'visibility_off'"
+                  :label="hiddenNow[w] ? t('turn.hiddenUndo') : t('turn.hideShort')"
+                  @click="toggleHide(w)"
+                />
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1">
+            {{ t('turn.wordWas', { word }) }}
+          </div>
+          <div v-if="lastWordMsg" class="q-px-md q-py-sm text-caption text-negative">
+            {{ t('packs.lastWord') }}
+          </div>
+          <div v-if="noWords" class="q-pa-md text-grey-7">{{ t('turn.noMoreWords') }}</div>
+        </q-card>
       </div>
-      <div v-if="shown.length > 0" class="column items-center q-gutter-y-xs">
-        <div class="text-caption text-grey-7">
-          {{ t('turn.wordsShown') }}
-        </div>
-        <div v-for="w in shown" :key="w" class="row items-center no-wrap">
-          <span class="q-mr-sm">{{ w }}</span>
-          <q-btn
-            flat
-            dense
-            no-caps
-            size="sm"
-            :icon="hiddenNow[w] ? 'undo' : 'visibility_off'"
-            :label="hiddenNow[w] ? t('turn.hiddenUndo') : t('turn.hideShort')"
-            @click="toggleHide(w)"
-          />
-        </div>
-        <div v-if="lastWordMsg" class="text-caption text-negative">{{ t('packs.lastWord') }}</div>
-      </div>
-      <div v-if="noWords" class="text-grey-7">{{ t('turn.noMoreWords') }}</div>
-      <div
-        v-for="line in resultLines"
-        :key="line.teamId"
-        class="text-h6 text-weight-bold"
-        :style="colorOf(line.teamId)"
-      >
-        {{ t('turn.gained', { team: nameOf(line.teamId), n: signed(line.points) }) }}
-      </div>
-      <div v-if="bonusText" class="text-positive">{{ bonusText }}</div>
-      <div v-if="skipText" class="text-warning">{{ skipText }}</div>
-      <div v-if="rerollText" class="text-warning">{{ rerollText }}</div>
+
       <q-btn
-        class="action-bar"
+        class="action-bar full-width"
         color="primary"
         size="lg"
         rounded
@@ -453,18 +477,20 @@ const resultLines = computed(() => {
   for (const d of deltas.value) totals.set(d.teamId, (totals.get(d.teamId) ?? 0) + d.points);
   return [...totals].map(([teamId, points]) => ({ teamId, points }));
 });
-const bonusText = computed(() =>
-  bonus.value > 0 ? t('turn.fastBonus', { n: signed(bonus.value) }) : '',
-);
-const skipText = computed(() => {
-  const cost = tally.value.skips * (isMulti.value ? multi.value.skipPenalty : 0);
-  return cost > 0 ? t('turn.skipsCost', { n: signed(-cost) }) : '';
-});
+const pillStyle = (id: number) => ({ background: teamHex(state.value?.teams[id]?.color ?? '') });
+const skipCost = computed(() => tally.value.skips * (isMulti.value ? multi.value.skipPenalty : 0));
+const rerollCost = computed(() => (rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0));
 
-const rerollText = computed(() => {
-  const cost = rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0;
-  return cost > 0 ? t('turn.rerollCost', { n: signed(-cost) }) : '';
-});
+/** Extra lines under the points: fast-guess bonus and the penalties that applied. */
+const breakdown = computed(() =>
+  [
+    { icon: 'bolt', color: 'positive', label: t('turn.fastBonus'), n: bonus.value },
+    { icon: 'skip_next', color: 'warning', label: t('turn.skipsCost'), n: -skipCost.value },
+    { icon: 'autorenew', color: 'warning', label: t('turn.rerollCost'), n: -rerollCost.value },
+  ]
+    .filter((b) => b.n !== 0)
+    .map((b) => ({ ...b, value: signed(b.n) })),
+);
 
 function toggleHide(w: string) {
   const t = tile.value;
