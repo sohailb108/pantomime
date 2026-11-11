@@ -20,12 +20,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            src-pwa/package-lock.json
       - run: npm ci
+      # The PWA mode has its own dependencies (service worker registration, Workbox).
+      - run: npm ci --prefix src-pwa
       - run: npm run typecheck
       - run: npm test
       # The default build uses relative paths, so it works under /<repo>/ and later under any
