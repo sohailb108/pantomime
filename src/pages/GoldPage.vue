@@ -64,7 +64,7 @@
       <div class="col column justify-center">
         <PeekWord :word="word ?? ''" :label="t('turn.peek')" />
       </div>
-      <div class="row q-col-gutter-md action-bar">
+      <div class="row no-wrap action-bar">
         <div class="col">
           <q-btn
             class="full-width"

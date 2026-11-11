@@ -80,7 +80,7 @@
           {{ fmt(tally.correct) }} ✓ ·
           {{ skipsText }}
         </div>
-        <div class="row q-col-gutter-md action-bar">
+        <div class="row no-wrap action-bar">
           <div class="col">
             <q-btn
               class="full-width"
@@ -123,7 +123,7 @@
         <div class="col column justify-center">
           <PeekWord :word="word ?? ''" :label="t('turn.peek')" />
         </div>
-        <div class="row q-col-gutter-md action-bar">
+        <div class="row no-wrap action-bar">
           <div class="col">
             <q-btn
               class="full-width"
@@ -163,7 +163,7 @@
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
       <div class="text-h4 text-weight-bold">{{ word }}</div>
-      <div class="row q-col-gutter-md full-width q-mt-lg action-bar">
+      <div class="row no-wrap full-width q-mt-lg action-bar">
         <div class="col">
           <q-btn
             class="full-width"

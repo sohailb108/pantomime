@@ -25,6 +25,10 @@ body,
   padding-top: 8px;
   padding-bottom: 8px;
   background: var(--q-page-bg, #fff);
+  // Rows of buttons use a plain gap, since Quasar's gutter classes pull the row up over the content above.
+  &.row {
+    gap: 16px;
+  }
 }
 body.body--dark .action-bar {
   background: #121212;
