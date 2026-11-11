@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "id": "movies",
+  "lang": "en",
+  "version": 1,
+  "name": "Movies and shows",
+  "color": "#5C6BC0",
+  "words": {
+    "1": [
+      "Titanic",
+      "Frozen",
+      "Shrek",
+      "Batman",
+      "Spider-Man",
+      "Finding Nemo",
+      "Toy Story",
+      "Aladdin"
+    ],
+    "2": [
+      "The Lion King",
+      "Harry Potter",
+      "Jurassic Park",
+      "Star Wars",
+      "Home Alone",
+      "Kung Fu Panda",
+      "Ghostbusters",
+      "Cinderella"
+    ],
+    "3": [
+      "The Matrix",
+      "Inception",
+      "Forrest Gump",
+      "Pirates of the Caribbean",
+      "Back to the Future",
+      "The Godfather",
+      "Gladiator",
+      "Mission Impossible"
+    ]
+  }
+}

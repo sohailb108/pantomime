@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "food",
+  "lang": "en",
+  "version": 1,
+  "name": "Food and drink",
+  "color": "#EF5350",
+  "words": {
+    "1": ["pizza", "bread", "apple", "ice cream", "egg", "soup", "cake", "banana"],
+    "2": [
+      "spaghetti",
+      "hamburger",
+      "watermelon",
+      "popcorn",
+      "sandwich",
+      "pancake",
+      "sushi",
+      "corn on the cob"
+    ],
+    "3": [
+      "fondue",
+      "lasagna",
+      "pomegranate",
+      "cotton candy",
+      "baklava",
+      "artichoke",
+      "oyster",
+      "stir-fry"
+    ]
+  }
+}

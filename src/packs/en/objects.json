@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "objects",
+  "lang": "en",
+  "version": 1,
+  "name": "Objects",
+  "color": "#AB47BC",
+  "words": {
+    "1": ["chair", "phone", "key", "umbrella", "spoon", "clock", "book", "shoe"],
+    "2": ["scissors", "toothbrush", "camera", "ladder", "guitar", "backpack", "hammer", "mirror"],
+    "3": [
+      "telescope",
+      "hourglass",
+      "vacuum cleaner",
+      "compass",
+      "typewriter",
+      "stapler",
+      "kaleidoscope",
+      "parachute"
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "animals",
+  "lang": "en",
+  "version": 1,
+  "name": "Animals",
+  "color": "#FF7043",
+  "words": {
+    "1": ["cat", "dog", "fish", "bird", "cow", "duck", "pig", "frog"],
+    "2": ["elephant", "monkey", "snake", "penguin", "kangaroo", "giraffe", "bat", "crab"],
+    "3": [
+      "octopus",
+      "chameleon",
+      "flamingo",
+      "sloth",
+      "hedgehog",
+      "praying mantis",
+      "jellyfish",
+      "woodpecker"
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+// Per-language font comes from the --app-font variable (see services/language.ts).
+:root {
+  --app-font: sans-serif;
+}
+
+body,
+.q-btn,
+.q-field,
+.q-item,
+.q-toolbar {
+  font-family: var(--app-font);
+}
+
+// Direction-sensitive icons flip automatically in RTL.
+[dir='rtl'] .flip-rtl {
+  transform: scaleX(-1);
+}
+
+// Primary actions stay reachable when content is taller than the screen
+// (e.g. a phone in landscape): they stick to the bottom edge of the page.
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: var(--q-page-bg, #fff);
+}
+body.body--dark .action-bar {
+  background: #121212;
+}
+
+// Short screens (landscape phones): tighten the game screens.
+@media (max-height: 500px) {
+  .game-page {
+    padding-top: 8px !important;
+    padding-bottom: 0 !important;
+  }
+  .game-page .header {
+    margin-bottom: 10px !important;
+    padding: 0 !important;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px 12px;
+  }
+  .game-page .header .team-pill {
+    font-size: 1rem;
+    padding: 0 12px;
+  }
+  .game-page .timer {
+    font-size: 2rem;
+  }
+  .game-page .peek {
+    min-height: 64px !important;
+  }
+  .game-page .text-h3 {
+    font-size: 2rem;
+    line-height: 2.4rem;
+  }
+  .game-page .q-gutter-y-md,
+  .game-page .q-gutter-y-lg {
+    margin-top: 0 !important;
+  }
+  .game-page .q-gutter-y-md > *,
+  .game-page .q-gutter-y-lg > * {
+    margin-top: 4px !important;
+  }
+}

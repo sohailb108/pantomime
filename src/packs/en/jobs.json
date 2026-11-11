@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "jobs",
+  "lang": "en",
+  "version": 1,
+  "name": "Jobs",
+  "color": "#26A69A",
+  "words": {
+    "1": ["teacher", "doctor", "cook", "driver", "farmer", "singer", "painter", "barber"],
+    "2": [
+      "firefighter",
+      "dentist",
+      "pilot",
+      "plumber",
+      "photographer",
+      "judge",
+      "tailor",
+      "referee"
+    ],
+    "3": [
+      "astronaut",
+      "magician",
+      "archaeologist",
+      "lifeguard",
+      "translator",
+      "conductor",
+      "puppeteer",
+      "beekeeper"
+    ]
+  }
+}

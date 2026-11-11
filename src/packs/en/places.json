@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "places",
+  "lang": "en",
+  "version": 1,
+  "name": "Places",
+  "color": "#8D6E63",
+  "words": {
+    "1": ["school", "beach", "hospital", "zoo", "kitchen", "park", "bank", "bakery"],
+    "2": ["airport", "library", "cinema", "mountain", "supermarket", "farm", "circus", "gym"],
+    "3": [
+      "lighthouse",
+      "planetarium",
+      "volcano",
+      "submarine",
+      "observatory",
+      "greenhouse",
+      "car wash",
+      "laundromat"
+    ]
+  }
+}
