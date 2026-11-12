@@ -37,9 +37,6 @@
       <div class="text-h5 text-center text-weight-bold" :style="colorOf(team.id)">
         {{ isMulti ? t('turn.passToJudge') : t('turn.passTo', { team: teamName(team.color) }) }}
       </div>
-      <div class="text-center text-grey-7 hint-text">
-        {{ isMulti ? t('turn.judgeHint', { team: teamName(team.color) }) : t('turn.actorHint') }}
-      </div>
       <div class="column full-width turn-actions">
         <q-btn
           color="primary"

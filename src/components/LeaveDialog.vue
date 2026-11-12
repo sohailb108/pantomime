@@ -22,7 +22,7 @@
         />
         <q-btn
           outline
-          color="negative"
+          color="primary"
           rounded
           no-caps
           :label="t('leave.home')"

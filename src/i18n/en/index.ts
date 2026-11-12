@@ -123,10 +123,8 @@ export default {
     playedBy: 'Played by {team}',
   },
   turn: {
-    passTo: 'Pass the phone to the actor of {team}',
+    passTo: 'Pass the phone to the actor on {team}',
     passToJudge: 'Pass the phone to a judge from another team',
-    judgeHint: "The judge holds the phone with the screen toward {team}'s actor, away from the actor's teammates. The judge taps Correct when the team guesses the word.",
-    actorHint: 'The actor keeps the phone and judges their own team\'s guesses. Only the actor looks at the screen.',
     prepHint: 'Only the actor looks. Tap Start when ready, then hold the covered word to check guesses.',
     getReady: 'Get ready',
     roleJudge: 'Judge: a player from another team',
