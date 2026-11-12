@@ -48,6 +48,11 @@ export function rerollDelta(teamId: number, settings: SingleSettings): ScoreDelt
 /** Steal is only fair with two teams: with more, just one of the others would get the chance. */
 export const canSteal = (teamCount: number): boolean => teamCount === 2;
 
+/** Points a correct steal is worth: the tile's points, or half of them (rounded up) when set. */
+export function stealPoints(tilePoints: number, settings: SingleSettings): number {
+  return settings.stealHalf ? Math.ceil(tilePoints / 2) : tilePoints;
+}
+
 /** The team that gets the steal guess: the other team. Null if steal is disabled or not allowed. */
 export function stealTeam(
   currentTeam: number,

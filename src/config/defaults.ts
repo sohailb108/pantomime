@@ -12,6 +12,7 @@ export const DEFAULT_GAME_SETTINGS: Settings = {
   single: {
     timerSeconds: { 1: 30, 2: 60, 3: 90 },
     steal: true,
+    stealHalf: false,
     rerollPenalty: 1,
     fastGuessSeconds: 10,
     fastGuessBonus: 1,

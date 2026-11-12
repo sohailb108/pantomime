@@ -6,6 +6,7 @@ import {
   scoreMultiTurn,
   scoreSingleSuccess,
   singleTimer,
+  stealPoints,
   stealTeam,
 } from '@/game/scoring';
 
@@ -51,5 +52,12 @@ describe('single-word scoring', () => {
     expect(stealTeam(1, 2, d.single)).toBe(0);
     expect(stealTeam(2, 3, d.single)).toBeNull();
     expect(stealTeam(0, 3, { ...d.single, steal: false })).toBeNull();
+  });
+
+  it('values a steal at the tile points, or half of them rounded up', () => {
+    expect(stealPoints(4, d.single)).toBe(4);
+    expect(stealPoints(4, { ...d.single, stealHalf: true })).toBe(2);
+    expect(stealPoints(5, { ...d.single, stealHalf: true })).toBe(3);
+    expect(stealPoints(1, { ...d.single, stealHalf: true })).toBe(1);
   });
 });

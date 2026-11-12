@@ -124,7 +124,10 @@ function played(index: number) {
     stolen: stolenBy
       ? {
           hex: teamHex(stolenBy),
-          points: formatSigned(state.value.settings.points[tile.difficulty], settings.language),
+          points: formatSigned(
+            tile.stolenPoints ?? state.value.settings.points[tile.difficulty],
+            settings.language,
+          ),
         }
       : undefined,
   };

@@ -224,6 +224,17 @@
                         @update:model-value="setup.settings.single.steal = $event"
                     /></q-item-section>
                   </q-item>
+                  <q-item v-if="stealAllowed && setup.settings.single.steal">
+                    <q-item-section>
+                      <q-item-label>{{ t('setup.stealValue') }}</q-item-label>
+                      <q-option-group
+                        v-model="stealValueMode"
+                        type="radio"
+                        color="primary"
+                        :options="stealValueOptions"
+                      />
+                    </q-item-section>
+                  </q-item>
                   <q-item>
                     <q-item-section>{{ t('setup.rerollPenalty') }}</q-item-section>
                     <q-item-section side>
@@ -462,6 +473,14 @@ const modes = [
   { value: 'multi', title: 'setup.modeMulti', desc: 'setup.modeMultiDesc' },
 ] as const;
 const stealAllowed = computed(() => canSteal(setup.teamCount));
+const stealValueOptions = computed(() => [
+  { label: t('setup.stealFull'), value: 'full' },
+  { label: t('setup.stealHalfOption'), value: 'half' },
+]);
+const stealValueMode = computed({
+  get: () => (setup.settings.single.stealHalf ? 'half' : 'full'),
+  set: (v: string) => (setup.settings.single.stealHalf = v === 'half'),
+});
 const stepIndex = computed(() => steps.indexOf(step.value));
 const categories = computed(() =>
   listCategories(settings.language).map((c) => ({

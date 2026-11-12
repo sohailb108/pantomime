@@ -62,7 +62,7 @@ export function finishTurn(
   const result = {
     playedBy: state.currentTeam,
     points: own.reduce((sum, d) => sum + d.points, 0),
-    ...(stolen ? { stolenBy: stolen.teamId } : {}),
+    ...(stolen ? { stolenBy: stolen.teamId, stolenPoints: stolen.points } : {}),
   };
   const tiles = state.tiles.map((t, i) => (i === tileIndex ? { ...t, ...result } : t));
   const next: GameState = {

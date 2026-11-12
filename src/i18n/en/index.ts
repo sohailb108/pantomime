@@ -88,6 +88,9 @@ export default {
     timer2: 'Timer, medium (seconds)',
     timer3: 'Timer, hard (seconds)',
     steal: 'Steal chance for the other team',
+    stealValue: 'Points for a correct steal',
+    stealFull: 'All of the tile points',
+    stealHalfOption: 'Half of the tile points (rounded up)',
     stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
     rerollPenalty: 'Reroll penalty',
     fastSeconds: 'Fast guess within (seconds)',
@@ -148,7 +151,7 @@ export default {
     giveUpConfirm: 'Tap again to give up',
     noMoreWords: 'No more words in this category.',
     noRerollWords: 'No other word is left in this category, so the word cannot be changed.',
-    stealTitle: '{team} can steal the points!',
+    stealTitle: '{team} can steal {n} points!',
     stealHint: 'One guess, out loud. The actor of the other team holds the phone (hold the card to check the word) and taps the result.',
     stealRight: 'Right guess',
     stealWrong: 'Wrong',
@@ -306,7 +309,7 @@ export default {
           },
           {
             t: 'Steal',
-            b: 'After a failed single-word turn, the other team may get one guess for the points, if steal is enabled. Steal only works in games with 2 teams, because with more teams only one of the others would get the chance. The stealing team guesses out loud. The actor, who still holds the phone with the word covered, marks it Correct or Wrong.',
+            b: 'After a failed single-word turn, the other team may get one guess for the points (all of them, or half if that setting is on), if steal is enabled. Steal only works in games with 2 teams, because with more teams only one of the others would get the chance. The stealing team guesses out loud. The actor, who still holds the phone with the word covered, marks it Correct or Wrong.',
           },
           {
             t: 'Reroll',
@@ -351,6 +354,10 @@ export default {
           {
             t: 'Steal chance for the other team',
             b: "When on, after a failed turn the other team gets one guess at the word for the tile's points. Only available with 2 teams; with more teams the switch is locked off.",
+          },
+          {
+            t: 'Points for a correct steal',
+            b: "Choose whether a correct steal earns all of the tile's points (default) or half of them, rounded up. Only shown while steal is on.",
           },
           {
             t: 'Reroll penalty',

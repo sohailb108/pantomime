@@ -27,6 +27,7 @@ export const useGameStore = defineStore('game', () => {
   // Games saved before tile points were configurable have no points setting.
   if (state.value) {
     state.value.settings.points ??= { ...DEFAULT_GAME_SETTINGS.points };
+    state.value.settings.single.stealHalf ??= false;
     state.value.settings.gold.timerSeconds ??= DEFAULT_GAME_SETTINGS.gold.timerSeconds;
     // Games saved when teams still had names get palette colors by team order.
     state.value.teams.forEach((team, i) => {

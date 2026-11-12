@@ -206,7 +206,7 @@
         class="text-h5 text-weight-bold"
         :style="stealer === null ? undefined : colorOf(stealer)"
       >
-        {{ t('turn.stealTitle', { team: stealerName }) }}
+        {{ t('turn.stealTitle', { team: stealerName, n: fmt(stealValue) }) }}
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
       <PeekWord class="full-width" :word="word ?? ''" :label="t('turn.peek')" />
@@ -338,6 +338,7 @@ import {
   scoreMultiTurn,
   scoreSingleSuccess,
   singleTimer,
+  stealPoints,
   stealTeam,
 } from '@/game/scoring';
 import type { ScoreDelta } from '@/game/types';
@@ -524,6 +525,8 @@ const rerollLabel = computed(() =>
     : t('turn.rerollFree'),
 );
 const stealer = computed(() => stealTeam(team.value!.id, state.value!.teams.length, single.value));
+/** What a correct steal is worth under the game's steal setting. */
+const stealValue = computed(() => stealPoints(tileValue.value, single.value));
 const stealerName = computed(() => (stealer.value === null ? '' : nameOf(stealer.value)));
 
 function reroll() {
@@ -554,7 +557,7 @@ function failSingle() {
 }
 function steal(right: boolean) {
   if (right && stealer.value !== null) {
-    deltas.value.push({ teamId: stealer.value, points: tileValue.value });
+    deltas.value.push({ teamId: stealer.value, points: stealValue.value });
   }
   phase.value = 'result';
 }

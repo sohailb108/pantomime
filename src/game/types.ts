@@ -19,6 +19,8 @@ export interface MultiSettings {
 export interface SingleSettings {
   timerSeconds: Record<Difficulty, number>;
   steal: boolean;
+  /** A correct steal is worth half the tile's points (rounded up) instead of all of them. */
+  stealHalf: boolean;
   /** Points lost for the one allowed reroll, 0 means free. */
   rerollPenalty: number;
   /** A correct guess within this many seconds earns fastGuessBonus. */
@@ -58,6 +60,8 @@ export interface Tile {
   points?: number;
   /** Id of the team that stole the tile's points, if one did. */
   stolenBy?: number;
+  /** Points the stealing team got. */
+  stolenPoints?: number;
 }
 
 export type GameStatus = 'playing' | 'gold' | 'finished';
