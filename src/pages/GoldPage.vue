@@ -1,6 +1,16 @@
 <template>
   <q-page v-if="state" class="column q-pa-md game-page">
     <div class="text-center q-mb-md header gold-header">
+      <q-btn
+        v-if="phase === 'prep' || phase === 'play'"
+        class="leave-btn"
+        flat
+        round
+        dense
+        icon="close"
+        :aria-label="t('leave.button')"
+        @click="leave.open.value = true"
+      />
       <q-icon name="emoji_events" size="28px" class="q-mr-sm" />
       <span class="text-h5 text-weight-bold">{{ t('gold.title') }}</span>
     </div>
@@ -139,6 +149,7 @@
         @click="next"
       />
     </div>
+    <LeaveDialog v-model="leave.open.value" kind="gold" @home="exit" />
   </q-page>
 </template>
 
@@ -147,8 +158,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
+import LeaveDialog from '@/components/LeaveDialog.vue';
 import PeekWord from '@/components/PeekWord.vue';
 import { useCountdown } from '@/composables/countdown';
+import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
 import { cue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
@@ -192,6 +205,10 @@ const countdown = useCountdown(() => {
 });
 useWakeLock();
 
+// While a word is shown, leaving is confirmed first. The attempt is only counted once resolved.
+const leave = useLeaveGuard(() => phase.value === 'prep' || phase.value === 'play');
+watch(leave.open, (open) => (open ? countdown.pause() : countdown.resume()));
+
 watch(countdown.secondsLeft, (n) => {
   if (phase.value === 'play' && countdown.running.value && n > 0 && n <= 5) cue('tick');
 });
@@ -215,6 +232,11 @@ function showWord() {
   word.value = next;
   game.markGoldSeen(next);
   phase.value = 'prep';
+}
+/** Leaves the unfinished attempt; the game stays at the gold round and is saved. */
+function exit() {
+  leave.allow();
+  void router.replace('/');
 }
 /** The team keeps its points and skips the attempt. */
 function decline() {
@@ -255,7 +277,12 @@ function next() {
 </script>
 
 <style scoped lang="scss">
+.leave-btn {
+  position: absolute;
+  inset-inline-start: 4px;
+}
 .gold-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;

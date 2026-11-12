@@ -141,6 +141,16 @@ export default {
     rerollCost: 'Word change',
     next: 'Continue',
   },
+  leave: {
+    button: 'Leave',
+    turnTitle: 'Leave this turn?',
+    turnBody: 'The turn will not be scored. The tile stays available.',
+    goldTitle: 'Leave the gold round?',
+    goldBody: 'This attempt will not count. Your game is saved.',
+    resume: 'Keep playing',
+    board: 'Back to the board',
+    home: 'Home',
+  },
   update: {
     available: 'A new version is available.',
     refresh: 'Refresh',

@@ -1,6 +1,16 @@
 <template>
   <q-page v-if="tile && team" class="column q-pa-md game-page">
     <div class="header text-center q-mb-md" :style="{ '--team': teamHex(team.color) }">
+      <q-btn
+        v-if="phase !== 'handoff'"
+        class="leave-btn"
+        flat
+        round
+        dense
+        icon="close"
+        :aria-label="t('leave.button')"
+        @click="leave.open.value = true"
+      />
       <div class="team-pill text-h6 text-weight-bold" :style="{ background: teamHex(team.color) }">
         {{ teamName(team.color) }}
       </div>
@@ -301,6 +311,7 @@
         @click="finish"
       />
     </div>
+    <LeaveDialog v-model="leave.open.value" kind="turn" @board="exit('/board')" @home="exit('/')" />
   </q-page>
 </template>
 
@@ -309,8 +320,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
+import LeaveDialog from '@/components/LeaveDialog.vue';
 import PeekWord from '@/components/PeekWord.vue';
 import { useCountdown } from '@/composables/countdown';
+import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
 import { cue } from '@/services/feedback';
 import {
@@ -378,6 +391,10 @@ let confirmTimer: ReturnType<typeof setTimeout> | undefined;
 const countdown = useCountdown(onTimeEnd);
 useWakeLock();
 
+// Once the word is shown, leaving would throw the turn away, so it is confirmed first.
+const leave = useLeaveGuard(() => phase.value !== 'handoff');
+watch(leave.open, (open) => (open ? countdown.pause() : countdown.resume()));
+
 // Tick during the last seconds of a running timer.
 watch(countdown.secondsLeft, (n) => {
   if (phase.value === 'play' && countdown.running.value && n > 0 && n <= 5) cue('tick');
@@ -396,6 +413,13 @@ onBeforeUnmount(() => clearTimeout(confirmTimer));
 function back() {
   game.pick(null);
   void router.replace('/board');
+}
+
+/** Leaves a started turn: nothing is scored and the tile stays unplayed. */
+function exit(to: string) {
+  leave.allow();
+  game.pick(null);
+  void router.replace(to);
 }
 
 /** Takes the next word of the deck and records it as used. */
@@ -555,6 +579,7 @@ function toggleHide(w: string) {
 }
 
 function finish() {
+  leave.allow();
   game.finish(deltas.value);
   const status = state.value?.status;
   void router.replace(status === 'gold' ? '/gold' : status === 'finished' ? '/results' : '/board');
@@ -583,10 +608,16 @@ function finish() {
   line-height: 1.2;
 }
 .header {
+  position: relative;
   padding: 12px 8px 10px;
   border-radius: 16px;
   background: rgba(128, 128, 128, 0.1);
   border-top: 5px solid var(--team);
+}
+.leave-btn {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-start: 4px;
 }
 .tile-chip {
   margin-top: 4px;

@@ -2,7 +2,7 @@
   <q-page v-if="state" class="q-pa-md">
     <div class="board-col">
       <div class="row items-center q-mb-md">
-        <q-btn flat round icon="arrow_back" class="flip-rtl" :aria-label="t('board.home')" to="/" />
+        <q-btn flat round icon="home" :aria-label="t('board.home')" to="/" />
         <div class="text-h5 text-weight-bold q-mx-sm">{{ t('board.title') }}</div>
       </div>
 

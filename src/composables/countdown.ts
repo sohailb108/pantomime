@@ -10,6 +10,7 @@ export function useCountdown(onEnd: () => void) {
   const running = ref(false);
   let deadline = 0;
   let startedAt = 0;
+  let pausedAt = 0;
   let handle: ReturnType<typeof setInterval> | undefined;
 
   function tick() {
@@ -22,6 +23,7 @@ export function useCountdown(onEnd: () => void) {
 
   function start(seconds: number) {
     stop();
+    pausedAt = 0;
     total.value = seconds;
     startedAt = Date.now();
     deadline = startedAt + seconds * 1000;
@@ -36,6 +38,23 @@ export function useCountdown(onEnd: () => void) {
     handle = undefined;
   }
 
+  /** Freezes a running countdown until `resume`. Does nothing when it is not running. */
+  function pause() {
+    if (!running.value) return;
+    stop();
+    pausedAt = Date.now();
+  }
+  /** Continues a paused countdown with the time it had left. */
+  function resume() {
+    if (!pausedAt) return;
+    const shift = Date.now() - pausedAt;
+    pausedAt = 0;
+    deadline += shift;
+    startedAt += shift;
+    running.value = true;
+    handle = setInterval(tick, 100);
+  }
+
   /** Whole seconds left, rounded up so the display reaches 0 only when time is over. */
   const secondsLeft = computed(() => Math.ceil(remainingMs.value / 1000));
   /** Seconds elapsed since start, as a decimal. */
@@ -44,5 +63,5 @@ export function useCountdown(onEnd: () => void) {
   }
 
   onBeforeUnmount(stop);
-  return { start, stop, running, secondsLeft, total, remainingMs, elapsedSeconds };
+  return { start, stop, pause, resume, running, secondsLeft, total, remainingMs, elapsedSeconds };
 }
