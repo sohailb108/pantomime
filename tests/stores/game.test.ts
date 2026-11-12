@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
+import { loadJson } from '@/services/storage';
 import { useGameStore } from '@/stores/game';
 
 function memoryStorage() {
@@ -95,5 +96,22 @@ describe('game store persistence', () => {
     deck.forEach((w) => b.markTileSeen('animals', 1, w));
     expect(new Set(b.tileDeck('animals', 1)).size).toBe(deck.length);
     expect(b.tileDeck('animals', 1)).toHaveLength(deck.length);
+  });
+
+  it('records a word once and forgets words that left the pool', async () => {
+    const a = freshStore();
+    a.start(options);
+    const deck = a.tileDeck('animals', 1);
+    a.markTileSeen('animals', 1, deck[0]!);
+    a.markTileSeen('animals', 1, deck[0]!);
+    a.markTileSeen('animals', 1, 'removed word');
+    await nextTick();
+    const history = () =>
+      loadJson<Record<string, Record<string, string[]>>>('pantomime:history')![options.lang]!;
+    expect(history()['animals:1']).toEqual([deck[0], 'removed word']);
+
+    a.tileDeck('animals', 1);
+    await nextTick();
+    expect(history()['animals:1']).toEqual([deck[0]]);
   });
 });

@@ -441,12 +441,14 @@ function multiCorrect() {
 }
 function multiSkip() {
   if (!canSkipNow.value) return;
-  tally.value.skips++;
-  cue('skip');
+  // A skip with no replacement word has no effect, so it is not counted or charged.
   if (!draw()) {
     noWords.value = true;
     endMulti();
+    return;
   }
+  tally.value.skips++;
+  cue('skip');
 }
 function endMulti() {
   countdown.stop();

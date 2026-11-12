@@ -71,7 +71,12 @@ export const useGameStore = defineStore('game', () => {
 
   function deckFor(poolId: string, pool: string[]): string[] {
     const langHistory = (history.value[lang.value] ??= {});
-    let seen = new Set(langHistory[poolId] ?? []);
+    // Forget words that left the pool (hidden, removed or deleted with their category).
+    const inPool = new Set(pool);
+    const old = langHistory[poolId] ?? [];
+    const kept = old.filter((w) => inPool.has(w));
+    if (kept.length !== old.length) langHistory[poolId] = kept;
+    let seen = new Set(kept);
     // Every word was used: start over instead of repeating the same order.
     if (isPoolExhausted(pool, seen)) {
       langHistory[poolId] = [];
@@ -91,7 +96,8 @@ export const useGameStore = defineStore('game', () => {
 
   /** Records a word as used so later games do not draw it again soon. */
   function markSeen(poolId: string, word: string) {
-    ((history.value[lang.value] ??= {})[poolId] ??= []).push(word);
+    const list = ((history.value[lang.value] ??= {})[poolId] ??= []);
+    if (!list.includes(word)) list.push(word);
   }
   function markTileSeen(categoryId: string, difficulty: Difficulty, word: string) {
     markSeen(poolKey(categoryId, difficulty), word);
