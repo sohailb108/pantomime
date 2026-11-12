@@ -181,7 +181,7 @@ export default {
     exported: 'Saved a file with your words for this language.',
     imported: 'Imported {n} word. | Imported {n} words.',
     err: {
-      invalid: 'Enter a word of 1 to 40 characters.',
+      invalid: 'Enter a word of 1 to 80 characters.',
       duplicate: 'This word is already in the list.',
       full: 'This list is full.',
     },
@@ -238,15 +238,15 @@ export default {
           },
           {
             t: 'Tile points',
-            b: "Easy, medium and hard tiles are worth {p1} / {p2} / {p3} points by default. You can change each value in the Mode step. In multi-word mode every correct word earns the tile's points; in single-word mode a correct guess earns them once.",
+            b: "Easy, medium and hard tiles are worth {p1} / {p2} / {p3} points by default. You can change each value in Game settings (a button in the Mode step). In multi-word mode every correct word earns the tile's points; in single-word mode a correct guess earns them once.",
           },
           {
             t: 'Multi-word mode',
-            b: 'The actor reveals the first word and the timer starts. Tap Correct when the team guesses it, or Skip to move on. Every correct word scores the tile points. The turn ends when time runs out or the tile has no words left.',
+            b: 'The actor reveals the first word and the timer starts. Tap Correct when the team guesses it, or Skip to move on (each skip costs a penalty, and the number of skips per turn is limited by default). Every correct word scores the tile points. The turn ends when time runs out or the tile has no words left.',
           },
           {
             t: 'Single-word mode',
-            b: 'One word per turn. The actor sees the word on the hand-over screen and taps Start. The word is then covered. The judge, who holds the phone, can hold the word to peek at it and checks the guesses. Tap Guessed when the team gets it. Give up asks for a confirm tap, and so does a timeout: both count as a failed turn.',
+            b: 'One word per turn. The actor sees the word on the hand-over screen and taps Start. The word is then covered. The judge, who holds the phone, can hold the word to peek at it and checks the guesses. Tap Guessed when the team gets it. A correct guess made quickly earns a small bonus (see the settings guide). Give up asks for a confirm tap, and so does a timeout: both count as a failed turn.',
           },
           {
             t: 'Steal',
@@ -258,7 +258,7 @@ export default {
           },
           {
             t: 'Gold round',
-            b: 'If enabled, after the last tile the teams that are not leading get one attempt each at a very hard word, lowest score first. Success adds the bonus ({goldBonus} points by default) and the round ends at once. Failure costs a penalty ({goldPenalty} points by default) and the next team goes. A team that prefers to keep its points can decline its attempt with no penalty. There is no reroll and no steal. If teams are tied for the lead, each of them gets an attempt too. The highest score then wins.',
+            b: 'If enabled, after the last tile the teams that are not leading get one attempt each at a very hard word, lowest score first. Success adds the bonus ({goldBonus} points by default) and the round ends at once. Failure costs a penalty ({goldPenalty} points by default) and the next team goes. A team that prefers to keep its points can tap "Keep my points (skip)" with no penalty. There is no reroll and no steal. If teams are tied for the lead, each of them gets an attempt too. The highest score then wins.',
           },
         ],
       },
@@ -315,8 +315,8 @@ export default {
           },
           { g: 'App settings' },
           {
-            t: 'Language, dark mode, sound and vibration',
-            b: 'Found in the app settings. Vibration is not available on every device, for example iPhones.',
+            t: 'Language, color theme, dark mode, sound and vibration',
+            b: 'Found in Settings on the home page. The color theme changes the accent color of the whole app. Vibration is not available on every device, for example iPhones.',
           },
         ],
       },
@@ -355,11 +355,15 @@ export default {
           },
           {
             t: 'How they mix',
-            b: 'Your words join the built-in words of the same category and difficulty, so they can appear in any game that uses that category.',
+            b: 'Your words join the built-in words of the same category and difficulty, so they can appear in any game that uses that category. Words do not repeat until every word of a list has been shown, and then the list starts over. The gold round has its own list of gold words, and you can add your own there too.',
+          },
+          {
+            t: 'Limits',
+            b: 'A word can be up to 80 characters and a category name up to 30. Lists and the number of categories also have a (generous) size limit, and the app tells you when you reach it.',
           },
           {
             t: 'Backup',
-            b: 'You can export your words to a file and import them on another device.',
+            b: 'Export saves your words for the current language to a file, and Import loads such a file on another device. A file only works for the language it was exported in and for the same version of the app.',
           },
         ],
       },
@@ -372,7 +376,7 @@ export default {
           },
           {
             t: 'Your data stays on your device',
-            b: 'There is no account and no server. Settings, custom words and game history are stored only in this browser.',
+            b: 'There is no account and no server. Settings, custom words, the saved game and the list of words already shown are stored only in this browser.',
           },
           {
             t: 'Clearing data',

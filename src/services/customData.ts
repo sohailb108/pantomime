@@ -22,7 +22,7 @@ export interface CustomLang {
   hiddenGold: string[];
 }
 
-export const MAX_WORD_LENGTH = 40;
+export const MAX_WORD_LENGTH = 80;
 export const MAX_CATEGORIES = 100;
 export const MAX_WORDS_PER_LIST = 2000;
 export const MAX_NAME_LENGTH = 30;
@@ -123,7 +123,6 @@ function cleanWords(value: unknown): WordsByDifficulty | null {
   }
   return out;
 }
-
 
 /** Validates an exported file. Anything unexpected makes the whole import fail, nothing is partially applied. */
 export function parseImport(text: string): ParsedImport {

@@ -10,7 +10,13 @@
     @pointercancel="shown = false"
     @contextmenu.prevent
   >
-    <div v-if="shown" class="text-h4 text-weight-bold">{{ word }}</div>
+    <div
+      v-if="shown"
+      class="text-h4 text-weight-bold"
+      :class="{ 'long-word': word.length > LONG_WORD }"
+    >
+      {{ word }}
+    </div>
     <template v-else>
       <q-icon name="visibility_off" size="lg" />
       <div class="q-mt-sm">{{ label }}</div>
@@ -20,6 +26,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { LONG_WORD } from '@/config/limits';
 
 defineProps<{ word: string; label: string }>();
 const shown = ref(false);

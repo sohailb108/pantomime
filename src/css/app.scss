@@ -125,3 +125,10 @@ body.body--dark .action-bar {
     --tone: #c10015;
   }
 }
+
+// Long words (see config/limits.ts): smaller text, so up to 80 characters still fit.
+.text-h3.long-word,
+.text-h4.long-word {
+  font-size: 1.6rem;
+  line-height: 2.2rem;
+}

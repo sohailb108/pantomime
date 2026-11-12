@@ -5,6 +5,7 @@ import {
   emptyLang,
   emptyWords,
   isComplete,
+  MAX_WORD_LENGTH,
   mergeInto,
   normalizeLang,
   normalizeWord,
@@ -15,7 +16,7 @@ describe('words', () => {
   it('normalizes and rejects empty or too long words', () => {
     expect(normalizeWord('  hello   world ')).toBe('hello world');
     expect(normalizeWord('   ')).toBeNull();
-    expect(normalizeWord('x'.repeat(41))).toBeNull();
+    expect(normalizeWord('x'.repeat(MAX_WORD_LENGTH + 1))).toBeNull();
   });
 
   it('adds without duplicates, ignoring case', () => {
@@ -70,7 +71,10 @@ describe('export and import', () => {
   });
 
   it('drops invalid words and duplicates but keeps the rest', () => {
-    const file = { ...buildExport('en', emptyLang()), gold: ['ok', 'OK', 5, '', 'x'.repeat(50)] };
+    const file = {
+      ...buildExport('en', emptyLang()),
+      gold: ['ok', 'OK', 5, '', 'x'.repeat(MAX_WORD_LENGTH + 10)],
+    };
     const parsed = parseImport(JSON.stringify(file));
     expect(parsed.ok && parsed.data.gold).toEqual(['ok']);
   });

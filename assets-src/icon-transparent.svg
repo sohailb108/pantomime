@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+  <defs>
+    <path id="m" d="M0-90C60-90 92-62 92-12C92 52 52 98 0 98C-52 98-92 52-92-12C-92-62-60-90 0-90Z"/>
+  </defs>
+  <g transform="translate(256 256) scale(1.25) translate(-256 -262)">
+  <!-- back mask: sad -->
+  <g transform="translate(322 282) rotate(14) scale(1.12)">
+    <use xlink:href="#m" fill="#ffe0b2"/>
+    <path d="M62-18Q40-40 18-18Q40-28 62-18Z" fill="#ff7043" stroke="#ff7043" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M-34 58Q0 28 34 58" fill="none" stroke="#ff7043" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <!-- front mask: happy -->
+  <g transform="translate(190 236) rotate(-14) scale(1.12)">
+    <use xlink:href="#m" fill="#fff" stroke="#ff7043" stroke-width="22"/>
+    <path d="M-62-20Q-40 4-18-20Q-40-8-62-20ZM62-20Q40 4 18-20Q40-8 62-20Z" fill="#ff7043" stroke="#ff7043" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M-44 28Q0 80 44 28" fill="none" stroke="#ff7043" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  </g>
+</svg>

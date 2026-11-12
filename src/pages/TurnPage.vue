@@ -45,7 +45,12 @@
 
     <!-- Single mode: word shown before start -->
     <div v-else-if="phase === 'prep'" class="col column items-center justify-center q-gutter-y-lg">
-      <div class="word-card text-h3 text-weight-bold text-center">{{ word }}</div>
+      <div
+        class="word-card text-h3 text-weight-bold text-center"
+        :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
+      >
+        {{ word }}
+      </div>
       <div class="column full-width turn-actions">
         <q-btn
           color="primary"
@@ -101,7 +106,12 @@
           {{ t('turn.finishWord') }}
         </div>
         <div class="col column items-center justify-center">
-          <div class="word-card text-h3 text-weight-bold text-center">{{ word }}</div>
+          <div
+            class="word-card text-h3 text-weight-bold text-center"
+            :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
+          >
+            {{ word }}
+          </div>
         </div>
         <div class="tally text-center text-grey-7">
           {{ fmt(tally.correct) }} ✓ ·
@@ -189,7 +199,12 @@
         {{ t('turn.stealTitle', { team: stealerName }) }}
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
-      <div class="word-card text-h4 text-weight-bold">{{ word }}</div>
+      <div
+        class="word-card text-h4 text-weight-bold"
+        :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
+      >
+        {{ word }}
+      </div>
       <div class="row no-wrap full-width q-mt-lg action-bar">
         <div class="col">
           <q-btn
@@ -318,6 +333,7 @@ import {
 import type { ScoreDelta } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
 import { listAllCategories } from '@/services/packs';
+import { LONG_WORD } from '@/config/limits';
 import { hidePoolWord, restorePoolWord, type HideResult } from '@/services/words';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
