@@ -140,6 +140,10 @@ export default {
     rerollCost: 'تعویض کلمه',
     next: 'ادامه',
   },
+  update: {
+    available: 'نسخه جدید برنامه آماده است.',
+    refresh: 'بارگذاری دوباره',
+  },
   gold: {
     title: 'دور طلایی',
     intro: 'فرصت آخر! {team} یک کلمه بسیار سخت دریافت می‌کند.',

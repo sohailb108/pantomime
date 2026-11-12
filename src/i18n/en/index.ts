@@ -141,6 +141,10 @@ export default {
     rerollCost: 'Word change',
     next: 'Continue',
   },
+  update: {
+    available: 'A new version is available.',
+    refresh: 'Refresh',
+  },
   gold: {
     title: 'Gold round',
     intro: 'Last chance! {team} gets one very hard word.',
