@@ -17,8 +17,15 @@ const files = import.meta.glob<CategoryPack | GoldPack>('@/packs/*/*.json', {
   import: 'default',
 });
 
+/** Pack files by "lang/file", built once at load. */
+const packsByKey = new Map<string, CategoryPack | GoldPack>();
+for (const [path, pack] of Object.entries(files)) {
+  const match = /\/packs\/([^/]+)\/([^/]+)\.json$/.exec(path);
+  if (match) packsByKey.set(`${match[1]}/${match[2]}`, pack);
+}
+
 function find(lang: string, file: string): CategoryPack | GoldPack | undefined {
-  return Object.entries(files).find(([path]) => path.endsWith(`/packs/${lang}/${file}.json`))?.[1];
+  return packsByKey.get(`${lang}/${file}`);
 }
 
 /** Number of built-in words of one category and difficulty. */

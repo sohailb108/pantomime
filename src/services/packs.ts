@@ -1,27 +1,6 @@
 import { useCustomStore } from '@/stores/custom';
+import { listBuiltinCategories, type CategoryInfo } from './builtinPacks';
 import { isComplete } from './customData';
-
-export interface CategoryInfo {
-  id: string;
-  name: string;
-}
-
-interface PackIndex {
-  schema: number;
-  lang: string;
-  categories: CategoryInfo[];
-}
-
-const indexes = import.meta.glob<PackIndex>('@/packs/*/index.json', {
-  eager: true,
-  import: 'default',
-});
-
-/** Built-in categories of a language. Falls back to an empty list for languages without a pack. */
-export function listBuiltinCategories(lang: string): CategoryInfo[] {
-  const entry = Object.entries(indexes).find(([path]) => path.includes(`/packs/${lang}/`));
-  return entry ? entry[1].categories : [];
-}
 
 /** Built-in categories followed by the user's custom ones, with `custom` marking the latter. */
 export function listAllCategories(lang: string): (CategoryInfo & { custom: boolean })[] {

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 import type { Difficulty } from '@/game/types';
-import { listBuiltinCategories } from '@/services/packs';
+import { listBuiltinCategories } from '@/services/builtinPacks';
 import {
   absorbBuiltinDuplicates,
   addToList,
