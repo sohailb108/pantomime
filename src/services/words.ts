@@ -37,7 +37,7 @@ export function getPool(lang: string, categoryId: string, difficulty: Difficulty
   ];
 }
 
-const distinct = (words: string[]) => new Set(words.map((w) => w.toLocaleLowerCase())).size;
+const distinct = (words: string[]) => new Set(words.map((w) => w.toLowerCase())).size;
 
 /** What hiding a word changed, so it can be undone. */
 export interface HideResult {

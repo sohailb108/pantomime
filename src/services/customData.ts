@@ -130,7 +130,7 @@ export function normalizeName(raw: string): string | null {
   return name.length > 0 && name.length <= MAX_NAME_LENGTH ? name : null;
 }
 
-const same = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleLowerCase();
+const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 export type AddResult = 'ok' | 'invalid' | 'duplicate' | 'full';
 
