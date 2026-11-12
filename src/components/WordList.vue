@@ -139,6 +139,12 @@ function add() {
 }
 .word-chip {
   margin: 2px;
+  height: auto;
+  min-height: 32px;
+  overflow-wrap: anywhere;
+  :deep(.q-chip__content) {
+    white-space: normal;
+  }
   background: rgba(128, 128, 128, 0.2);
   color: inherit;
 }

@@ -45,10 +45,7 @@
 
     <!-- Single mode: word shown before start -->
     <div v-else-if="phase === 'prep'" class="col column items-center justify-center q-gutter-y-lg">
-      <div
-        class="word-card text-h3 text-weight-bold text-center"
-        :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
-      >
+      <div class="word-card text-h3 text-weight-bold text-center" :class="longWordClass(word)">
         {{ word }}
       </div>
       <div class="column full-width turn-actions">
@@ -106,10 +103,7 @@
           {{ t('turn.finishWord') }}
         </div>
         <div class="col column items-center justify-center">
-          <div
-            class="word-card text-h3 text-weight-bold text-center"
-            :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
-          >
+          <div class="word-card text-h3 text-weight-bold text-center" :class="longWordClass(word)">
             {{ word }}
           </div>
         </div>
@@ -199,10 +193,7 @@
         {{ t('turn.stealTitle', { team: stealerName }) }}
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
-      <div
-        class="word-card text-h4 text-weight-bold"
-        :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
-      >
+      <div class="word-card text-h4 text-weight-bold" :class="longWordClass(word)">
         {{ word }}
       </div>
       <div class="row no-wrap full-width q-mt-lg action-bar">
@@ -275,7 +266,7 @@
           </div>
           <q-list v-if="shown.length > 0" separator>
             <q-item v-for="w in shown" :key="w">
-              <q-item-section class="text-subtitle1">{{ w }}</q-item-section>
+              <q-item-section class="text-subtitle1 wrap-anywhere">{{ w }}</q-item-section>
               <q-item-section side>
                 <q-btn
                   outline
@@ -290,7 +281,7 @@
               </q-item-section>
             </q-item>
           </q-list>
-          <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1">
+          <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1 wrap-anywhere">
             {{ t('turn.wordWas', { word }) }}
           </div>
           <div v-if="lastWordMsg" class="q-px-md q-py-sm text-caption text-negative">
@@ -333,7 +324,7 @@ import {
 import type { ScoreDelta } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
 import { listAllCategories } from '@/services/packs';
-import { LONG_WORD } from '@/config/limits';
+import { longWordClass } from '@/config/limits';
 import { hidePoolWord, restorePoolWord, type HideResult } from '@/services/words';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';

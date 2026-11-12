@@ -127,6 +127,11 @@ body.body--dark .action-bar {
 }
 
 // Long words (see config/limits.ts): smaller text, so up to 80 characters still fit.
+// Must stay after the landscape media query above: both have the same specificity.
+.wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+.game-page .text-h3.long-word,
 .text-h3.long-word,
 .text-h4.long-word {
   font-size: 1.6rem;

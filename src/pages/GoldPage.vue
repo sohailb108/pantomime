@@ -51,10 +51,7 @@
       <div class="text-subtitle1 text-weight-bold" :style="colorStyle(team?.color)">
         {{ t('gold.attempt', { team: teamName(team?.color) }) }}
       </div>
-      <div
-        class="word-card text-h3 text-weight-bold"
-        :class="{ 'long-word': (word ?? '').length > LONG_WORD }"
-      >
+      <div class="word-card text-h3 text-weight-bold" :class="longWordClass(word)">
         {{ word }}
       </div>
       <q-btn
@@ -153,7 +150,7 @@ import { useCountdown } from '@/composables/countdown';
 import { useWakeLock } from '@/composables/wakelock';
 import { cue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
-import { LONG_WORD } from '@/config/limits';
+import { longWordClass } from '@/config/limits';
 import { singleTimer } from '@/game/scoring';
 import { formatNumber, formatSigned } from '@/services/format';
 import { useGameStore } from '@/stores/game';

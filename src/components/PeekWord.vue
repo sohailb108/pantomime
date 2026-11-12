@@ -10,11 +10,7 @@
     @pointercancel="shown = false"
     @contextmenu.prevent
   >
-    <div
-      v-if="shown"
-      class="text-h4 text-weight-bold"
-      :class="{ 'long-word': word.length > LONG_WORD }"
-    >
+    <div v-if="shown" class="text-h4 text-weight-bold" :class="longWordClass(word)">
       {{ word }}
     </div>
     <template v-else>
@@ -26,7 +22,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { LONG_WORD } from '@/config/limits';
+import { longWordClass } from '@/config/limits';
 
 defineProps<{ word: string; label: string }>();
 const shown = ref(false);
@@ -38,6 +34,7 @@ const shown = ref(false);
   border-radius: 20px;
   border: 2px solid rgba(128, 128, 128, 0.25);
   user-select: none;
+  overflow-wrap: anywhere;
   touch-action: none;
   &.covered {
     background: repeating-linear-gradient(
