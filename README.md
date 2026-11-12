@@ -17,7 +17,7 @@ npm install
 npx quasar dev -m pwa        # dev server
 npm run typecheck            # vue-tsc
 npm test                     # vitest (game logic)
-npm run lint                 # prettier + eslint
+npm run lint                 # eslint
 npx quasar build -m pwa      # production build -> dist/pwa
 ```
 
