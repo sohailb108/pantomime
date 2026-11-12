@@ -11,10 +11,10 @@
         :aria-label="t('leave.button')"
         @click="leave.open.value = true"
       />
-      <div class="team-pill text-h6 text-weight-bold" :style="{ background: teamHex(team.color) }">
+      <div class="team-pill text-subtitle1 text-weight-bold" :style="{ background: teamHex(team.color) }">
         {{ teamName(team.color) }}
       </div>
-      <div class="tile-chip text-subtitle2">
+      <div class="tile-chip text-body2">
         {{
           t('turn.tileInfo', {
             category: category.name,
@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <div v-if="phase !== 'result' && phase !== 'getready'" class="role-chip text-center text-caption">
+    <div v-if="phase !== 'result' && phase !== 'getready'" class="role-chip text-center text-body2">
       <q-icon :name="isMulti ? 'gavel' : 'sports_esports'" size="16px" class="q-mr-xs" />
       {{ isMulti ? t('turn.roleJudge') : t('turn.roleActor') }}
     </div>
@@ -95,7 +95,7 @@
           :label="rerollLabel"
           @click="reroll"
         />
-        <div v-if="!rerolled && deck.length === 0" class="text-caption text-grey-7 text-center">
+        <div v-if="!rerolled && deck.length === 0" class="text-body2 text-grey-7 text-center">
           {{ t('turn.noRerollWords') }}
         </div>
       </div>
@@ -120,7 +120,7 @@
             {{ word }}
           </div>
         </div>
-        <div class="tally text-center text-grey-7">
+        <div class="tally text-body2 text-center text-grey-7">
           {{ fmt(tally.correct) }} ✓ ·
           {{ skipsText }}
         </div>
@@ -272,7 +272,7 @@
               {{ nameOf(line.teamId) }}
             </div>
             <div
-              class="line-points text-h4 text-weight-bold"
+              class="line-points text-h5 text-weight-bold"
               :class="line.points < 0 ? 'text-negative' : 'text-positive'"
             >
               {{ t('board.points', { n: signed(line.points) }) }}
@@ -292,7 +292,7 @@
         </q-card>
 
         <q-card v-if="shown.length > 0 || word || noWords" flat class="soft-card">
-          <div v-if="shown.length > 0" class="q-pa-md q-pb-none text-subtitle2 text-grey-7">
+          <div v-if="shown.length > 0" class="q-pa-md q-pb-none text-body2 text-grey-7">
             {{ t('turn.wordsShown') }}
           </div>
           <q-list v-if="shown.length > 0" class="words-list" separator>
@@ -315,7 +315,7 @@
           <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1 wrap-anywhere">
             {{ t('turn.wordWas', { word }) }}
           </div>
-          <div v-if="emptiedMsg" class="q-px-md q-py-sm text-caption text-warning">
+          <div v-if="emptiedMsg" class="q-px-md q-py-sm text-body2 text-warning">
             {{ t('packs.emptiedHint') }}
           </div>
           <div v-if="noWords" class="q-pa-md text-grey-7">{{ t('turn.noMoreWords') }}</div>
