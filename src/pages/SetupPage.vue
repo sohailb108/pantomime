@@ -1,118 +1,36 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md setup-page">
     <div class="row items-center q-mb-sm">
       <q-btn flat round icon="close" :aria-label="t('setup.close')" to="/" />
       <div class="text-h5 text-weight-bold q-mx-sm">{{ t('setup.title') }}</div>
     </div>
 
     <q-stepper v-model="step" flat animated alternative-labels class="setup-stepper">
-      <q-step name="teams" :title="t('setup.steps.teams')" icon="groups" :done="stepIndex > 0">
-        <div
-          v-for="(color, i) in setup.teamColors"
-          :key="i"
-          class="team-group row items-center q-mb-md q-pa-md no-wrap"
-          :style="{ '--team': teamHex(color) }"
-        >
-          <div class="col">
-            <div class="text-weight-bold q-mb-sm" :style="{ color: teamHex(color) }">
-              {{ t(`teamColors.${color}`) }}
-            </div>
-            <div class="swatches" role="radiogroup" :aria-label="t('setup.pickColor')">
-              <button
-                v-for="c in TEAM_COLORS"
-                :key="c.id"
-                type="button"
-                class="swatch"
-                :class="{ selected: c.id === color }"
-                :style="{ background: c.hex }"
-                role="radio"
-                :aria-checked="c.id === color"
-                :aria-label="t(`teamColors.${c.id}`)"
-                :disabled="c.id !== color && setup.teamColors.includes(c.id)"
-                @click="setup.setColor(i, c.id)"
-              >
-                <q-icon v-if="c.id === color" name="check" color="white" size="20px" />
-              </button>
-            </div>
+      <q-step name="mode" :title="t('setup.steps.mode')" icon="tune" :done="stepIndex > 0">
+        <div class="text-subtitle2 text-grey-7 q-mb-xs">{{ t('setup.teamsTitle') }}</div>
+        <div class="team-row">
+          <div class="team-circles">
+            <button
+              v-for="(color, i) in setup.teamColors"
+              :key="i"
+              type="button"
+              class="team-circle"
+              :style="{ background: teamHex(color) }"
+              :aria-label="`${t(`teamColors.${color}`)}: ${t('setup.pickColor')}`"
+              @click="colorTeam = i"
+            />
           </div>
           <q-btn
-            flat
             round
-            icon="delete_outline"
-            :aria-label="t('setup.removeTeam')"
-            :disable="setup.teamCount <= MIN_TEAMS"
-            @click="setup.removeTeam(i)"
-          />
-        </div>
-        <q-btn
-          outline
-          rounded
-          no-caps
-          color="primary"
-          icon="add"
-          :label="t('setup.addTeam')"
-          :disable="setup.teamCount >= MAX_TEAMS"
-          @click="setup.addTeam()"
-        />
-      </q-step>
-
-      <q-step
-        name="categories"
-        :title="t('setup.steps.categories')"
-        icon="category"
-        :done="stepIndex > 1"
-      >
-        <div class="row justify-center q-mb-md">
-          <q-btn
-            class="select-all-btn no-wrap"
             outline
-            rounded
-            no-caps
             color="primary"
-            :icon="allSelected ? 'deselect' : 'select_all'"
-            :label="allSelected ? t('setup.clearAll') : t('setup.selectAll')"
-            @click="toggleAll"
+            icon="add"
+            :aria-label="t('setup.addTeam')"
+            :disable="setup.teamCount >= MAX_TEAMS"
+            @click="setup.addTeam()"
           />
         </div>
-        <div class="row q-col-gutter-sm">
-          <div v-for="c in categories" :key="c.id" class="col-6 col-sm-4">
-            <q-card
-              flat
-              class="cursor-pointer text-center q-pa-md category-card"
-              :class="{ selected: setup.categoryIds.includes(c.id) }"
-              role="checkbox"
-              :aria-checked="setup.categoryIds.includes(c.id)"
-              tabindex="0"
-              @click="setup.toggleCategory(c.id)"
-              @keydown.enter.space.prevent="setup.toggleCategory(c.id)"
-            >
-              <q-icon
-                v-if="setup.categoryIds.includes(c.id)"
-                name="check_circle"
-                class="check"
-                size="sm"
-              />
-              <div class="text-subtitle1 text-weight-bold">{{ c.name }}</div>
-            </q-card>
-          </div>
-        </div>
-        <div class="q-mt-md" :class="{ 'text-negative': !enoughCategories }">
-          {{
-            t('setup.categoriesHint', {
-              min: fmt(setup.minCategories),
-              n: fmt(setup.categoryIds.length),
-            })
-          }}
-        </div>
-        <div v-if="enoughCategories" class="text-grey-7">
-          {{ t('setup.tiles', { n: fmt(setup.tileCount) }) }}
-        </div>
-        <div v-if="enoughCategories && setup.trimmedCount > 0" class="text-grey-7">
-          {{ t('setup.trimmed', { n: fmt(setup.trimmedCount) }, setup.trimmedCount) }}
-        </div>
-      </q-step>
 
-      <q-step name="mode" :title="t('setup.steps.mode')" icon="tune">
         <div class="row q-col-gutter-sm">
           <div v-for="m in modes" :key="m.value" class="col-12 col-sm-6">
             <q-card
@@ -153,6 +71,42 @@
           />
           <div class="text-grey-7 q-mt-sm">{{ summary }}</div>
         </div>
+
+        <q-dialog :model-value="colorTeam !== null" @update:model-value="colorTeam = null">
+          <q-card flat class="dialog-card">
+            <div class="text-h6 text-weight-bold q-mb-md">{{ t('setup.pickColor') }}</div>
+            <div v-if="colorTeam !== null" class="swatches" role="radiogroup">
+              <button
+                v-for="c in TEAM_COLORS"
+                :key="c.id"
+                type="button"
+                class="swatch"
+                :class="{ selected: c.id === setup.teamColors[colorTeam] }"
+                :style="{ background: c.hex }"
+                role="radio"
+                :aria-checked="c.id === setup.teamColors[colorTeam]"
+                :aria-label="t(`teamColors.${c.id}`)"
+                :disabled="c.id !== setup.teamColors[colorTeam] && setup.teamColors.includes(c.id)"
+                @click="pickColor(c.id)"
+              >
+                <q-icon v-if="c.id === setup.teamColors[colorTeam]" name="check" color="white" size="20px" />
+              </button>
+            </div>
+            <div class="dialog-actions">
+              <q-btn
+                outline
+                rounded
+                no-caps
+                color="negative"
+                icon="delete_outline"
+                :label="t('setup.removeTeam')"
+                :disable="setup.teamCount <= MIN_TEAMS"
+                @click="removeColorTeam"
+              />
+              <q-btn v-close-popup rounded no-caps color="primary" :label="t('home.ok')" />
+            </div>
+          </q-card>
+        </q-dialog>
 
         <q-dialog
           v-model="settingsOpen"
@@ -342,31 +296,86 @@
         </q-dialog>
       </q-step>
 
-      <template #message>
-        <div class="row justify-between items-center q-px-md q-pt-md">
+      <q-step
+        name="categories"
+        :title="t('setup.steps.categories')"
+        icon="category"
+      >
+        <div class="q-mb-md">
+          <div class="q-mb-xs" :class="{ 'text-negative': !enoughCategories }">
+            {{
+              t('setup.categoriesHint', {
+                min: fmt(setup.minCategories),
+                n: fmt(setup.categoryIds.length),
+              })
+            }}
+          </div>
+          <div v-if="enoughCategories" class="text-grey-7">
+            {{ t('setup.tiles', { n: fmt(setup.tileCount) }) }}
+          </div>
+          <div v-if="enoughCategories && setup.trimmedCount > 0" class="text-grey-7">
+            {{ t('setup.trimmed', { n: fmt(setup.trimmedCount) }, setup.trimmedCount) }}
+          </div>
+        </div>
+        <div class="row justify-center q-mb-md">
           <q-btn
-            v-if="stepIndex > 0"
+            class="select-all-btn no-wrap"
             outline
             rounded
             no-caps
             color="primary"
-            :label="t('setup.back')"
-            @click="step = steps[stepIndex - 1]!"
+            :icon="allSelected ? 'deselect' : 'select_all'"
+            :label="allSelected ? t('setup.clearAll') : t('setup.selectAll')"
+            @click="toggleAll"
           />
-          <span v-else />
-          <q-btn
-            v-if="stepIndex < steps.length - 1"
-            color="primary"
-            rounded
-            no-caps
-            :label="t('setup.next')"
-            :disable="!canAdvance"
-            @click="step = steps[stepIndex + 1]!"
-          />
-          <q-btn v-else color="primary" rounded no-caps :label="t('setup.start')" @click="start" />
         </div>
-      </template>
+        <div class="row q-col-gutter-sm">
+          <div v-for="c in categories" :key="c.id" class="col-6 col-sm-4">
+            <q-card
+              flat
+              class="cursor-pointer text-center q-pa-md category-card"
+              :class="{ selected: setup.categoryIds.includes(c.id) }"
+              role="checkbox"
+              :aria-checked="setup.categoryIds.includes(c.id)"
+              tabindex="0"
+              @click="setup.toggleCategory(c.id)"
+              @keydown.enter.space.prevent="setup.toggleCategory(c.id)"
+            >
+              <q-icon
+                v-if="setup.categoryIds.includes(c.id)"
+                name="check_circle"
+                class="check"
+                size="sm"
+              />
+              <div class="text-subtitle1 text-weight-bold">{{ c.name }}</div>
+            </q-card>
+          </div>
+        </div>
+      </q-step>
     </q-stepper>
+
+    <div class="setup-nav action-bar row justify-between items-center">
+      <q-btn
+        v-if="stepIndex > 0"
+        outline
+        rounded
+        no-caps
+        color="primary"
+        :label="t('setup.back')"
+        @click="step = steps[stepIndex - 1]!"
+      />
+      <span v-else />
+      <q-btn
+        v-if="stepIndex < steps.length - 1"
+        color="primary"
+        rounded
+        no-caps
+        :label="t('setup.next')"
+        :disable="!canAdvance"
+        @click="step = steps[stepIndex + 1]!"
+      />
+      <q-btn v-else color="primary" rounded no-caps :label="t('setup.start')" @click="start" />
+    </div>
   </q-page>
 </template>
 
@@ -385,7 +394,7 @@ import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 import { useSetupStore } from '@/stores/setup';
 
-const steps = ['teams', 'categories', 'mode'] as const;
+const steps = ['mode', 'categories'] as const;
 type Step = (typeof steps)[number];
 
 const { t } = useI18n();
@@ -394,7 +403,19 @@ const settings = useSettingsStore();
 const setup = useSetupStore();
 const game = useGameStore();
 
-const step = ref<Step>('teams');
+const step = ref<Step>('mode');
+/** Index of the team whose color dialog is open. */
+const colorTeam = ref<number | null>(null);
+function pickColor(id: string) {
+  if (colorTeam.value === null) return;
+  setup.setColor(colorTeam.value, id);
+  colorTeam.value = null;
+}
+function removeColorTeam() {
+  if (colorTeam.value === null) return;
+  setup.removeTeam(colorTeam.value);
+  colorTeam.value = null;
+}
 const settingsOpen = ref(false);
 // Settings as they were when the dialog opened; Cancel (or Esc) restores them.
 let settingsBackup: Settings | null = null;
@@ -498,7 +519,22 @@ function start() {
 </script>
 
 <style scoped lang="scss">
+.setup-page {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+// Back and Next stay pinned to the bottom of the screen (shared .action-bar), whatever the page length.
+.setup-nav {
+  width: 100%;
+  max-width: 560px;
+  // Pushes the bar to the bottom when the page is shorter than the screen.
+  margin: auto auto 0;
+}
+
 .setup-stepper {
+  width: 100%;
   max-width: 560px;
   margin: 0 auto;
   background: transparent;
@@ -527,12 +563,31 @@ function start() {
 
 :deep(.q-stepper__step-inner) {
   padding-inline: 0;
+  padding-top: 8px;
 }
 
-.team-group {
-  border-radius: 16px;
-  background: rgba(128, 128, 128, 0.1);
-  border-inline-start: 6px solid var(--team, rgba(128, 128, 128, 0.4));
+.team-row {
+  margin-bottom: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.team-circles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.team-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  padding: 0;
 }
 
 .swatches {
