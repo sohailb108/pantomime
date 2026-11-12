@@ -12,8 +12,14 @@ export function useWakeLock() {
   async function acquire() {
     if (!wanted || sentinel || document.visibilityState !== 'visible') return;
     try {
-      sentinel = (await navigator.wakeLock?.request('screen')) ?? null;
-      sentinel?.addEventListener('release', () => (sentinel = null));
+      const lock = (await navigator.wakeLock?.request('screen')) ?? null;
+      // Unmounted (or hidden again) while the request was pending: do not keep the lock.
+      if (!wanted) {
+        void lock?.release().catch(() => undefined);
+        return;
+      }
+      sentinel = lock;
+      lock?.addEventListener('release', () => (sentinel = null));
     } catch {
       sentinel = null;
     }

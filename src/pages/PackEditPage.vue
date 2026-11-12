@@ -102,11 +102,14 @@
       <q-card flat class="dialog-card">
         <div class="dialog-head">
           <div class="dialog-icon negative"><q-icon name="delete" size="22px" /></div>
-          <div>{{ t('packs.deleteConfirm', { name: title }) }}</div>
+          <div>
+            {{ inActiveGame ? t('packs.deleteInGame') : t('packs.deleteConfirm', { name: title }) }}
+          </div>
         </div>
         <div class="dialog-actions">
           <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
           <q-btn
+            v-if="!inActiveGame"
             v-close-popup
             rounded
             no-caps
@@ -132,6 +135,7 @@ import { isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { listAllCategories } from '@/services/packs';
 import { builtinGoldWords, builtinWords } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
+import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
@@ -139,6 +143,7 @@ const route = useRoute();
 const router = useRouter();
 const settings = useSettingsStore();
 const custom = useCustomStore();
+const game = useGameStore();
 
 const lang = computed(() => settings.language);
 const id = computed(() => String(route.params.id));
@@ -158,6 +163,14 @@ onMounted(() => {
 const editOpen = ref(false);
 const editName = ref('');
 const deleteOpen = ref(false);
+// A game that is still running keeps tiles for this category, so it cannot be deleted meanwhile.
+const inActiveGame = computed(
+  () =>
+    game.state !== null &&
+    game.state.status !== 'finished' &&
+    game.lang === lang.value &&
+    game.state.tiles.some((tile) => tile.categoryId === id.value),
+);
 
 function openEdit() {
   editName.value = title.value;

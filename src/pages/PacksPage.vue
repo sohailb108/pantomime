@@ -186,7 +186,8 @@ function doExport() {
   a.href = url;
   a.download = `pantomime-words-${lang.value}.json`;
   a.click();
-  URL.revokeObjectURL(url);
+  // Revoke later: some browsers start the download asynchronously.
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
   say(t('packs.exported'), true);
 }
 

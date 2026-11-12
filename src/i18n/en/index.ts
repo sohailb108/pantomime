@@ -173,6 +173,7 @@ export default {
     edit: 'Edit category',
     deleteCategory: 'Delete category',
     deleteConfirm: 'Delete the category "{name}" and all its words?',
+    deleteInGame: 'This category is used by the game in progress. Finish or quit the game first.',
     incomplete: 'Needs at least one word at every difficulty to be used in a game',
     incompleteHint:
       'Add at least one easy, one medium and one hard word to use this category in a game.',

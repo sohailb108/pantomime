@@ -30,16 +30,20 @@ export const useSettingsStore = defineStore('settings', () => {
   const palette = ref(getPalette(saved.palette ?? DEFAULT_PALETTE).id);
 
   function persist() {
-    localStorage.setItem(
-      KEY,
-      JSON.stringify({
-        language: language.value,
-        dark: dark.value,
-        sound: sound.value,
-        vibration: vibration.value,
-        palette: palette.value,
-      }),
-    );
+    try {
+      localStorage.setItem(
+        KEY,
+        JSON.stringify({
+          language: language.value,
+          dark: dark.value,
+          sound: sound.value,
+          vibration: vibration.value,
+          palette: palette.value,
+        }),
+      );
+    } catch {
+      // Storage full or blocked (private mode): the setting still applies for this session.
+    }
   }
 
   function setLanguage(code: string) {

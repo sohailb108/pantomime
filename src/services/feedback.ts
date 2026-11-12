@@ -36,6 +36,14 @@ function audio(): AudioContext | undefined {
 
 /** Plays a short synthesized cue and vibrates, each only if enabled and supported. Never throws. */
 export function cue(name: Cue): void {
+  try {
+    play(name);
+  } catch {
+    // Audio or vibration failed: feedback is optional.
+  }
+}
+
+function play(name: Cue): void {
   const settings = useSettingsStore();
   if (settings.vibration && typeof navigator.vibrate === 'function') {
     navigator.vibrate(VIBRATION[name]);

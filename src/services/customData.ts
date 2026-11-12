@@ -26,6 +26,8 @@ export const MAX_WORD_LENGTH = 80;
 export const MAX_CATEGORIES = 100;
 export const MAX_WORDS_PER_LIST = 2000;
 export const MAX_NAME_LENGTH = 30;
+/** Keys of `extra` and `hidden`: built-in or custom category ids. Rules out keys like __proto__. */
+const CATEGORY_KEY = /^[a-z0-9][a-z0-9-]{0,40}$/;
 export const EXPORT_SCHEMA = 1;
 
 export function emptyWords(): WordsByDifficulty {
@@ -177,6 +179,7 @@ export function parseImport(text: string): ParsedImport {
   if (!isObject(extra)) return { ok: false, error: 'invalid' };
   if (Object.keys(extra).length > MAX_CATEGORIES) return { ok: false, error: 'tooLarge' };
   for (const [id, value] of Object.entries(extra)) {
+    if (!CATEGORY_KEY.test(id)) return { ok: false, error: 'invalid' };
     const words = cleanWords(value);
     if (words === null) return { ok: false, error: 'invalid' };
     data.extra[id] = words;
@@ -190,6 +193,7 @@ export function parseImport(text: string): ParsedImport {
   if (!isObject(hidden)) return { ok: false, error: 'invalid' };
   if (Object.keys(hidden).length > MAX_CATEGORIES) return { ok: false, error: 'tooLarge' };
   for (const [id, value] of Object.entries(hidden)) {
+    if (!CATEGORY_KEY.test(id)) return { ok: false, error: 'invalid' };
     const words = cleanWords(value);
     if (words === null) return { ok: false, error: 'invalid' };
     data.hidden[id] = words;

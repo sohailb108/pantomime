@@ -185,7 +185,7 @@ const iosHint = needsIosHint();
 const iosOpen = ref(false);
 
 async function install() {
-  if (!(await promptInstall())) iosOpen.value = true;
+  if ((await promptInstall()) === 'unavailable') iosOpen.value = true;
 }
 
 async function share() {

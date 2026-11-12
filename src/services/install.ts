@@ -35,12 +35,12 @@ export function listenForInstall(): void {
   });
 }
 
-/** Shows the browser's install dialog. Returns false when there is nothing to show. */
-export async function promptInstall(): Promise<boolean> {
-  if (!deferred) return false;
+/** Shows the browser's install dialog. Returns 'unavailable' when there is nothing to show. */
+export async function promptInstall(): Promise<'accepted' | 'dismissed' | 'unavailable'> {
+  if (!deferred) return 'unavailable';
   const event = deferred;
   deferred = null;
   installAvailable.value = false;
   await event.prompt();
-  return (await event.userChoice).outcome === 'accepted';
+  return (await event.userChoice).outcome === 'accepted' ? 'accepted' : 'dismissed';
 }
