@@ -45,11 +45,14 @@ export function rerollDelta(teamId: number, settings: SingleSettings): ScoreDelt
   return settings.rerollPenalty > 0 ? [{ teamId, points: -settings.rerollPenalty }] : [];
 }
 
-/** The team that gets the steal guess: the next team in order. Null if steal is disabled. */
+/** Steal is only fair with two teams: with more, just one of the others would get the chance. */
+export const canSteal = (teamCount: number): boolean => teamCount === 2;
+
+/** The team that gets the steal guess: the other team. Null if steal is disabled or not allowed. */
 export function stealTeam(
   currentTeam: number,
   teamCount: number,
   settings: SingleSettings,
 ): number | null {
-  return settings.steal ? (currentTeam + 1) % teamCount : null;
+  return settings.steal && canSteal(teamCount) ? (currentTeam + 1) % teamCount : null;
 }

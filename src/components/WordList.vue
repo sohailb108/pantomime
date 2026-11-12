@@ -1,8 +1,9 @@
 <template>
-  <div class="q-mb-lg">
-    <div class="row items-baseline">
+  <div class="word-card q-mb-md" :style="{ '--tone': tone ?? 'var(--q-primary)' }">
+    <div class="row items-center no-wrap">
+      <span class="tone-dot q-mr-sm" />
       <div class="text-subtitle1 text-weight-bold col">{{ title }}</div>
-      <div v-if="builtinCount !== undefined" class="text-caption text-grey-7">
+      <div v-if="builtinCount !== undefined" class="builtin-chip text-caption">
         {{ t('packs.builtinCount', { n: fmt(builtinCount) }) }}
       </div>
     </div>
@@ -35,9 +36,7 @@
         v-for="w in words"
         :key="w"
         removable
-        dense
-        color="grey-3"
-        text-color="black"
+        class="word-chip"
         :remove-aria-label="t('packs.removeWord', { word: w })"
         @remove="emit('remove', w)"
       >
@@ -54,11 +53,8 @@
           v-for="w in hidden"
           :key="w"
           clickable
-          dense
           icon-right="visibility"
-          color="grey-5"
-          text-color="black"
-          class="hidden-word"
+          class="word-chip hidden-word"
           :aria-label="t('packs.showWord', { word: w })"
           @click="pending = w"
         >
@@ -68,12 +64,15 @@
     </div>
 
     <q-dialog :model-value="pending !== null" @update:model-value="pending = null">
-      <q-card style="min-width: 280px">
-        <q-card-section>{{ t('packs.showConfirm', { word: pending }) }}</q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat no-caps :label="t('setup.close')" />
-          <q-btn flat no-caps color="primary" :label="t('packs.show')" @click="confirmShow" />
-        </q-card-actions>
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="visibility" size="22px" /></div>
+          <div>{{ t('packs.showConfirm', { word: pending }) }}</div>
+        </div>
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
+          <q-btn rounded no-caps color="primary" :label="t('packs.show')" @click="confirmShow" />
+        </div>
       </q-card>
     </q-dialog>
   </div>
@@ -94,6 +93,8 @@ const props = defineProps<{
   onAdd: (word: string) => AddResult;
   /** Built-in words the user hid. Only these are listed, the rest of the built-in words stay unseen. */
   hidden?: readonly string[] | undefined;
+  /** Accent color (any CSS color) for the card's marker. */
+  tone?: string | undefined;
 }>();
 const emit = defineEmits<{ remove: [word: string]; unhide: [word: string] }>();
 
@@ -118,6 +119,29 @@ function add() {
 </script>
 
 <style scoped lang="scss">
+.word-card {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  border-inline-start: 6px solid var(--tone);
+}
+.tone-dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+.builtin-chip {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.18);
+}
+.word-chip {
+  margin: 2px;
+  background: rgba(128, 128, 128, 0.2);
+  color: inherit;
+}
 .hidden-word {
   text-decoration: line-through;
   opacity: 0.7;

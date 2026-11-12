@@ -1,4 +1,7 @@
-/** Color themes. The first one is the default and matches `quasar.variables.scss`. */
+/**
+ * Color themes. The first one is the default and matches `quasar.variables.scss`.
+ * Deliberately muted and dusty, so they are not mistaken for the saturated team colors.
+ */
 export interface Palette {
   id: string;
   primary: string;
@@ -10,32 +13,46 @@ export interface Palette {
 
 export const PALETTES: Palette[] = [
   {
-    id: 'orange',
-    primary: '#ff7043',
-    primaryDark: '#ff7043',
-    secondary: '#26a69a',
-    accent: '#ffca28',
+    id: 'orange', // terracotta
+    primary: '#b4573a',
+    primaryDark: '#cf7455',
+    secondary: '#5a8f8a',
+    accent: '#d4a24c',
   },
   {
-    id: 'blue',
-    primary: '#1976d2',
-    primaryDark: '#42a5f5',
-    secondary: '#26a69a',
-    accent: '#ffb300',
+    id: 'blue', // slate blue
+    primary: '#4e6a96',
+    primaryDark: '#7894c4',
+    secondary: '#5a8f8a',
+    accent: '#d4a24c',
   },
   {
-    id: 'green',
-    primary: '#388e3c',
-    primaryDark: '#4caf50',
-    secondary: '#00897b',
-    accent: '#ffb300',
+    id: 'green', // sage
+    primary: '#56795c',
+    primaryDark: '#7aa881',
+    secondary: '#5a8f8a',
+    accent: '#d4a24c',
   },
   {
-    id: 'purple',
-    primary: '#ab47bc',
-    primaryDark: '#ba68c8',
-    secondary: '#26a69a',
-    accent: '#ffca28',
+    id: 'purple', // mauve
+    primary: '#8a5a80',
+    primaryDark: '#b384a8',
+    secondary: '#5a8f8a',
+    accent: '#d4a24c',
+  },
+  {
+    id: 'brown', // cocoa
+    primary: '#7a5c4a',
+    primaryDark: '#a8846f',
+    secondary: '#5a8f8a',
+    accent: '#d4a24c',
+  },
+  {
+    id: 'teal', // dusty lagoon
+    primary: '#3f7f87',
+    primaryDark: '#6aa9b1',
+    secondary: '#b07a5a',
+    accent: '#d4a24c',
   },
 ];
 

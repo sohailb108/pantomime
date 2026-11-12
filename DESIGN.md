@@ -57,8 +57,8 @@ Before every turn a **"Pass to actor"** screen shows the team, the chosen tile a
 - The judge taps **Guessed**, or **Give up** (which asks for a confirm tap first), or the timer runs out. Giving up and a timeout both count as a failed turn, and a failed turn triggers the steal chance if enabled.
 - Settings:
   - Timer per difficulty (for example 30/60/90 s).
-  - Steal chance: after a failure, the opposing team gets one guess for the points. The judge resolves it with Correct or Wrong. With more than 2 teams, the next team in order gets the steal.
-  - Reroll word: one swap per turn, allowed only before Start. Costs a configurable penalty (default 1 point, 0 means free) deducted from the team's score.
+  - Steal chance: after a failure, the opposing team gets one guess for the points. The judge resolves it with Correct or Wrong. Steal is only available in games with exactly 2 teams (with more teams only one of the others would get the chance, which is unfair). In setup the switch is locked off for 3 or more teams.
+  - Reroll word: one swap per turn, allowed only before Start. Costs a configurable penalty (default 1 point, 0 means free) deducted from the team's score. If no other word is left in the category, the button is replaced by a short hint saying so.
   - Fast-guess bonus: configurable threshold (seconds) and bonus points. A correct guess within the threshold adds the bonus points.
 
 ### 2.6 Gold round (optional, end of game)
@@ -170,7 +170,7 @@ Adding a language = add `src/i18n/<lang>/`, add `src/packs/<lang>/`, and add one
 
 | Screen            | Purpose                                                                                                                           |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Home              | New game, Resume game, Word packs, Settings, Install                                                                              |
+| Home              | Logo and title, New game (Resume game when one is saved), a card linking Word packs and Help, a Settings card (theme swatches, dark mode, sound, vibration), then Install and Share |
 | Setup: Teams      | 2 to 6 teams, each with a color from the palette                                                                                  |
 | Setup: Categories | Pick categories, preview the board                                                                                                |
 | Setup: Mode       | Mode cards, a settings summary and a settings dialog (scoring, mode rules, gold round)                                            |
@@ -227,7 +227,7 @@ Implementation notes:
 - **Handoff back button:** the handoff screen has a Back button that returns to the board and clears the picked tile, so the team can choose another tile. It exists only in the handoff phase (once a word has been shown, the turn cannot be undone).
 - **Turn phases:** `handoff` (team, category, points, one big button), then the mode's play phase, then `result` (points gained), then back to the board, or on to the gold round or the final results depending on the new game status.
 - **Multi-word play:** the handoff button reveals the first word and starts the timer. Correct adds a word, Skip shows the remaining skips and applies the penalty, and is disabled at the limit. When time ends and "finish the current word" is on, the current word stays up with Correct and Done, otherwise the turn ends at once. An empty word deck ends the turn early.
-- **Single-word play:** handoff, then the word is shown with the one allowed Reroll (before Start, costs the reroll penalty), then Start covers the word and starts the timer. Hold to peek. Guessed scores the tile's points plus the fast-guess bonus. Give up needs a second tap within 3 seconds. A timeout or give up is a failure, followed by the steal phase if enabled (the next team guesses, the judge taps Correct or Wrong, a correct steal gives that team the tile's points).
+- **Single-word play:** handoff, then the word is shown with the one allowed Reroll (before Start, costs the reroll penalty), then Start covers the word and starts the timer. Hold to peek. Guessed scores the tile's points plus the fast-guess bonus. Give up needs a second tap within 3 seconds. A timeout or give up is a failure, followed by the steal phase if enabled (the other team guesses, the judge taps Correct or Wrong, a correct steal gives that team the tile's points).
 - **Gold round:** an intro naming the team, then the single-word play with the difficulty-3 timer and a word from the gold pool, then the outcome. Success ends the round at once.
 - **Results:** ranking with ties (1, 1, 3), the winner highlighted, Play again (to setup) and Home.
 - **Result screen:** a title, then a **points card** (each team that scored as a colored pill with its signed points on the opposite side, or "No points this turn"; below a divider the breakdown lines that apply, each with an icon: fast-guess bonus, skip penalty (multi-word) and word-change penalty (single-word)), then a **words card** (caption, then one row per word shown with its Hide button at the end, rows separated by dividers; the single-word "The word was" line when no list is shown; the last-word and no-more-words notices). Content is top-aligned and starts-aligned (follows the page direction); the Continue button is a full-width sticky bar at the bottom.

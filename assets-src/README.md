@@ -1,0 +1,1 @@
+`icon.svg` is the source of the app icons in `public/icons/` and `public/favicon.ico`. Re-export with Inkscape (`inkscape icon.svg -w 512 -h 512 -o icon-512x512.png`) and ImageMagick for the smaller sizes.

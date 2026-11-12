@@ -1,64 +1,71 @@
 <template>
   <q-page v-if="state" class="q-pa-md">
-    <div class="row items-center q-mb-md">
-      <q-btn flat round icon="home" :aria-label="t('board.home')" to="/" />
-      <div class="text-h5 text-weight-bold q-mx-sm">{{ t('board.title') }}</div>
-    </div>
+    <div class="board-col">
+      <div class="row items-center q-mb-md">
+        <q-btn flat round icon="arrow_back" class="flip-rtl" :aria-label="t('board.home')" to="/" />
+        <div class="text-h5 text-weight-bold q-mx-sm">{{ t('board.title') }}</div>
+      </div>
 
-    <div class="row q-col-gutter-sm q-mb-md">
-      <div v-for="team in state.teams" :key="team.id" class="col">
+      <div class="scores q-mb-md">
         <div
-          class="score-card text-center q-pa-sm"
+          v-for="team in state.teams"
+          :key="team.id"
+          class="score-card text-center text-white"
           :class="{ current: team.id === state.currentTeam }"
           :style="{ background: teamHex(team.color) }"
           role="group"
           :aria-label="teamName(team.color)"
         >
-          <div class="text-h5 text-white">{{ fmt(team.score) }}</div>
+          <div class="score-name">{{ teamName(team.color) }}</div>
+          <div class="score-value">{{ fmt(team.score) }}</div>
         </div>
       </div>
-    </div>
 
-    <div
-      class="text-h6 text-center q-mb-md text-weight-bold"
-      :style="{ color: teamHex(state.teams[state.currentTeam]?.color ?? '') }"
-    >
-      {{ t('board.turnOf', { team: teamName(state.teams[state.currentTeam]?.color) }) }}
-    </div>
+      <div
+        class="turn-pill text-weight-bold q-mb-lg"
+        :style="{
+          color: teamHex(state.teams[state.currentTeam]?.color ?? ''),
+          borderColor: teamHex(state.teams[state.currentTeam]?.color ?? ''),
+        }"
+      >
+        <q-icon name="play_circle" size="20px" class="q-mr-xs" />
+        {{ t('board.turnOf', { team: teamName(state.teams[state.currentTeam]?.color) }) }}
+      </div>
 
-    <div v-for="cat in columns" :key="cat.id" class="board-row">
-      <div class="cat-title text-weight-bold">{{ cat.name }}</div>
-      <div class="tile-row">
-        <template v-for="d in DIFFICULTIES" :key="d">
-          <q-btn
-            v-if="tileIndex(cat.id, d) !== undefined"
-            class="full-width tile"
-            :class="{ played: isPlayed(tileIndex(cat.id, d)!) }"
-            :style="playedStyle(tileIndex(cat.id, d)!)"
-            unelevated
-            no-caps
-            :aria-disabled="isPlayed(tileIndex(cat.id, d)!)"
-            :aria-label="t('board.points', { n: fmt(pointsOf(d)) })"
-            @click="pickTile(tileIndex(cat.id, d)!)"
-          >
-            <div
-              v-if="played(tileIndex(cat.id, d)!)"
-              class="tile-played"
-              :aria-label="played(tileIndex(cat.id, d)!)!.label"
+      <div v-for="cat in columns" :key="cat.id" class="board-row">
+        <div class="cat-title text-weight-bold">{{ cat.name }}</div>
+        <div class="tile-row">
+          <template v-for="d in DIFFICULTIES" :key="d">
+            <q-btn
+              v-if="tileIndex(cat.id, d) !== undefined"
+              class="full-width tile"
+              :class="{ played: isPlayed(tileIndex(cat.id, d)!) }"
+              :style="playedStyle(tileIndex(cat.id, d)!)"
+              unelevated
+              no-caps
+              :aria-disabled="isPlayed(tileIndex(cat.id, d)!)"
+              :aria-label="t('board.points', { n: fmt(pointsOf(d)) })"
+              @click="pickTile(tileIndex(cat.id, d)!)"
             >
-              <div class="text-weight-bold">{{ played(tileIndex(cat.id, d)!)!.points }}</div>
-              <div v-if="played(tileIndex(cat.id, d)!)!.stolen" class="steal-line">
-                <span
-                  class="dot"
-                  :style="{ background: played(tileIndex(cat.id, d)!)!.stolen!.hex }"
-                />
-                {{ played(tileIndex(cat.id, d)!)!.stolen!.points }}
+              <div
+                v-if="played(tileIndex(cat.id, d)!)"
+                class="tile-played"
+                :aria-label="played(tileIndex(cat.id, d)!)!.label"
+              >
+                <div class="text-weight-bold">{{ played(tileIndex(cat.id, d)!)!.points }}</div>
+                <div v-if="played(tileIndex(cat.id, d)!)!.stolen" class="steal-line">
+                  <span
+                    class="dot"
+                    :style="{ background: played(tileIndex(cat.id, d)!)!.stolen!.hex }"
+                  />
+                  {{ played(tileIndex(cat.id, d)!)!.stolen!.points }}
+                </div>
               </div>
-            </div>
-            <template v-else>{{ t('board.points', { n: fmt(pointsOf(d)) }) }}</template>
-          </q-btn>
-          <div v-else class="tile-removed" />
-        </template>
+              <template v-else>{{ t('board.points', { n: fmt(pointsOf(d)) }) }}</template>
+            </q-btn>
+            <div v-else class="tile-removed" />
+          </template>
+        </div>
       </div>
     </div>
   </q-page>
@@ -145,19 +152,57 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.board-col {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.scores {
+  display: flex;
+  gap: 8px;
+}
 .score-card {
-  border-radius: 4px;
-  min-height: 48px;
-  opacity: 0.75;
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: 16px;
+  padding: 8px 6px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
   &.current {
     opacity: 1;
-    outline: 3px solid currentColor;
-    outline-offset: 2px;
+    box-shadow:
+      0 0 0 3px var(--q-page-bg, #fff),
+      0 0 0 5px currentColor,
+      0 4px 12px rgba(0, 0, 0, 0.25);
   }
 }
-// One block per category: the title, then its three difficulty tiles side by side.
+.score-name {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.score-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.turn-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 6px 16px;
+  border: 2px solid;
+  border-radius: 999px;
+  font-size: 1.05rem;
+}
+// One card per category: the title, then its three difficulty tiles side by side.
 .board-row {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
 }
 .tile-row {
   display: grid;
@@ -166,22 +211,23 @@ onMounted(() => {
 }
 .cat-title {
   overflow-wrap: break-word;
-  padding: 4px 2px;
-  margin-bottom: 8px;
-  border-bottom: 3px solid rgba(128, 128, 128, 0.5);
-  font-size: 1rem;
+  padding: 0 2px;
+  margin-bottom: 10px;
+  font-size: 1.05rem;
 }
 .tile {
+  border-radius: 12px;
+  // Unplayed: outlined only, so the filled team colors stand out as "played".
   background: transparent;
-  color: inherit;
-  // Unplayed tiles are outlined, not filled.
-  border: 2px solid rgba(128, 128, 128, 0.6);
+  border: 2px solid var(--q-primary);
+  color: var(--q-primary);
   min-height: 56px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
   // A played tile takes the color of the team that played it (set inline).
   &.played {
-    color: #fff;
     border-color: transparent;
+    color: #fff;
     // The ring marks a tile as played.
     box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.85);
     cursor: default;
@@ -208,6 +254,6 @@ onMounted(() => {
 .tile-removed {
   min-height: 56px;
   border: 2px dashed rgba(128, 128, 128, 0.3);
-  border-radius: 4px;
+  border-radius: 12px;
 }
 </style>

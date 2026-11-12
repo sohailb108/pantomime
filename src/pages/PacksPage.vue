@@ -1,81 +1,103 @@
 <template>
   <q-page class="q-pa-md">
     <div class="row items-center q-mb-md">
-      <q-btn flat round icon="home" :aria-label="t('board.home')" to="/" />
+      <q-btn flat round icon="arrow_back" class="flip-rtl" :aria-label="t('board.home')" to="/" />
       <div class="text-h5 text-weight-bold q-mx-sm">{{ t('packs.title') }}</div>
     </div>
 
-    <q-list bordered separator class="rounded-borders q-mb-md">
-      <q-item v-for="c in categories" :key="c.id" clickable :to="`/packs/${c.id}`">
-        <q-item-section>
-          <q-item-label>{{ c.name }}</q-item-label>
-          <q-item-label v-if="c.custom && !complete(c.id)" caption class="text-warning">
-            {{ t('packs.incomplete') }}
-          </q-item-label>
-          <q-item-label v-else-if="extraCount(c.id, c.custom) > 0" caption>
-            {{ t('packs.customCount', { n: fmt(extraCount(c.id, c.custom)) }) }}
-          </q-item-label>
-        </q-item-section>
-        <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
-      </q-item>
-      <q-item clickable to="/packs/gold">
-        <q-item-section avatar><q-icon name="emoji_events" color="amber" /></q-item-section>
-        <q-item-section>
-          <q-item-label>{{ t('packs.gold') }}</q-item-label>
-          <q-item-label v-if="custom.goldWords(lang).length > 0" caption>
-            {{ t('packs.customCount', { n: fmt(custom.goldWords(lang).length) }) }}
-          </q-item-label>
-        </q-item-section>
-        <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
-      </q-item>
-    </q-list>
+    <div class="packs-col">
+      <div class="pack-list q-mb-lg">
+        <q-item
+          v-for="c in categories"
+          :key="c.id"
+          clickable
+          class="pack-card"
+          :to="`/packs/${c.id}`"
+        >
+          <q-item-section avatar>
+            <div class="pack-avatar">{{ initial(c.name) }}</div>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-weight-bold">{{ c.name }}</q-item-label>
+            <q-item-label v-if="c.custom && !complete(c.id)" caption class="text-warning">
+              {{ t('packs.incomplete') }}
+            </q-item-label>
+            <q-item-label v-else-if="extraCount(c.id, c.custom) > 0" caption>
+              {{ t('packs.customCount', { n: fmt(extraCount(c.id, c.custom)) }) }}
+            </q-item-label>
+          </q-item-section>
+          <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
+        </q-item>
+        <q-item clickable class="pack-card gold" to="/packs/gold">
+          <q-item-section avatar>
+            <div class="pack-avatar gold"><q-icon name="emoji_events" color="white" /></div>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-weight-bold">{{ t('packs.gold') }}</q-item-label>
+            <q-item-label v-if="custom.goldWords(lang).length > 0" caption>
+              {{ t('packs.customCount', { n: fmt(custom.goldWords(lang).length) }) }}
+            </q-item-label>
+          </q-item-section>
+          <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
+        </q-item>
+      </div>
 
-    <q-btn
-      class="q-mb-md"
-      color="primary"
-      rounded
-      no-caps
-      icon="add"
-      :label="t('packs.newCategory')"
-      @click="openNew"
-    />
-    <div class="row no-wrap q-gutter-sm">
       <q-btn
-        class="col"
-        outline
+        class="full-width q-mb-sm"
+        color="primary"
+        size="lg"
         rounded
         no-caps
-        icon="download"
-        :label="t('packs.export')"
-        @click="doExport"
+        icon="add"
+        :label="t('packs.newCategory')"
+        @click="openNew"
       />
-      <q-btn
-        class="col"
-        outline
-        rounded
-        no-caps
-        icon="upload"
-        :label="t('packs.import')"
-        @click="fileInput?.click()"
-      />
-      <input
-        ref="fileInput"
-        type="file"
-        accept="application/json,.json"
-        class="hidden"
-        @change="doImport"
-      />
+      <div class="row no-wrap q-gutter-sm">
+        <q-btn
+          class="col"
+          outline
+          rounded
+          no-caps
+          color="primary"
+          icon="download"
+          :label="t('packs.export')"
+          @click="doExport"
+        />
+        <q-btn
+          class="col"
+          outline
+          rounded
+          no-caps
+          color="primary"
+          icon="upload"
+          :label="t('packs.import')"
+          @click="fileInput?.click()"
+        />
+        <input
+          ref="fileInput"
+          type="file"
+          accept="application/json,.json"
+          class="hidden"
+          @change="doImport"
+        />
+      </div>
+      <div v-if="message" class="status-banner q-mt-md" :class="messageOk ? 'ok' : 'fail'">
+        <q-icon
+          :name="messageOk ? 'check_circle' : 'error'"
+          size="24px"
+          :color="messageOk ? 'positive' : 'negative'"
+        />
+        <div>{{ message }}</div>
+      </div>
     </div>
-    <q-banner v-if="message" rounded class="q-mt-md" :class="messageOk ? 'bg-green-1' : 'bg-red-1'">
-      {{ message }}
-    </q-banner>
 
     <q-dialog v-model="newOpen">
-      <q-card style="min-width: 280px">
-        <q-card-section>
-          <div class="text-h6">{{ t('packs.newCategory') }}</div>
-        </q-card-section>
-        <q-card-section class="q-pt-none">
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="add" size="22px" /></div>
+          <div class="text-h6 text-weight-bold">{{ t('packs.newCategory') }}</div>
+        </div>
+        <div>
           <q-input
             v-model="newName"
             outlined
@@ -85,18 +107,18 @@
             :label="t('packs.categoryName')"
             @keyup.enter="create"
           />
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat no-caps :label="t('setup.close')" />
+        </div>
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
           <q-btn
-            flat
+            rounded
             no-caps
             color="primary"
             :label="t('packs.create')"
             :disable="!newName.trim()"
             @click="create"
           />
-        </q-card-actions>
+        </div>
       </q-card>
     </q-dialog>
   </q-page>
@@ -121,6 +143,7 @@ const custom = useCustomStore();
 const lang = computed(() => settings.language);
 const fmt = (n: number) => formatNumber(n, lang.value);
 const categories = computed(() => listAllCategories(lang.value));
+const initial = (name: string) => [...name.trim()][0] ?? '?';
 
 function complete(id: string): boolean {
   const c = custom.findCategory(lang.value, id);
@@ -181,5 +204,38 @@ async function doImport(event: Event) {
 <style scoped lang="scss">
 .hidden {
   display: none;
+}
+.packs-col {
+  max-width: 480px;
+  margin: 0 auto;
+}
+.pack-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pack-card {
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  min-height: 64px;
+  &.gold {
+    background: rgba(255, 193, 7, 0.14);
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.6);
+  }
+}
+.pack-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: var(--q-primary);
+  color: #fff;
+  &.gold {
+    background: linear-gradient(135deg, #ffd54f, #f9a825);
+  }
 }
 </style>

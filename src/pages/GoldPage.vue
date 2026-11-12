@@ -1,18 +1,19 @@
 <template>
   <q-page v-if="state" class="column q-pa-md game-page">
-    <div class="text-center q-pa-sm q-mb-md header gold-header">
-      <div class="text-h5 text-weight-bold">{{ t('gold.title') }}</div>
+    <div class="text-center q-mb-md header gold-header">
+      <q-icon name="emoji_events" size="28px" class="q-mr-sm" />
+      <span class="text-h5 text-weight-bold">{{ t('gold.title') }}</span>
     </div>
 
     <div
       v-if="phase === 'intro'"
       class="col column items-center justify-center q-gutter-y-md text-center"
     >
-      <q-icon name="emoji_events" size="72px" color="amber" />
+      <div class="gold-medal"><q-icon name="emoji_events" size="56px" color="white" /></div>
       <div class="text-h5 text-weight-bold" :style="colorStyle(team?.color)">
         {{ t('gold.intro', { team: teamName(team?.color) }) }}
       </div>
-      <div class="text-grey-7">
+      <div class="rules-card text-grey-8">
         {{
           t('gold.rules', {
             bonus: formatSigned(gold.bonus, settings.language),
@@ -20,15 +21,27 @@
           })
         }}
       </div>
-      <q-btn
-        color="primary"
-        size="xl"
-        rounded
-        no-caps
-        :label="t('turn.showWord')"
-        @click="showWord"
-      />
-      <q-btn flat no-caps :label="t('gold.decline')" @click="decline" />
+      <div class="row no-wrap full-width gold-actions">
+        <q-btn
+          class="col"
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          :label="t('turn.showWord')"
+          @click="showWord"
+        />
+        <q-btn
+          class="col"
+          outline
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          :label="t('gold.decline')"
+          @click="decline"
+        />
+      </div>
     </div>
 
     <div
@@ -38,7 +51,7 @@
       <div class="text-subtitle1 text-weight-bold" :style="colorStyle(team?.color)">
         {{ t('gold.attempt', { team: teamName(team?.color) }) }}
       </div>
-      <div class="text-h3 text-weight-bold">{{ word }}</div>
+      <div class="word-card text-h3 text-weight-bold">{{ word }}</div>
       <q-btn
         color="primary"
         size="xl"
@@ -50,17 +63,27 @@
     </div>
 
     <div v-else-if="phase === 'play'" class="col column q-gutter-y-md">
-      <div class="timer text-center" :class="{ low: countdown.secondsLeft.value <= 10 }">
-        {{ fmt(countdown.secondsLeft.value) }}
+      <div class="row justify-center">
+        <q-circular-progress
+          class="timer-ring"
+          show-value
+          :value="
+            countdown.total.value ? countdown.remainingMs.value / (countdown.total.value * 1000) : 0
+          "
+          :min="0"
+          :max="1"
+          size="132px"
+          :thickness="0.12"
+          rounded
+          reverse
+          track-color="grey-4"
+          :color="countdown.secondsLeft.value <= 10 ? 'negative' : 'amber-8'"
+        >
+          <div class="timer text-center" :class="{ low: countdown.secondsLeft.value <= 10 }">
+            {{ fmt(countdown.secondsLeft.value) }}
+          </div>
+        </q-circular-progress>
       </div>
-      <q-linear-progress
-        :value="
-          countdown.total.value ? countdown.remainingMs.value / (countdown.total.value * 1000) : 0
-        "
-        size="10px"
-        rounded
-        :color="countdown.secondsLeft.value <= 10 ? 'negative' : 'primary'"
-      />
       <div class="col column justify-center">
         <PeekWord :word="word ?? ''" :label="t('turn.peek')" />
       </div>
@@ -91,6 +114,9 @@
     </div>
 
     <div v-else class="col column items-center justify-center q-gutter-y-md text-center">
+      <div class="result-icon" :class="success ? 'ok' : 'fail'">
+        <q-icon :name="success ? 'check' : 'close'" size="56px" color="white" />
+      </div>
       <div class="text-h5 text-weight-bold" :style="colorStyle(attemptColor)">
         {{
           success
@@ -98,8 +124,16 @@
             : t('gold.failTitle', { team: teamName(attemptColor) })
         }}
       </div>
-      <div class="text-subtitle1">{{ t('turn.wordWas', { word }) }}</div>
-      <q-btn class="action-bar" color="primary" size="lg" rounded no-caps :label="t('turn.next')" @click="next" />
+      <div class="word-card text-h6">{{ t('turn.wordWas', { word }) }}</div>
+      <q-btn
+        class="action-bar"
+        color="primary"
+        size="lg"
+        rounded
+        no-caps
+        :label="t('turn.next')"
+        @click="next"
+      />
     </div>
   </q-page>
 </template>
@@ -209,15 +243,72 @@ function next() {
 
 <style scoped lang="scss">
 .gold-header {
-  border-bottom: 3px solid #ffc107;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  border-radius: 16px;
+  background: rgba(255, 193, 7, 0.14);
+  border-top: 5px solid #ffc107;
   color: #f9a825;
 }
+.gold-medal,
+.result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.gold-medal {
+  background: linear-gradient(135deg, #ffd54f, #f9a825);
+  outline: 4px solid rgba(255, 193, 7, 0.35);
+}
+.result-icon.ok {
+  background: var(--q-positive);
+}
+.result-icon.fail {
+  background: var(--q-negative);
+}
+.gold-actions {
+  gap: 12px;
+  .q-btn {
+    min-height: 56px;
+  }
+}
+.rules-card {
+  max-width: 420px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+}
+.word-card {
+  width: 100%;
+  padding: 28px 16px;
+  border-radius: 20px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 2px solid rgba(255, 193, 7, 0.6);
+  overflow-wrap: anywhere;
+}
 .timer {
-  font-size: 3.5rem;
+  font-size: 2.6rem;
   font-weight: 700;
   line-height: 1;
   &.low {
     color: var(--q-negative);
+  }
+}
+@media (max-height: 500px) {
+  .timer-ring {
+    font-size: 84px !important;
+  }
+  .timer {
+    font-size: 1.8rem;
+  }
+  .word-card {
+    padding: 12px 16px;
   }
 }
 </style>

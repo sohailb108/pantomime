@@ -5,12 +5,13 @@
       <div class="text-h5 text-weight-bold q-mx-sm">{{ t('setup.title') }}</div>
     </div>
 
-    <q-stepper v-model="step" flat animated alternative-labels>
+    <q-stepper v-model="step" flat animated alternative-labels class="setup-stepper">
       <q-step name="teams" :title="t('setup.steps.teams')" icon="groups" :done="stepIndex > 0">
         <div
           v-for="(color, i) in setup.teamColors"
           :key="i"
-          class="team-group row items-center q-mb-lg q-pa-sm no-wrap"
+          class="team-group row items-center q-mb-md q-pa-md no-wrap"
+          :style="{ '--team': teamHex(color) }"
         >
           <div class="col">
             <div class="text-weight-bold q-mb-sm" :style="{ color: teamHex(color) }">
@@ -44,8 +45,10 @@
           />
         </div>
         <q-btn
-          flat
+          outline
+          rounded
           no-caps
+          color="primary"
           icon="add"
           :label="t('setup.addTeam')"
           :disable="setup.teamCount >= MAX_TEAMS"
@@ -59,12 +62,13 @@
         icon="category"
         :done="stepIndex > 1"
       >
-        <div class="q-mb-sm">
+        <div class="row justify-center q-mb-md">
           <q-btn
-            flat
+            class="select-all-btn no-wrap"
+            outline
             rounded
             no-caps
-            dense
+            color="primary"
             :icon="allSelected ? 'deselect' : 'select_all'"
             :label="allSelected ? t('setup.clearAll') : t('setup.selectAll')"
             @click="toggleAll"
@@ -74,7 +78,6 @@
           <div v-for="c in categories" :key="c.id" class="col-6 col-sm-4">
             <q-card
               flat
-              bordered
               class="cursor-pointer text-center q-pa-md category-card"
               :class="{ selected: setup.categoryIds.includes(c.id) }"
               role="checkbox"
@@ -114,7 +117,6 @@
           <div v-for="m in modes" :key="m.value" class="col-12 col-sm-6">
             <q-card
               flat
-              bordered
               class="mode-card cursor-pointer"
               :class="{ selected: setup.mode === m.value }"
               role="radio"
@@ -159,133 +161,154 @@
           transition-hide="slide-down"
         >
           <q-card class="column no-wrap">
-            <q-toolbar>
-              <q-toolbar-title>{{ t('setup.gameSettings') }}</q-toolbar-title>
+            <q-toolbar class="settings-bar">
+              <q-toolbar-title class="text-weight-bold">{{
+                t('setup.gameSettings')
+              }}</q-toolbar-title>
               <q-btn
-                flat
+                outline
+                rounded
                 no-caps
+                dense
+                color="primary"
                 :label="t('setup.resetDefaults')"
                 @click="setup.resetSettings()"
               />
             </q-toolbar>
             <q-separator />
             <q-card-section class="col scroll">
-              <div class="text-subtitle2 text-grey-7">{{ t('setup.sectionScoring') }}</div>
-              <q-list separator>
-                <q-item v-for="d in DIFFICULTIES" :key="d">
-                  <q-item-section>{{ t(`setup.points${d}`) }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper v-model="setup.settings.points[d]" :min="1" :max="20" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-              <div class="text-subtitle2 text-grey-7 q-mt-md">{{ t('setup.sectionRules') }}</div>
-              <q-list v-if="setup.mode === 'multi'" separator>
-                <q-item>
-                  <q-item-section>{{ t('setup.turnSeconds') }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper
-                      v-model="setup.settings.multi.turnSeconds"
-                      :min="15"
-                      :max="300"
-                      :step="15"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>{{ t('setup.unlimitedSkips') }}</q-item-section>
-                  <q-item-section side>
-                    <q-toggle v-model="skipUnlimited" />
-                  </q-item-section>
-                </q-item>
-                <q-item v-if="setup.settings.multi.skipLimit !== null">
-                  <q-item-section>{{ t('setup.skipLimit') }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper v-model="skipLimitValue" :min="0" :max="20" />
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>{{ t('setup.skipPenalty') }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper v-model="setup.settings.multi.skipPenalty" :max="10" />
-                  </q-item-section>
-                </q-item>
-                <q-item tag="label">
-                  <q-item-section>{{ t('setup.lastSecondBonus') }}</q-item-section>
-                  <q-item-section side>
-                    <q-toggle v-model="setup.settings.multi.lastSecondBonus" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-
-              <q-list v-else separator>
-                <q-item v-for="d in DIFFICULTIES" :key="d">
-                  <q-item-section>{{ t(`setup.timer${d}`) }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper
-                      v-model="setup.settings.single.timerSeconds[d]"
-                      :min="10"
-                      :max="300"
-                      :step="5"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item tag="label">
-                  <q-item-section>{{ t('setup.steal') }}</q-item-section>
-                  <q-item-section side
-                    ><q-toggle v-model="setup.settings.single.steal"
-                  /></q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>{{ t('setup.rerollPenalty') }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper v-model="setup.settings.single.rerollPenalty" :max="10" />
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper
-                      v-model="setup.settings.single.fastGuessSeconds"
-                      :min="1"
-                      :max="60"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item>
-                  <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
-                  <q-item-section side>
-                    <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-
-              <div class="text-subtitle2 text-grey-7 q-mt-md">{{ t('setup.sectionGold') }}</div>
-              <q-list separator>
-                <q-item tag="label">
-                  <q-item-section>{{ t('setup.goldEnabled') }}</q-item-section>
-                  <q-item-section side
-                    ><q-toggle v-model="setup.settings.gold.enabled"
-                  /></q-item-section>
-                </q-item>
-                <template v-if="setup.settings.gold.enabled">
-                  <q-item>
-                    <q-item-section>{{ t('setup.goldBonus') }}</q-item-section>
+              <div class="settings-col">
+                <div class="settings-heading text-primary text-weight-bold">
+                  {{ t('setup.sectionScoring') }}
+                </div>
+                <q-list class="settings-list">
+                  <q-item v-for="d in DIFFICULTIES" :key="d">
+                    <q-item-section>{{ t(`setup.points${d}`) }}</q-item-section>
                     <q-item-section side>
-                      <NumberStepper v-model="setup.settings.gold.bonus" :max="100" :step="5" />
+                      <NumberStepper v-model="setup.settings.points[d]" :min="1" :max="20" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+                <div class="settings-heading text-primary text-weight-bold q-mt-md">
+                  {{ t('setup.sectionRules') }}
+                </div>
+                <q-list v-if="setup.mode === 'multi'" class="settings-list">
+                  <q-item>
+                    <q-item-section>{{ t('setup.turnSeconds') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper
+                        v-model="setup.settings.multi.turnSeconds"
+                        :min="15"
+                        :max="300"
+                        :step="15"
+                      />
                     </q-item-section>
                   </q-item>
                   <q-item>
-                    <q-item-section>{{ t('setup.goldPenalty') }}</q-item-section>
+                    <q-item-section>{{ t('setup.unlimitedSkips') }}</q-item-section>
                     <q-item-section side>
-                      <NumberStepper v-model="setup.settings.gold.penalty" :max="100" :step="5" />
+                      <q-toggle v-model="skipUnlimited" />
                     </q-item-section>
                   </q-item>
-                </template>
-              </q-list>
+                  <q-item v-if="setup.settings.multi.skipLimit !== null">
+                    <q-item-section>{{ t('setup.skipLimit') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="skipLimitValue" :min="0" :max="20" />
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>{{ t('setup.skipPenalty') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="setup.settings.multi.skipPenalty" :max="10" />
+                    </q-item-section>
+                  </q-item>
+                  <q-item tag="label">
+                    <q-item-section>{{ t('setup.lastSecondBonus') }}</q-item-section>
+                    <q-item-section side>
+                      <q-toggle v-model="setup.settings.multi.lastSecondBonus" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+
+                <q-list v-else class="settings-list">
+                  <q-item v-for="d in DIFFICULTIES" :key="d">
+                    <q-item-section>{{ t(`setup.timer${d}`) }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper
+                        v-model="setup.settings.single.timerSeconds[d]"
+                        :min="10"
+                        :max="300"
+                        :step="5"
+                      />
+                    </q-item-section>
+                  </q-item>
+                  <q-item tag="label">
+                    <q-item-section>
+                      <q-item-label>{{ t('setup.steal') }}</q-item-label>
+                      <q-item-label v-if="!stealAllowed" caption>{{
+                        t('setup.stealTwoOnly')
+                      }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side
+                      ><q-toggle
+                        :model-value="stealAllowed && setup.settings.single.steal"
+                        :disable="!stealAllowed"
+                        @update:model-value="setup.settings.single.steal = $event"
+                    /></q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>{{ t('setup.rerollPenalty') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="setup.settings.single.rerollPenalty" :max="10" />
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper
+                        v-model="setup.settings.single.fastGuessSeconds"
+                        :min="1"
+                        :max="60"
+                      />
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+
+                <div class="settings-heading text-primary text-weight-bold q-mt-md">
+                  {{ t('setup.sectionGold') }}
+                </div>
+                <q-list class="settings-list">
+                  <q-item tag="label">
+                    <q-item-section>{{ t('setup.goldEnabled') }}</q-item-section>
+                    <q-item-section side
+                      ><q-toggle v-model="setup.settings.gold.enabled"
+                    /></q-item-section>
+                  </q-item>
+                  <template v-if="setup.settings.gold.enabled">
+                    <q-item>
+                      <q-item-section>{{ t('setup.goldBonus') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.gold.bonus" :max="100" :step="5" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section>{{ t('setup.goldPenalty') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.gold.penalty" :max="100" :step="5" />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-list>
+              </div>
             </q-card-section>
             <q-separator />
-            <q-card-actions class="q-pa-md no-wrap" style="gap: 16px">
+            <q-card-actions class="settings-actions q-pa-md no-wrap" style="gap: 16px">
               <q-btn
                 class="col"
                 outline
@@ -312,8 +335,10 @@
         <div class="row justify-between items-center q-px-md q-pt-md">
           <q-btn
             v-if="stepIndex > 0"
-            flat
+            outline
+            rounded
             no-caps
+            color="primary"
             :label="t('setup.back')"
             @click="step = steps[stepIndex - 1]!"
           />
@@ -341,6 +366,7 @@ import { useRouter } from 'vue-router';
 import NumberStepper from '@/components/NumberStepper.vue';
 import { TEAM_COLORS, teamHex } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS } from '@/game/board';
+import { canSteal } from '@/game/scoring';
 import { DIFFICULTIES, type Settings } from '@/game/types';
 import { listCategories } from '@/services/packs';
 import { formatNumber } from '@/services/format';
@@ -382,6 +408,7 @@ const modes = [
   { value: 'single', title: 'setup.modeSingle', desc: 'setup.modeSingleDesc' },
   { value: 'multi', title: 'setup.modeMulti', desc: 'setup.modeMultiDesc' },
 ] as const;
+const stealAllowed = computed(() => canSteal(setup.teamCount));
 const stepIndex = computed(() => steps.indexOf(step.value));
 const categories = computed(() => listCategories(settings.language));
 
@@ -407,10 +434,10 @@ const summary = computed(() => {
   } else {
     const [a, b, c] = DIFFICULTIES.map((d) => fmt(g.single.timerSeconds[d]));
     parts.push(t('setup.sumTimers', { a, b, c }));
-    parts.push(g.single.steal ? t('setup.sumSteal') : t('setup.sumNoSteal'));
+    parts.push(g.single.steal && stealAllowed.value ? t('setup.sumSteal') : t('setup.sumNoSteal'));
   }
   parts.push(g.gold.enabled ? t('setup.sumGoldOn') : t('setup.sumGoldOff'));
-  return parts.join(' · ');
+  return parts.join(' - ');
 });
 
 const canAdvance = computed(() => {
@@ -458,31 +485,50 @@ function start() {
 </script>
 
 <style scoped lang="scss">
+.setup-stepper {
+  max-width: 560px;
+  margin: 0 auto;
+  background: transparent;
+}
+
 // Keep the three step labels on one line on narrow phones.
 :deep(.q-stepper__header) {
   flex-wrap: nowrap;
+  border: 0;
 }
+
 :deep(.q-stepper__tab) {
   flex: 1 1 0;
   min-width: 0;
   padding-inline: 4px;
 }
+
 :deep(.q-stepper__tab .q-stepper__title) {
   font-size: 0.8rem;
+  font-weight: 600;
 }
+
 :deep(.q-stepper__line) {
   min-width: 0;
 }
-.team-group {
-  border: 1px solid rgba(128, 128, 128, 0.35);
-  border-radius: 8px;
+
+:deep(.q-stepper__step-inner) {
+  padding-inline: 0;
 }
+
+.team-group {
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  border-inline-start: 6px solid var(--team, rgba(128, 128, 128, 0.4));
+}
+
 .swatches {
   display: grid;
   grid-template-columns: repeat(4, 40px);
   justify-content: space-evenly;
   gap: 8px;
 }
+
 .swatch {
   width: 40px;
   height: 40px;
@@ -493,25 +539,36 @@ function start() {
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
   &.selected {
     border-color: var(--q-dark, #000);
     box-shadow: 0 0 0 2px #fff inset;
   }
+
   &:disabled {
     opacity: 0.2;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
+
 .mode-card {
-  border: 2px solid rgba(128, 128, 128, 0.4);
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  border: 2px solid transparent;
   height: 100%;
+
   &.selected {
     border-color: var(--q-primary);
+    background: rgba(128, 128, 128, 0.16);
   }
+
   .mode-desc {
     opacity: 0.75;
   }
 }
+
 .category-card {
   position: relative;
   height: 100%;
@@ -519,16 +576,59 @@ function start() {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(128, 128, 128, 0.4);
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  border: 2px solid transparent;
+
   &.selected {
     border-color: var(--q-primary);
     background: var(--q-primary);
     color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
+
   .check {
     position: absolute;
     top: 4px;
     inset-inline-end: 4px;
   }
+}
+
+.settings-bar {
+  gap: 12px;
+}
+
+.dialog-icon-round {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--q-primary);
+}
+
+.settings-col,
+.settings-actions {
+  max-width: 560px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.settings-heading {
+  margin: 8px 4px;
+}
+
+.settings-list {
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  overflow: hidden;
+
+  .q-item + .q-item {
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+  }
+}
+.select-all-btn {
+  width: 220px;
 }
 </style>

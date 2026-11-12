@@ -1,61 +1,80 @@
 <template>
   <q-page v-if="ready" class="q-pa-md">
-    <div class="row items-center q-mb-md no-wrap">
-      <q-btn
-        flat
-        round
-        icon="arrow_back"
-        class="flip-rtl"
-        :aria-label="t('setup.back')"
-        to="/packs"
-      />
-      <q-icon v-if="isGold" name="emoji_events" color="amber" size="sm" class="q-mx-sm" />
-      <div class="text-h5 text-weight-bold col ellipsis">{{ title }}</div>
-      <template v-if="customCategory">
-        <q-btn flat round icon="edit" :aria-label="t('packs.edit')" @click="openEdit" />
+    <div class="edit-col">
+      <div class="row items-center q-mb-md no-wrap">
         <q-btn
           flat
           round
-          icon="delete_outline"
-          color="negative"
-          :aria-label="t('packs.deleteCategory')"
-          @click="deleteOpen = true"
+          icon="arrow_back"
+          class="flip-rtl"
+          :aria-label="t('setup.back')"
+          to="/packs"
+        />
+        <q-icon v-if="isGold" name="emoji_events" color="amber" size="sm" class="q-mx-sm" />
+        <div class="text-h5 text-weight-bold col ellipsis">{{ title }}</div>
+        <template v-if="customCategory">
+          <q-btn
+            outline
+            round
+            dense
+            icon="edit"
+            color="primary"
+            class="q-mx-xs"
+            :aria-label="t('packs.edit')"
+            @click="openEdit"
+          />
+          <q-btn
+            outline
+            round
+            dense
+            icon="delete_outline"
+            color="negative"
+            :aria-label="t('packs.deleteCategory')"
+            @click="deleteOpen = true"
+          />
+        </template>
+      </div>
+
+      <div v-if="customCategory && !complete" class="hint-card q-mb-md">
+        <q-icon name="info" color="warning" size="24px" />
+        <div>{{ t('packs.incompleteHint') }}</div>
+      </div>
+
+      <template v-if="isGold">
+        <WordList
+          :title="t('packs.gold')"
+          tone="#ffc107"
+          :words="custom.goldWords(lang)"
+          :builtin-count="builtinGoldCount"
+          :hidden="custom.hiddenGold(lang)"
+          @unhide="(w) => custom.unhideGold(lang, w)"
+          :on-add="(w) => custom.addGold(lang, w)"
+          @remove="(w) => custom.removeGold(lang, w)"
+        />
+      </template>
+      <template v-else>
+        <WordList
+          v-for="d in DIFFICULTIES"
+          :key="d"
+          :title="t(`packs.difficulty${d}`)"
+          :tone="TONES[d]"
+          :words="custom.wordsOf(lang, id, d)"
+          :builtin-count="customCategory ? undefined : builtinWords(lang, id, d).length"
+          :hidden="custom.hiddenOf(lang, id, d)"
+          @unhide="(w) => custom.unhideWord(lang, id, d, w)"
+          :on-add="(w) => custom.addWord(lang, id, d, w)"
+          @remove="(w) => custom.removeWord(lang, id, d, w)"
         />
       </template>
     </div>
 
-    <div v-if="customCategory && !complete" class="text-warning q-mb-md">
-      {{ t('packs.incompleteHint') }}
-    </div>
-
-    <template v-if="isGold">
-      <WordList
-        :title="t('packs.gold')"
-        :words="custom.goldWords(lang)"
-        :builtin-count="builtinGoldCount"
-        :hidden="custom.hiddenGold(lang)"
-        @unhide="(w) => custom.unhideGold(lang, w)"
-        :on-add="(w) => custom.addGold(lang, w)"
-        @remove="(w) => custom.removeGold(lang, w)"
-      />
-    </template>
-    <template v-else>
-      <WordList
-        v-for="d in DIFFICULTIES"
-        :key="d"
-        :title="t(`packs.difficulty${d}`)"
-        :words="custom.wordsOf(lang, id, d)"
-        :builtin-count="customCategory ? undefined : builtinWords(lang, id, d).length"
-        :hidden="custom.hiddenOf(lang, id, d)"
-        @unhide="(w) => custom.unhideWord(lang, id, d, w)"
-        :on-add="(w) => custom.addWord(lang, id, d, w)"
-        @remove="(w) => custom.removeWord(lang, id, d, w)"
-      />
-    </template>
-
     <q-dialog v-model="editOpen">
-      <q-card style="min-width: 280px">
-        <q-card-section>
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="edit" size="22px" /></div>
+          <div class="text-h6 text-weight-bold">{{ t('packs.categoryName') }}</div>
+        </div>
+        <div>
           <q-input
             v-model="editName"
             outlined
@@ -64,41 +83,46 @@
             :maxlength="MAX_NAME_LENGTH"
             :label="t('packs.categoryName')"
           />
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat no-caps :label="t('setup.close')" />
+        </div>
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
           <q-btn
-            flat
+            rounded
             no-caps
             color="primary"
             :label="t('packs.save')"
             :disable="!editName.trim()"
             @click="saveEdit"
           />
-        </q-card-actions>
+        </div>
       </q-card>
     </q-dialog>
 
     <q-dialog v-model="deleteOpen">
-      <q-card style="min-width: 280px">
-        <q-card-section>{{ t('packs.deleteConfirm', { name: title }) }}</q-card-section>
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat no-caps :label="t('setup.close')" />
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon negative"><q-icon name="delete" size="22px" /></div>
+          <div>{{ t('packs.deleteConfirm', { name: title }) }}</div>
+        </div>
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
           <q-btn
             v-close-popup
-            flat
+            rounded
             no-caps
             color="negative"
             :label="t('packs.deleteCategory')"
             @click="remove"
           />
-        </q-card-actions>
+        </div>
       </q-card>
     </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
+// Marker color of each difficulty card: easy, medium, hard.
+const TONES: Record<number, string> = { 1: '#21ba45', 2: '#f2c037', 3: '#c10015' };
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -149,3 +173,19 @@ function remove() {
   void router.replace('/packs');
 }
 </script>
+
+<style scoped lang="scss">
+.edit-col {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.hint-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border-inline-start: 4px solid #f2c037;
+  background: rgba(251, 192, 45, 0.15);
+}
+</style>

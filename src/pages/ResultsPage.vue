@@ -1,43 +1,56 @@
 <template>
   <q-page v-if="state" class="column q-pa-md">
-    <div class="text-h4 text-weight-bold text-center q-mb-md text-primary">
-      {{ t('results.title') }}
-    </div>
-    <div
-      class="text-h6 text-center text-weight-bold q-mb-md"
-      :style="winners.length === 1 ? { color: teamHex(winners[0]!.color) } : undefined"
-    >
-      {{
-        winners.length === 1
-          ? t('results.winner', { team: teamName(winners[0]!.color) })
-          : t('results.tie')
-      }}
-    </div>
-
-    <div class="ranking">
-      <div
-        v-for="r in ranking"
-        :key="r.teamId"
-        class="rank-card"
-        :class="{ winner: r.rank === 1 }"
-        :style="{ '--team': teamHex(r.color) }"
-      >
-        <div class="rank-badge">{{ fmt(r.rank) }}</div>
-        <div class="team-name">{{ teamName(r.color) }}</div>
-        <bdi class="score">{{ fmt(r.score) }}</bdi>
+    <div class="results-col">
+      <div class="hero text-center">
+        <div class="medal"><q-icon name="emoji_events" size="56px" color="white" /></div>
+        <div class="text-h5 text-weight-bold q-mt-md">{{ t('results.title') }}</div>
+        <div
+          class="winner-pill text-h6 text-weight-bold"
+          :style="winners.length === 1 ? { background: teamHex(winners[0]!.color) } : undefined"
+          :class="{ tie: winners.length !== 1 }"
+        >
+          {{
+            winners.length === 1
+              ? t('results.winner', { team: teamName(winners[0]!.color) })
+              : t('results.tie')
+          }}
+        </div>
       </div>
-    </div>
 
-    <div class="row justify-center q-gutter-md q-mt-lg">
-      <q-btn
-        color="primary"
-        size="lg"
-        rounded
-        no-caps
-        :label="t('results.playAgain')"
-        to="/setup"
-      />
-      <q-btn flat size="lg" rounded no-caps :label="t('results.home')" to="/" />
+      <div class="ranking">
+        <div
+          v-for="r in ranking"
+          :key="r.teamId"
+          class="rank-card"
+          :class="{ winner: r.rank === 1 }"
+          :style="{ '--team': teamHex(r.color) }"
+        >
+          <div class="rank-badge">{{ fmt(r.rank) }}</div>
+          <div class="team-name">{{ teamName(r.color) }}</div>
+          <bdi class="score">{{ fmt(r.score) }}</bdi>
+        </div>
+      </div>
+
+      <div class="column q-gutter-y-sm q-mt-lg q-pb-md">
+        <q-btn
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          icon="replay"
+          :label="t('results.playAgain')"
+          to="/setup"
+        />
+        <q-btn
+          outline
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          :label="t('results.home')"
+          to="/"
+        />
+      </div>
     </div>
   </q-page>
 </template>
@@ -69,6 +82,35 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.results-col {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+.hero {
+  padding: 8px 0 20px;
+}
+.medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd54f, #f9a825);
+  outline: 4px solid rgba(255, 193, 7, 0.35);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.winner-pill {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 20px;
+  border-radius: 999px;
+  color: #fff;
+  &.tie {
+    background: #f9a825;
+  }
+}
 .ranking {
   display: flex;
   flex-direction: column;
@@ -79,13 +121,13 @@ onMounted(() => {
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
   border-inline-start: 10px solid var(--team);
   &.winner {
-    background: rgba(255, 193, 7, 0.15);
-    border-color: #ffc107;
-    border-inline-start-color: var(--team);
+    padding: 16px 14px;
+    background: rgba(255, 193, 7, 0.18);
+    box-shadow: 0 0 0 2px #ffc107;
   }
 }
 .rank-badge {
@@ -101,6 +143,8 @@ onMounted(() => {
   color: #000;
   .winner & {
     background: #ffc107;
+    width: 42px;
+    height: 42px;
   }
 }
 .team-name {
@@ -113,5 +157,8 @@ onMounted(() => {
   font-weight: 700;
   color: var(--team);
   unicode-bidi: isolate;
+}
+.winner .score {
+  font-size: 2rem;
 }
 </style>

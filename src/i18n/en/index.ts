@@ -29,7 +29,14 @@ export default {
     language: 'Language',
     dark: 'Dark mode',
     palette: 'Color theme',
-    palettes: { orange: 'Orange', blue: 'Blue', green: 'Green', purple: 'Purple' },
+    palettes: {
+      orange: 'Terracotta',
+      blue: 'Slate',
+      green: 'Sage',
+      purple: 'Mauve',
+      brown: 'Cocoa',
+      teal: 'Lagoon',
+    },
     sound: 'Sound',
     vibration: 'Vibration',
   },
@@ -64,7 +71,8 @@ export default {
     timer1: 'Timer, easy (seconds)',
     timer2: 'Timer, medium (seconds)',
     timer3: 'Timer, hard (seconds)',
-    steal: 'Steal chance for the next team',
+    steal: 'Steal chance for the other team',
+    stealTwoOnly: 'Only available with 2 teams, so it stays fair.',
     rerollPenalty: 'Reroll penalty',
     fastSeconds: 'Fast guess within (seconds)',
     fastBonus: 'Fast guess bonus',
@@ -115,6 +123,7 @@ export default {
     giveUp: 'Give up',
     giveUpConfirm: 'Tap again to give up',
     noMoreWords: 'No more words in this category.',
+    noRerollWords: 'No other word is left in this category, so the word cannot be changed.',
     stealTitle: '{team} can steal the points!',
     stealHint: 'One guess. The judge taps the result.',
     stealRight: 'Right guess',
@@ -241,11 +250,11 @@ export default {
           },
           {
             t: 'Steal',
-            b: 'After a failed single-word turn, the next team may get one guess for the points, if steal is enabled. The judge marks it Correct or Wrong.',
+            b: 'After a failed single-word turn, the other team may get one guess for the points, if steal is enabled. Steal only works in games with 2 teams, because with more teams only one of the others would get the chance. The judge marks it Correct or Wrong.',
           },
           {
             t: 'Reroll',
-            b: 'Before pressing Start, the actor may swap the word once for a penalty of {rerollPenalty} point by default.',
+            b: 'Before pressing Start, the actor may swap the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so.',
           },
           {
             t: 'Gold round',
@@ -284,8 +293,8 @@ export default {
             b: "Time for the turn, depending on the tile's difficulty. Defaults: {t1} / {t2} / {t3}.",
           },
           {
-            t: 'Steal chance for the next team',
-            b: "When on, after a failed turn the next team gets one guess at the word for the tile's points.",
+            t: 'Steal chance for the other team',
+            b: "When on, after a failed turn the other team gets one guess at the word for the tile's points. Only available with 2 teams; with more teams the switch is locked off.",
           },
           {
             t: 'Reroll penalty',

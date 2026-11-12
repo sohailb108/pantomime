@@ -28,6 +28,8 @@ const shown = ref(false);
 <style scoped lang="scss">
 .peek {
   min-height: 160px;
+  border-radius: 20px;
+  border: 2px solid rgba(128, 128, 128, 0.25);
   user-select: none;
   touch-action: none;
   &.covered {

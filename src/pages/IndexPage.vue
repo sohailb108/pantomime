@@ -1,85 +1,152 @@
 <template>
-  <q-page class="column items-center justify-center q-pa-md q-gutter-y-md">
-    <div class="text-h3 text-weight-bold text-primary">{{ t('appName') }}</div>
-    <div class="text-subtitle1 text-center">{{ t('tagline') }}</div>
+  <q-page class="home column items-center q-pa-md">
+    <div class="home-col column no-wrap full-width">
+      <div dir="ltr" class="row items-center justify-between no-wrap q-pt-sm">
+        <q-btn-toggle
+          class="lang-toggle"
+          v-model="language"
+          rounded
+          unelevated
+          no-caps
+          toggle-color="primary"
+          :options="languageOptions"
+        />
+        <q-btn flat round color="primary" icon="share" :aria-label="t('home.share')" @click="share">
+          <q-tooltip>{{ t('home.share') }}</q-tooltip>
+        </q-btn>
+      </div>
 
-    <q-btn
-      v-if="canResume"
-      color="primary"
-      size="lg"
-      rounded
-      no-caps
-      :label="t('home.resume')"
-      to="/board"
-    />
-    <q-btn
-      :color="canResume ? undefined : 'primary'"
-      :outline="canResume"
-      size="lg"
-      rounded
-      no-caps
-      :label="t('home.newGame')"
-      to="/setup"
-    />
+      <div class="column items-center q-py-lg">
+        <AppLogo />
+        <div class="text-h3 text-weight-bold text-primary q-mt-md">{{ t('appName') }}</div>
+        <div class="text-subtitle1 text-center text-grey-7">{{ t('tagline') }}</div>
+      </div>
 
-    <q-btn flat rounded no-caps icon="edit_note" :label="t('home.packs')" to="/packs" />
+      <div class="column q-gutter-y-sm">
+        <q-btn
+          v-if="canResume"
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          icon="play_arrow"
+          :label="t('home.resume')"
+          to="/board"
+        />
+        <q-btn
+          :color="canResume ? undefined : 'primary'"
+          :outline="canResume"
+          size="lg"
+          rounded
+          no-caps
+          icon="add"
+          :label="t('home.newGame')"
+          to="/setup"
+        />
+      </div>
 
-    <q-btn flat rounded no-caps icon="help_outline" :label="t('home.help')" to="/help" />
+      <q-card flat class="home-card q-mt-lg">
+        <q-list separator>
+          <q-item clickable to="/packs">
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="edit_note" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('home.packs') }}</q-item-section>
+            <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
+          </q-item>
+          <q-item clickable to="/help">
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="help_outline" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('home.help') }}</q-item-section>
+            <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
 
-    <q-btn
-      v-if="installAvailable || iosHint"
-      flat
-      rounded
-      no-caps
-      icon="install_mobile"
-      :label="t('home.install')"
-      @click="install"
-    />
-    <q-btn flat rounded no-caps icon="share" :label="t('home.share')" @click="share" />
+      <div class="text-subtitle2 text-primary text-weight-bold q-mt-lg q-mb-xs q-px-xs">
+        {{ t('home.settings') }}
+      </div>
+      <q-card flat class="home-card">
+        <q-list separator>
+          <q-item>
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="palette" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('settings.palette') }}</q-item-section>
+            <q-item-section side>
+              <div
+                class="row no-wrap q-gutter-xs"
+                role="radiogroup"
+                :aria-label="t('settings.palette')"
+              >
+                <q-btn
+                  v-for="p in PALETTES"
+                  :key="p.id"
+                  round
+                  unelevated
+                  size="sm"
+                  role="radio"
+                  :aria-checked="settings.palette === p.id"
+                  :aria-label="t(`settings.palettes.${p.id}`)"
+                  :style="{ background: p.primary }"
+                  :icon="settings.palette === p.id ? 'check' : undefined"
+                  text-color="white"
+                  @click="settings.setPalette(p.id)"
+                />
+              </div>
+            </q-item-section>
+          </q-item>
+          <q-item tag="label" v-ripple>
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="dark_mode" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('settings.dark') }}</q-item-section>
+            <q-item-section side><q-toggle v-model="dark" /></q-item-section>
+          </q-item>
+          <q-item tag="label" v-ripple>
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="volume_up" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('settings.sound') }}</q-item-section>
+            <q-item-section side><q-toggle v-model="sound" /></q-item-section>
+          </q-item>
+          <q-item tag="label" v-ripple>
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="vibration" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('settings.vibration') }}</q-item-section>
+            <q-item-section side><q-toggle v-model="vibration" /></q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+
+      <div class="row justify-center q-gutter-sm q-mt-md q-pb-md">
+        <q-btn
+          v-if="installAvailable || iosHint"
+          outline
+          rounded
+          no-caps
+          icon="install_mobile"
+          color="primary"
+          :label="t('home.install')"
+          @click="install"
+        />
+      </div>
+    </div>
 
     <q-dialog v-model="iosOpen">
-      <q-card class="q-pa-md" style="max-width: 360px">
-        <div class="text-h6">{{ t('home.install') }}</div>
-        <p class="q-mt-md q-mb-none">{{ t('home.iosInstall') }}</p>
-        <q-card-actions align="right">
-          <q-btn flat no-caps :label="t('home.ok')" v-close-popup />
-        </q-card-actions>
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="install_mobile" size="22px" /></div>
+          <div class="text-h6 text-weight-bold">{{ t('home.install') }}</div>
+        </div>
+        <p class="q-mb-none">{{ t('home.iosInstall') }}</p>
+        <div class="dialog-actions">
+          <q-btn color="primary" rounded no-caps :label="t('home.ok')" v-close-popup />
+        </div>
       </q-card>
     </q-dialog>
-
-    <q-btn-toggle
-      dir="ltr"
-      class="lang-toggle"
-      v-model="language"
-      rounded
-      unelevated
-      toggle-color="primary"
-      :options="languageOptions"
-    />
-    <div
-      class="row items-center no-wrap q-gutter-sm"
-      role="radiogroup"
-      :aria-label="t('settings.palette')"
-    >
-      <span class="text-body2">{{ t('settings.palette') }}</span>
-      <q-btn
-        v-for="p in PALETTES"
-        :key="p.id"
-        round
-        unelevated
-        size="sm"
-        role="radio"
-        :aria-checked="settings.palette === p.id"
-        :aria-label="t(`settings.palettes.${p.id}`)"
-        :style="{ background: p.primary }"
-        :icon="settings.palette === p.id ? 'check' : undefined"
-        text-color="white"
-        @click="settings.setPalette(p.id)"
-      />
-    </div>
-    <q-toggle v-model="dark" :label="t('settings.dark')" />
-    <q-toggle v-model="sound" :label="t('settings.sound')" />
-    <q-toggle v-model="vibration" :label="t('settings.vibration')" />
   </q-page>
 </template>
 
@@ -87,6 +154,7 @@
 import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import AppLogo from '@/components/AppLogo.vue';
 import { PALETTES } from '@/config/palettes';
 import { languages } from '@/i18n/languages';
 import { installAvailable, needsIosHint, promptInstall } from '@/services/install';
@@ -104,7 +172,7 @@ const canResume = computed(() => !!game.state && game.state.status !== 'finished
 // Left-to-right languages first, so the order never depends on the page direction.
 const languageOptions = [...languages]
   .sort((a, b) => Number(a.dir === 'rtl') - Number(b.dir === 'rtl'))
-  .map((l) => ({ label: l.name, value: l.code }));
+  .map((l) => ({ label: l.name, value: l.code, style: { fontFamily: l.font.family } }));
 const language = computed({
   get: () => settings.language,
   set: (v: string) => settings.setLanguage(v),
@@ -137,16 +205,54 @@ const vibration = computed({
 </script>
 
 <style scoped lang="scss">
+.home-col {
+  max-width: 480px;
+}
+
 // The switcher is always left-to-right, so its end buttons keep their own rounded sides.
+.lang-toggle {
+  border: 1px solid var(--q-primary);
+  border-radius: 28px;
+}
+
 .lang-toggle :deep(.q-btn) {
+  line-height: 1;
+  padding-top: 8px;
+  padding-bottom: 8px;
   border-radius: 0;
 }
+
 .lang-toggle :deep(.q-btn:first-child) {
   border-start-start-radius: 28px;
   border-end-start-radius: 28px;
 }
+
 .lang-toggle :deep(.q-btn:last-child) {
   border-start-end-radius: 28px;
   border-end-end-radius: 28px;
+}
+
+.home-card {
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  overflow: hidden;
+
+  :deep(.q-item) {
+    min-height: 60px;
+  }
+
+  :deep(.q-separator) {
+    background: rgba(128, 128, 128, 0.2);
+  }
+}
+
+.item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--q-primary);
 }
 </style>

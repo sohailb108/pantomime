@@ -1,7 +1,10 @@
 <template>
   <q-page v-if="tile && team" class="column q-pa-md game-page">
-    <div class="header text-center q-pa-sm q-mb-md">
-      <div class="text-subtitle1">
+    <div class="header text-center q-mb-md" :style="{ '--team': teamHex(team.color) }">
+      <div class="team-pill text-h6 text-weight-bold" :style="{ background: teamHex(team.color) }">
+        {{ teamName(team.color) }}
+      </div>
+      <div class="tile-chip text-subtitle2">
         {{
           t('turn.tileInfo', {
             category: category.name,
@@ -9,74 +12,98 @@
           })
         }}
       </div>
-      <div class="team-pill text-h6 text-weight-bold" :style="{ background: teamHex(team.color) }">
-        {{ teamName(team.color) }}
-      </div>
     </div>
 
     <!-- Handoff -->
     <div v-if="phase === 'handoff'" class="col column items-center justify-center q-gutter-y-lg">
+      <div class="handoff-icon" :style="{ background: teamHex(team.color) }">
+        <q-icon name="swap_horiz" size="48px" color="white" />
+      </div>
       <div class="text-h5 text-center text-weight-bold" :style="colorOf(team.id)">
         {{ t('turn.passTo', { team: teamName(team.color) }) }}
       </div>
-      <q-btn
-        color="primary"
-        size="xl"
-        rounded
-        no-caps
-        :label="isMulti ? t('turn.startTurn') : t('turn.showWord')"
-        @click="begin"
-      />
-      <q-btn flat no-caps @click="back">
-        <q-icon name="arrow_back" class="flip-rtl q-mr-sm" />
-        {{ t('turn.back') }}
-      </q-btn>
+      <div class="column full-width turn-actions">
+        <q-btn
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          :label="isMulti ? t('turn.startTurn') : t('turn.showWord')"
+          @click="begin"
+        />
+        <q-btn
+          outline
+          size="lg"
+          rounded
+          no-caps
+          color="primary"
+          :label="t('turn.back')"
+          @click="back"
+        />
+      </div>
     </div>
 
     <!-- Single mode: word shown before start -->
     <div v-else-if="phase === 'prep'" class="col column items-center justify-center q-gutter-y-lg">
-      <div class="text-h3 text-weight-bold text-center">{{ word }}</div>
-      <q-btn
-        v-if="!rerolled"
-        flat
-        no-caps
-        icon="autorenew"
-        :label="rerollLabel"
-        :disable="deck.length === 0"
-        @click="reroll"
-      />
-      <q-btn
-        color="primary"
-        size="xl"
-        rounded
-        no-caps
-        :label="t('turn.start')"
-        @click="startSingle"
-      />
+      <div class="word-card text-h3 text-weight-bold text-center">{{ word }}</div>
+      <div class="column full-width turn-actions">
+        <q-btn
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          :label="t('turn.start')"
+          @click="startSingle"
+        />
+        <q-btn
+          v-if="!rerolled && deck.length > 0"
+          outline
+          size="lg"
+          rounded
+          no-caps
+          color="primary"
+          icon="autorenew"
+          :label="rerollLabel"
+          @click="reroll"
+        />
+        <div v-if="!rerolled && deck.length === 0" class="text-caption text-grey-7 text-center">
+          {{ t('turn.noRerollWords') }}
+        </div>
+      </div>
     </div>
 
     <!-- Playing -->
     <div v-else-if="phase === 'play' || phase === 'timeup'" class="col column q-gutter-y-md">
-      <div class="timer text-center" :class="{ low: countdown.secondsLeft.value <= 10 }">
-        {{ phase === 'timeup' ? t('turn.timeUp') : fmt(countdown.secondsLeft.value) }}
+      <div class="row justify-center">
+        <q-circular-progress
+          class="timer-ring"
+          show-value
+          :value="
+            countdown.total.value ? countdown.remainingMs.value / (countdown.total.value * 1000) : 0
+          "
+          :min="0"
+          :max="1"
+          size="132px"
+          :thickness="0.12"
+          rounded
+          reverse
+          track-color="grey-4"
+          :color="countdown.secondsLeft.value <= 10 ? 'negative' : 'primary'"
+        >
+          <div class="timer text-center" :class="{ low: countdown.secondsLeft.value <= 10 }">
+            {{ phase === 'timeup' ? t('turn.timeUp') : fmt(countdown.secondsLeft.value) }}
+          </div>
+        </q-circular-progress>
       </div>
-      <q-linear-progress
-        :value="
-          countdown.total.value ? countdown.remainingMs.value / (countdown.total.value * 1000) : 0
-        "
-        size="10px"
-        rounded
-        :color="countdown.secondsLeft.value <= 10 ? 'negative' : 'primary'"
-      />
 
       <template v-if="isMulti">
         <div v-if="phase === 'timeup'" class="text-center text-grey-7">
           {{ t('turn.finishWord') }}
         </div>
         <div class="col column items-center justify-center">
-          <div class="text-h3 text-weight-bold text-center">{{ word }}</div>
+          <div class="word-card text-h3 text-weight-bold text-center">{{ word }}</div>
         </div>
-        <div class="text-center text-grey-7">
+        <div class="tally text-center text-grey-7">
           {{ fmt(tally.correct) }} ✓ ·
           {{ skipsText }}
         </div>
@@ -162,7 +189,7 @@
         {{ t('turn.stealTitle', { team: stealerName }) }}
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
-      <div class="text-h4 text-weight-bold">{{ word }}</div>
+      <div class="word-card text-h4 text-weight-bold">{{ word }}</div>
       <div class="row no-wrap full-width q-mt-lg action-bar">
         <div class="col">
           <q-btn
@@ -192,18 +219,25 @@
     <!-- Result -->
     <div v-else class="col column no-wrap">
       <div class="col column q-gutter-y-md q-pt-md">
-        <div class="text-h5 text-weight-bold text-center">{{ t('turn.resultTitle') }}</div>
+        <div class="text-h5 text-weight-bold text-center">
+          <q-icon name="flag" color="primary" size="28px" class="q-mr-xs" />
+          {{ t('turn.resultTitle') }}
+        </div>
 
-        <q-card flat bordered class="q-pa-md">
+        <q-card flat class="soft-card q-pa-md">
           <div
             v-for="line in resultLines"
             :key="line.teamId"
-            class="row items-center no-wrap justify-between q-mb-sm"
+            class="line-row q--avoid-card-border row items-center no-wrap justify-between q-mb-sm"
+            :style="{ '--team': teamHex(state?.teams[line.teamId]?.color ?? '') }"
           >
             <div class="team-pill text-subtitle1 text-weight-bold" :style="pillStyle(line.teamId)">
               {{ nameOf(line.teamId) }}
             </div>
-            <div class="text-h5 text-weight-bold" :class="line.points < 0 ? 'text-negative' : ''">
+            <div
+              class="line-points text-h4 text-weight-bold"
+              :class="line.points < 0 ? 'text-negative' : 'text-positive'"
+            >
               {{ t('board.points', { n: signed(line.points) }) }}
             </div>
           </div>
@@ -220,7 +254,7 @@
           </template>
         </q-card>
 
-        <q-card v-if="shown.length > 0 || word || noWords" flat bordered>
+        <q-card v-if="shown.length > 0 || word || noWords" flat class="soft-card">
           <div v-if="shown.length > 0" class="q-pa-md q-pb-none text-subtitle2 text-grey-7">
             {{ t('turn.wordsShown') }}
           </div>
@@ -229,8 +263,10 @@
               <q-item-section class="text-subtitle1">{{ w }}</q-item-section>
               <q-item-section side>
                 <q-btn
-                  flat
+                  outline
+                  rounded
                   no-caps
+                  color="primary"
                   size="sm"
                   :icon="hiddenNow[w] ? 'undo' : 'visibility_off'"
                   :label="hiddenNow[w] ? t('turn.hiddenUndo') : t('turn.hideShort')"
@@ -479,7 +515,9 @@ const resultLines = computed(() => {
 });
 const pillStyle = (id: number) => ({ background: teamHex(state.value?.teams[id]?.color ?? '') });
 const skipCost = computed(() => tally.value.skips * (isMulti.value ? multi.value.skipPenalty : 0));
-const rerollCost = computed(() => (rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0));
+const rerollCost = computed(() =>
+  rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0,
+);
 
 /** Extra lines under the points: fast-guess bonus and the penalties that applied. */
 const breakdown = computed(() =>
@@ -521,15 +559,71 @@ function finish() {
   padding: 2px 16px;
   border-radius: 16px;
 }
+// Top of every phase: the playing team's pill and the tile (category and points) it plays.
+.soft-card {
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+}
+.line-row {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(128, 128, 128, 0.08);
+  border-inline-start: 6px solid var(--team);
+}
+.line-points {
+  line-height: 1.2;
+}
 .header {
-  border-bottom: 3px solid rgba(128, 128, 128, 0.5);
+  padding: 12px 8px 10px;
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+  border-top: 5px solid var(--team);
+}
+.tile-chip {
+  margin-top: 4px;
+  opacity: 0.8;
+}
+.turn-actions {
+  max-width: 320px;
+  gap: 12px;
+  .q-btn {
+    min-height: 56px;
+  }
+}
+.handoff-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.word-card {
+  width: 100%;
+  padding: 28px 16px;
+  border-radius: 20px;
+  background: rgba(128, 128, 128, 0.1);
+  border: 2px solid rgba(128, 128, 128, 0.25);
+  overflow-wrap: anywhere;
 }
 .timer {
-  font-size: 3.5rem;
+  font-size: 2.6rem;
   font-weight: 700;
   line-height: 1;
   &.low {
     color: var(--q-negative);
+  }
+}
+@media (max-height: 500px) {
+  .timer-ring {
+    font-size: 84px !important;
+  }
+  .timer {
+    font-size: 1.8rem;
+  }
+  .word-card {
+    padding: 12px 16px;
   }
 }
 </style>

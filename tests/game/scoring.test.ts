@@ -46,9 +46,10 @@ describe('single-word scoring', () => {
     expect(rerollDelta(1, { ...d.single, rerollPenalty: 0 })).toEqual([]);
   });
 
-  it('gives the steal to the next team in order, wrapping around', () => {
+  it('gives the steal to the other team, and never in games with more than two teams', () => {
     expect(stealTeam(0, 2, d.single)).toBe(1);
-    expect(stealTeam(2, 3, d.single)).toBe(0);
+    expect(stealTeam(1, 2, d.single)).toBe(0);
+    expect(stealTeam(2, 3, d.single)).toBeNull();
     expect(stealTeam(0, 3, { ...d.single, steal: false })).toBeNull();
   });
 });
