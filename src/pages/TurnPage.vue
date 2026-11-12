@@ -24,13 +24,21 @@
       </div>
     </div>
 
+    <div v-if="phase !== 'result' && phase !== 'getready'" class="role-chip text-center text-caption">
+      <q-icon :name="isMulti ? 'gavel' : 'sports_esports'" size="16px" class="q-mr-xs" />
+      {{ isMulti ? t('turn.roleJudge') : t('turn.roleActor') }}
+    </div>
+
     <!-- Handoff -->
     <div v-if="phase === 'handoff'" class="col column items-center justify-center q-gutter-y-lg">
       <div class="handoff-icon" :style="{ background: teamHex(team.color) }">
         <q-icon name="swap_horiz" size="48px" color="white" />
       </div>
       <div class="text-h5 text-center text-weight-bold" :style="colorOf(team.id)">
-        {{ t('turn.passTo', { team: teamName(team.color) }) }}
+        {{ isMulti ? t('turn.passToJudge') : t('turn.passTo', { team: teamName(team.color) }) }}
+      </div>
+      <div class="text-center text-grey-7 hint-text">
+        {{ isMulti ? t('turn.judgeHint', { team: teamName(team.color) }) : t('turn.actorHint') }}
       </div>
       <div class="column full-width turn-actions">
         <q-btn
@@ -53,11 +61,23 @@
       </div>
     </div>
 
+    <!-- Multi mode: short countdown before the first word -->
+    <div
+      v-else-if="phase === 'getready'"
+      class="col column items-center justify-center q-gutter-y-md"
+    >
+      <div class="text-h5 text-weight-bold text-grey-7">{{ t('turn.getReady') }}</div>
+      <div class="getready-number text-weight-bold" :style="colorOf(team.id)">
+        {{ fmt(getReady.secondsLeft.value) }}
+      </div>
+    </div>
+
     <!-- Single mode: word shown before start -->
     <div v-else-if="phase === 'prep'" class="col column items-center justify-center q-gutter-y-lg">
       <div class="word-card text-h3 text-weight-bold text-center" :class="longWordClass(word)">
         {{ word }}
       </div>
+      <div class="text-center text-grey-7 hint-text">{{ t('turn.prepHint') }}</div>
       <div class="column full-width turn-actions">
         <q-btn
           color="primary"
@@ -189,9 +209,7 @@
         {{ t('turn.stealTitle', { team: stealerName }) }}
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
-      <div class="word-card text-h4 text-weight-bold" :class="longWordClass(word)">
-        {{ word }}
-      </div>
+      <PeekWord class="full-width" :word="word ?? ''" :label="t('turn.peek')" />
       <div class="row no-wrap full-width q-mt-lg action-bar">
         <div class="col">
           <q-btn
@@ -330,7 +348,7 @@ import { getPool, hidePoolWord, restorePoolWord, type HideResult } from '@/servi
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
-type Phase = 'handoff' | 'prep' | 'play' | 'timeup' | 'steal' | 'result';
+type Phase = 'handoff' | 'getready' | 'prep' | 'play' | 'timeup' | 'steal' | 'result';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -376,6 +394,9 @@ const noWords = ref(false);
 const bonus = ref(0);
 
 const countdown = useCountdown(onTimeEnd);
+/** Three-second countdown before the first word of a multi-word turn. */
+const GET_READY_SECONDS = 3;
+const getReady = useCountdown(startMulti);
 useWakeLock();
 
 // Once the word is shown, leaving would throw the turn away, so it is confirmed first.
@@ -385,7 +406,18 @@ const leave = useLeaveGuard(() => phase.value !== 'handoff' && phase.value !== '
 onBeforeRouteLeave(() => {
   if (phase.value === 'result') game.finish(deltas.value);
 });
-watch(leave.open, (open) => (open ? countdown.pause() : countdown.resume()));
+watch(leave.open, (open) => {
+  if (open) {
+    countdown.pause();
+    getReady.pause();
+  } else {
+    countdown.resume();
+    getReady.resume();
+  }
+});
+watch(getReady.secondsLeft, (n) => {
+  if (phase.value === 'getready' && getReady.running.value && n > 0) cue('tick');
+});
 
 // Tick during the last seconds of a running timer.
 watch(countdown.secondsLeft, (n) => {
@@ -423,17 +455,29 @@ function draw(): string | null {
 }
 
 function begin() {
+  if (isMulti.value) {
+    // The word is only drawn once the countdown is over, so nobody sees it early.
+    phase.value = 'getready';
+    getReady.start(GET_READY_SECONDS);
+    return;
+  }
   if (!draw()) {
     noWords.value = true;
     phase.value = 'result';
     return;
   }
-  if (isMulti.value) {
-    phase.value = 'play';
-    countdown.start(state.value!.settings.multi.turnSeconds);
-  } else {
-    phase.value = 'prep';
+  phase.value = 'prep';
+}
+
+function startMulti() {
+  if (phase.value !== 'getready') return;
+  if (!draw()) {
+    noWords.value = true;
+    phase.value = 'result';
+    return;
   }
+  phase.value = 'play';
+  countdown.start(state.value!.settings.multi.turnSeconds);
 }
 
 // Multi-word mode
@@ -604,6 +648,17 @@ function finish() {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-start: 4px;
+}
+.role-chip {
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+.hint-text {
+  max-width: 320px;
+}
+.getready-number {
+  font-size: 7rem;
+  line-height: 1;
 }
 .tile-chip {
   margin-top: 4px;

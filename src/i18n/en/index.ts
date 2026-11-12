@@ -63,9 +63,11 @@ export default {
     trimmed:
       '{n} easy tile removed so every team gets equal turns | {n} easy tiles removed so every team gets equal turns',
     modeMulti: 'Multi-word',
-    modeMultiDesc: 'Act out as many words as you can before time runs out.',
+    modeMultiDesc:
+      'Act out as many words as you can before time runs out. A player from another team holds the phone as judge.',
     modeSingle: 'Single-word',
-    modeSingleDesc: 'One word per turn. Hold to peek, steal and reroll are available.',
+    modeSingleDesc:
+      'One word per turn. The actor keeps the phone and judges. Hold to peek and reroll; steal needs 2 teams.',
     turnSeconds: 'Turn time (seconds)',
     skipLimit: 'Skips per turn',
     unlimitedSkips: 'Unlimited skips',
@@ -78,7 +80,7 @@ export default {
     timer2: 'Timer, medium (seconds)',
     timer3: 'Timer, hard (seconds)',
     steal: 'Steal chance for the other team',
-    stealTwoOnly: 'Only available with 2 teams, so it stays fair.',
+    stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
     rerollPenalty: 'Reroll penalty',
     fastSeconds: 'Fast guess within (seconds)',
     fastBonus: 'Fast guess bonus',
@@ -110,11 +112,18 @@ export default {
     playedBy: 'Played by {team}',
   },
   turn: {
-    passTo: 'Pass the phone to a player of {team}',
+    passTo: 'Pass the phone to the actor of {team}',
+    passToJudge: 'Pass the phone to a judge from another team',
+    judgeHint: "The judge holds the phone with the screen toward {team}'s actor, away from the actor's teammates. The judge taps Correct when the team guesses the word.",
+    actorHint: 'The actor keeps the phone and judges their own team\'s guesses. Only the actor looks at the screen.',
+    prepHint: 'Only the actor looks. Tap Start when ready, then hold the covered word to check guesses.',
+    getReady: 'Get ready',
+    roleJudge: 'Judge: a player from another team',
+    roleActor: 'The actor holds the phone and judges',
     tileInfo: '{category}, {points}',
     back: 'Back to the board',
     showWord: 'Show the word',
-    startTurn: 'I am ready, start',
+    startTurn: 'I am the judge, start',
     correct: 'Correct',
     skip: 'Skip',
     skipsLeft: '{n} skips left',
@@ -132,7 +141,7 @@ export default {
     noMoreWords: 'No more words in this category.',
     noRerollWords: 'No other word is left in this category, so the word cannot be changed.',
     stealTitle: '{team} can steal the points!',
-    stealHint: 'One guess. The judge taps the result.',
+    stealHint: 'One guess, out loud. The actor of the other team holds the phone (hold the card to check the word) and taps the result.',
     stealRight: 'Right guess',
     stealWrong: 'Wrong',
     resultTitle: 'Turn over',
@@ -269,7 +278,11 @@ export default {
           },
           {
             t: 'Passing the phone',
-            b: 'Before each turn a hand-over screen shows whose turn it is. The word stays hidden until the actor taps the button, so hand the phone to the actor first.',
+            b: 'Before each turn a hand-over screen shows whose turn it is. The word stays hidden until the button is tapped. Who holds the phone depends on the mode: see Roles below.',
+          },
+          {
+            t: 'Roles',
+            b: 'In multi-word mode a player from another team is the judge: they hold the phone, see the words and tap Correct or Skip. In single-word mode the actor keeps the phone and judges their own team\'s guesses, so in a steal the other team never sees the word. Steal only works with 2 teams.',
           },
           {
             t: 'Tile points',
@@ -277,15 +290,15 @@ export default {
           },
           {
             t: 'Multi-word mode',
-            b: 'The actor reveals the first word and the timer starts. Tap Correct when the team guesses it, or Skip to move on (each skip costs a penalty, and the number of skips per turn is limited by default). Every correct word scores the tile points. The turn ends when time runs out or the tile has no words left.',
+            b: 'A judge from another team holds the phone and taps Start. After a short countdown the first word appears and the timer starts. The judge turns the screen toward the actor, away from the actor\'s teammates. Tap Correct when the team guesses it, or Skip to move on (each skip costs a penalty, and the number of skips per turn is limited by default). Every correct word scores the tile points. The turn ends when time runs out or the tile has no words left.',
           },
           {
             t: 'Single-word mode',
-            b: 'One word per turn. The actor sees the word on the hand-over screen and taps Start. The word is then covered. The judge, who holds the phone, can hold the word to peek at it and checks the guesses. Tap Guessed when the team gets it. A correct guess made quickly earns a small bonus (see the settings guide). Give up asks for a confirm tap, and so does a timeout: both count as a failed turn.',
+            b: 'One word per turn. The actor sees the word on the hand-over screen and taps Start. The word is then covered. The actor keeps the phone, can hold the word to peek at it again, and judges the guesses of their own team. Tap Guessed when the team gets it. A correct guess made quickly earns a small bonus (see the settings guide). Give up asks for a confirm tap, and so does a timeout: both count as a failed turn.',
           },
           {
             t: 'Steal',
-            b: 'After a failed single-word turn, the other team may get one guess for the points, if steal is enabled. Steal only works in games with 2 teams, because with more teams only one of the others would get the chance. The judge marks it Correct or Wrong.',
+            b: 'After a failed single-word turn, the other team may get one guess for the points, if steal is enabled. Steal only works in games with 2 teams, because with more teams only one of the others would get the chance. The stealing team guesses out loud. The actor, who still holds the phone with the word covered, marks it Correct or Wrong.',
           },
           {
             t: 'Reroll',
@@ -438,7 +451,7 @@ export default {
         items: [
           {
             t: 'Someone cheated. What now?',
-            b: 'It is a party game, so settle it as a group. The judge decides, and the round can be replayed with a new word if everybody agrees.',
+            b: 'It is a party game, so settle it as a group. The judge (or the actor in single-word mode) decides, and the round can be replayed with a new word if everybody agrees.',
           },
           {
             t: 'Can I undo a point?',
