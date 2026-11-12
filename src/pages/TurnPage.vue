@@ -86,27 +86,13 @@
 
     <!-- Playing -->
     <div v-else-if="phase === 'play' || phase === 'timeup'" class="col column q-gutter-y-md">
-      <div class="row justify-center">
-        <q-circular-progress
-          class="timer-ring"
-          show-value
-          :value="
-            countdown.total.value ? countdown.remainingMs.value / (countdown.total.value * 1000) : 0
-          "
-          :min="0"
-          :max="1"
-          size="132px"
-          :thickness="0.12"
-          rounded
-          reverse
-          track-color="grey-4"
-          :color="countdown.secondsLeft.value <= 10 ? 'negative' : 'primary'"
-        >
-          <div class="timer text-center" :class="{ low: countdown.secondsLeft.value <= 10 }">
-            {{ phase === 'timeup' ? t('turn.timeUp') : fmt(countdown.secondsLeft.value) }}
-          </div>
-        </q-circular-progress>
-      </div>
+      <TimerRing
+        :remaining-ms="countdown.remainingMs.value"
+        :total-seconds="countdown.total.value"
+        :seconds-left="countdown.secondsLeft.value"
+        color="primary"
+        :label="phase === 'timeup' ? t('turn.timeUp') : fmt(countdown.secondsLeft.value)"
+      />
 
       <template v-if="isMulti">
         <div v-if="phase === 'timeup'" class="text-center text-grey-7">
@@ -316,12 +302,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
 import PeekWord from '@/components/PeekWord.vue';
+import TimerRing from '@/components/TimerRing.vue';
+import { useConfirmTap } from '@/composables/confirmTap';
 import { useCountdown } from '@/composables/countdown';
 import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
@@ -336,7 +324,7 @@ import {
 } from '@/game/scoring';
 import type { ScoreDelta } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
-import { listAllCategories } from '@/services/packs';
+import { categoryOrFallback, listAllCategories } from '@/services/packs';
 import { longWordClass } from '@/config/limits';
 import { getPool, hidePoolWord, restorePoolWord, type HideResult } from '@/services/words';
 import { useGameStore } from '@/stores/game';
@@ -361,9 +349,7 @@ const team = computed(() => state.value?.teams[state.value.currentTeam]);
 const isMulti = computed(() => state.value?.mode === 'multi');
 const category = computed(() => {
   const id = tile.value?.categoryId ?? '';
-  return (
-    listAllCategories(game.lang).find((c) => c.id === id) ?? { id, name: id, color: '#9e9e9e' }
-  );
+  return categoryOrFallback(listAllCategories(game.lang), id);
 });
 
 const fmt = (n: number) => formatNumber(n, settings.language);
@@ -384,10 +370,10 @@ const emptiedMsg = ref(false);
 const deltas = ref<ScoreDelta[]>([]);
 const tally = ref({ correct: 0, skips: 0 });
 const rerolled = ref(false);
-const confirmGiveUp = ref(false);
+const giveUpTap = useConfirmTap();
+const confirmGiveUp = giveUpTap.armed;
 const noWords = ref(false);
 const bonus = ref(0);
-let confirmTimer: ReturnType<typeof setTimeout> | undefined;
 
 const countdown = useCountdown(onTimeEnd);
 useWakeLock();
@@ -408,7 +394,6 @@ onMounted(() => {
   }
   deck.value = game.tileDeck(tile.value.categoryId, tile.value.difficulty);
 });
-onBeforeUnmount(() => clearTimeout(confirmTimer));
 
 /** Back to the board before the turn starts: the tile stays unplayed and can be picked again. */
 function back() {
@@ -511,17 +496,11 @@ function guessed() {
   phase.value = 'result';
 }
 function giveUp() {
-  if (!confirmGiveUp.value) {
-    confirmGiveUp.value = true;
-    clearTimeout(confirmTimer);
-    confirmTimer = setTimeout(() => (confirmGiveUp.value = false), 3000);
-    return;
-  }
-  failSingle();
+  giveUpTap.tap(failSingle);
 }
 function failSingle() {
   countdown.stop();
-  confirmGiveUp.value = false;
+  giveUpTap.reset();
   phase.value = stealer.value === null ? 'result' : 'steal';
 }
 function steal(right: boolean) {
@@ -649,21 +628,7 @@ function finish() {
   border: 2px solid rgba(128, 128, 128, 0.25);
   overflow-wrap: anywhere;
 }
-.timer {
-  font-size: 2.6rem;
-  font-weight: 700;
-  line-height: 1;
-  &.low {
-    color: var(--q-negative);
-  }
-}
 @media (max-height: 500px) {
-  .timer-ring {
-    font-size: 84px !important;
-  }
-  .timer {
-    font-size: 1.8rem;
-  }
   .word-card {
     padding: 12px 16px;
   }

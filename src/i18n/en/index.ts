@@ -382,7 +382,7 @@ export default {
           },
           {
             t: 'Hiding built-in words',
-            b: 'Built-in words cannot be edited, but you can hide any of them: tap Hide on the result screen of a turn. Built-in words are never listed, so nobody can study them. Only the words you hid are shown in Categories and words, where you can tap one to show it again. Hidden words never appear in games. The last word of a list cannot be hidden.',
+            b: 'Built-in words cannot be edited, but you can hide any of them: tap Hide on the result screen of a turn. Built-in words are never listed, so nobody can study them. Only the words you hid are shown in Categories and words, where you can tap one to show it again. Hidden words never appear in games.',
           },
           {
             t: 'Changing and deleting',

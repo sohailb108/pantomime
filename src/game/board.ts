@@ -9,6 +9,11 @@ export function minCategoriesFor(teamCount: number): number {
   return Math.ceil(teamCount / DIFFICULTIES.length);
 }
 
+/** Tiles trimmed from a board of `categoryCount` categories for `teamCount` teams. */
+export function trimmedTileCount(categoryCount: number, teamCount: number): number {
+  return (categoryCount * DIFFICULTIES.length) % teamCount;
+}
+
 /** One tile per category and difficulty, before trimming. */
 export function buildTiles(categoryIds: readonly string[]): Tile[] {
   return categoryIds.flatMap((categoryId) =>

@@ -19,8 +19,12 @@ export async function applyLanguage(code: string): Promise<void> {
   root.style.setProperty('--app-font', lang.font.family);
 
   if (lang.font.load && !loadedFonts.has(lang.code)) {
-    await lang.font.load();
-    loadedFonts.add(lang.code);
+    try {
+      await lang.font.load();
+      loadedFonts.add(lang.code);
+    } catch {
+      // The font chunk failed to load (offline, stale cache): fall back to the system font.
+    }
   }
 
   const pack = (await lang.quasarLang()).default;

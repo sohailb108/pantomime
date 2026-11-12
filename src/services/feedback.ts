@@ -27,7 +27,8 @@ let ctx: AudioContext | undefined;
 function audio(): AudioContext | undefined {
   try {
     ctx ??= new AudioContext();
-    if (ctx.state === 'suspended') void ctx.resume();
+    // iOS Safari also leaves the context 'interrupted' after a lock or app switch.
+    if (ctx.state !== 'running') void ctx.resume();
     return ctx;
   } catch {
     return undefined;
@@ -40,13 +41,13 @@ export const vibrationSupported = typeof navigator !== 'undefined' && 'vibrate' 
 /**
  * Creates and resumes the audio context on the first tap, click or key press. Browsers with strict
  * autoplay rules (iOS) only allow that inside a user gesture, and the first cues of a game come
- * from timers, not taps. Stops listening once the context is running.
+ * from timers, not taps. Keeps listening, since iOS can interrupt the context again later (lock
+ * screen, app switch) and only a gesture can resume it.
  */
 export function unlockAudioOnGesture(): void {
   const events = ['touchend', 'click', 'keydown'] as const;
   const unlock = () => {
-    const c = audio();
-    if (c?.state === 'running') events.forEach((e) => document.removeEventListener(e, unlock, true));
+    audio();
   };
   events.forEach((e) => document.addEventListener(e, unlock, true));
 }

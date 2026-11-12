@@ -13,6 +13,14 @@ export function listAllCategories(lang: string): (CategoryInfo & { custom: boole
   ];
 }
 
+/** The category with this id, or a stand-in named by its id when it no longer exists. */
+export function categoryOrFallback<T extends CategoryInfo>(
+  categories: readonly T[],
+  id: string,
+): T | CategoryInfo {
+  return categories.find((c) => c.id === id) ?? { id, name: id };
+}
+
 /**
  * Categories a game can use: those with a word to draw at every difficulty (otherwise one of their
  * tiles would have nothing to draw). A new custom category stays out until it has enough words, and

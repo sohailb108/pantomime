@@ -35,33 +35,26 @@
       <div v-for="cat in columns" :key="cat.id" class="board-row">
         <div class="cat-title text-weight-bold">{{ cat.name }}</div>
         <div class="tile-row">
-          <template v-for="d in DIFFICULTIES" :key="d">
+          <template v-for="cell in cat.cells" :key="cell.d">
             <q-btn
-              v-if="tileIndex(cat.id, d) !== undefined"
+              v-if="cell.index !== undefined"
               class="full-width tile"
-              :class="{ played: isPlayed(tileIndex(cat.id, d)!) }"
-              :style="playedStyle(tileIndex(cat.id, d)!)"
+              :class="{ played: !!cell.played }"
+              :style="cell.played ? { background: cell.played.hex } : undefined"
               unelevated
               no-caps
-              :aria-disabled="isPlayed(tileIndex(cat.id, d)!)"
-              :aria-label="t('board.points', { n: fmt(pointsOf(d)) })"
-              @click="pickTile(tileIndex(cat.id, d)!)"
+              :aria-disabled="!!cell.played"
+              :aria-label="t('board.points', { n: fmt(pointsOf(cell.d)) })"
+              @click="pickTile(cell.index)"
             >
-              <div
-                v-if="played(tileIndex(cat.id, d)!)"
-                class="tile-played"
-                :aria-label="played(tileIndex(cat.id, d)!)!.label"
-              >
-                <div class="text-weight-bold">{{ played(tileIndex(cat.id, d)!)!.points }}</div>
-                <div v-if="played(tileIndex(cat.id, d)!)!.stolen" class="steal-line">
-                  <span
-                    class="dot"
-                    :style="{ background: played(tileIndex(cat.id, d)!)!.stolen!.hex }"
-                  />
-                  {{ played(tileIndex(cat.id, d)!)!.stolen!.points }}
+              <div v-if="cell.played" class="tile-played" :aria-label="cell.played.label">
+                <div class="text-weight-bold">{{ cell.played.points }}</div>
+                <div v-if="cell.played.stolen" class="steal-line">
+                  <span class="dot" :style="{ background: cell.played.stolen.hex }" />
+                  {{ cell.played.stolen.points }}
                 </div>
               </div>
-              <template v-else>{{ t('board.points', { n: fmt(pointsOf(d)) }) }}</template>
+              <template v-else>{{ t('board.points', { n: fmt(pointsOf(cell.d)) }) }}</template>
             </q-btn>
             <div v-else class="tile-removed" />
           </template>
@@ -78,7 +71,7 @@ import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
-import { listAllCategories } from '@/services/packs';
+import { categoryOrFallback, listAllCategories } from '@/services/packs';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -91,19 +84,23 @@ const state = computed(() => game.state);
 const { teamName, teamHex } = useTeamDisplay();
 const fmt = (n: number) => formatNumber(n, settings.language);
 
-// Columns follow the order tiles were built in, one per distinct category.
+// Columns follow the order tiles were built in, one per distinct category. Each column holds its
+// tiles' index and played state, computed once per change instead of once per template lookup.
 const columns = computed(() => {
-  const ids = [...new Set(state.value?.tiles.map((tile) => tile.categoryId) ?? [])];
+  const tiles = state.value?.tiles ?? [];
+  const indexOf = new Map(tiles.map((tile, i) => [`${tile.categoryId}:${tile.difficulty}`, i]));
+  const ids = [...new Set(tiles.map((tile) => tile.categoryId))];
   const all = listAllCategories(game.lang);
-  return ids.map((id) => all.find((c) => c.id === id) ?? { id, name: id, color: '#9e9e9e' });
+  return ids.map((id) => {
+    const cat = categoryOrFallback(all, id);
+    const cells = DIFFICULTIES.map((d) => {
+      const index = indexOf.get(`${id}:${d}`);
+      return { d, index, played: index === undefined ? undefined : played(index) };
+    });
+    return { ...cat, cells };
+  });
 });
 
-function tileIndex(categoryId: string, difficulty: Difficulty): number | undefined {
-  const i = state.value?.tiles.findIndex(
-    (tile) => tile.categoryId === categoryId && tile.difficulty === difficulty,
-  );
-  return i === undefined || i < 0 ? undefined : i;
-}
 function pointsOf(difficulty: Difficulty): number {
   return state.value?.settings.points[difficulty] ?? difficulty;
 }
@@ -131,11 +128,6 @@ function played(index: number) {
         }
       : undefined,
   };
-}
-
-function playedStyle(index: number) {
-  const p = played(index);
-  return p ? { background: p.hex } : undefined;
 }
 
 function pickTile(index: number) {

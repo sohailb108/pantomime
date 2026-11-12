@@ -100,6 +100,37 @@ describe('export and import', () => {
     expect(target.categories).toHaveLength(1);
     expect(target.categories[0]!.words[1]).toEqual(['golf', 'tennis']);
   });
+
+  it('merges a category with the same name under a different id', () => {
+    const target = sample();
+    const incoming = sample();
+    incoming.categories[0]!.id = 'c-other';
+    incoming.categories[0]!.name = target.categories[0]!.name.toUpperCase();
+    incoming.categories[0]!.words[1].push('tennis');
+    mergeInto(target, incoming);
+    expect(target.categories).toHaveLength(1);
+    expect(target.categories[0]!.words[1]).toEqual(['golf', 'tennis']);
+  });
+
+  it('merges extra and hidden words under ids that name Object properties', () => {
+    const target = emptyLang();
+    const incoming = emptyLang();
+    incoming.extra['constructor'] = { 1: ['a'], 2: [], 3: [] };
+    incoming.hidden['constructor'] = { 1: ['b'], 2: [], 3: [] };
+    incoming.extraNames['constructor'] = 'Constructor';
+    expect(mergeInto(target, incoming)).toBe(1);
+    expect(target.extra['constructor']![1]).toEqual(['a']);
+    expect(target.hidden['constructor']![1]).toEqual(['b']);
+    expect(target.extraNames['constructor']).toBe('Constructor');
+  });
+
+  it('treats Arabic and Persian letter variants as the same word', () => {
+    const list: string[] = [];
+    expect(addToList(list, 'کتاب')).toBe('ok');
+    expect(addToList(list, 'كتاب')).toBe('duplicate');
+    expect(addToList(list, 'ماهي')).toBe('ok');
+    expect(addToList(list, 'ماهی')).toBe('duplicate');
+  });
 });
 
 describe('legacy category color', () => {

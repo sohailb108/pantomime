@@ -136,7 +136,16 @@ export function normalizeName(raw: string): string | null {
   return name.length > 0 && name.length <= MAX_NAME_LENGTH ? name : null;
 }
 
-const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+/**
+ * Key for comparing words and names: lowercased, Unicode-normalized, and with the Arabic letter
+ * variants that look the same as the Persian ones (ي ك) folded, so typing with either keyboard
+ * layout finds the same word.
+ */
+export function compareKey(s: string): string {
+  return s.normalize('NFKC').toLowerCase().replace(/ي/g, 'ی').replace(/ك/g, 'ک');
+}
+
+const same = (a: string, b: string) => compareKey(a) === compareKey(b);
 
 export type AddResult = 'ok' | 'invalid' | 'duplicate' | 'full';
 
@@ -151,15 +160,15 @@ export function addToList(list: string[], raw: string): AddResult {
 }
 
 /**
- * Like `addToList` for many words into one list: remembers the lowercased words in a Set, so each
+ * Like `addToList` for many words into one list: remembers the comparison keys of the words in a Set, so each
  * add is O(1) instead of a scan of the whole list. Use it for imports and merges.
  */
 export function listAdder(list: string[]): (raw: string) => AddResult {
-  const seen = new Set(list.map((w) => w.toLowerCase()));
+  const seen = new Set(list.map(compareKey));
   return (raw) => {
     const word = normalizeWord(raw);
     if (word === null) return 'invalid';
-    const key = word.toLowerCase();
+    const key = compareKey(word);
     if (seen.has(key)) return 'duplicate';
     if (list.length >= MAX_WORDS_PER_LIST) return 'full';
     seen.add(key);
@@ -289,6 +298,15 @@ export function parseImport(text: string): ParsedImport {
   return { ok: true, lang: raw.lang, data };
 }
 
+/**
+ * Gets `record[id]`, creating it when missing. Only own keys count: ids like "constructor" pass
+ * `CATEGORY_KEY` and would otherwise find the inherited `Object` function and never get created.
+ */
+function ownOrCreate<T>(record: Record<string, T>, id: string, make: () => T): T {
+  if (!Object.hasOwn(record, id)) record[id] = make();
+  return record[id]!;
+}
+
 /** Merges imported data into `target` in place: only adds, never removes or overwrites. Returns how many words were added. */
 export function mergeInto(target: CustomLang, incoming: CustomLang): number {
   let added = 0;
@@ -301,23 +319,27 @@ export function mergeInto(target: CustomLang, incoming: CustomLang): number {
   };
 
   for (const c of incoming.categories) {
-    if (target.categories.length >= MAX_CATEGORIES && !target.categories.some((t) => t.id === c.id))
-      continue;
-    let existing = target.categories.find((t) => t.id === c.id);
+    // Same id, or the same name under another id (the category was created by hand on both sides).
+    let existing =
+      target.categories.find((t) => t.id === c.id) ??
+      target.categories.find((t) => same(t.name, c.name));
     if (!existing) {
+      if (target.categories.length >= MAX_CATEGORIES) continue;
       existing = { id: c.id, name: c.name, words: emptyWords() };
       target.categories.push(existing);
     }
     mergeWords(existing.words, c.words);
   }
   for (const [id, words] of Object.entries(incoming.extra)) {
-    mergeWords((target.extra[id] ??= emptyWords()), words);
+    mergeWords(ownOrCreate(target.extra, id, emptyWords), words);
   }
-  for (const [id, name] of Object.entries(incoming.extraNames)) target.extraNames[id] ??= name;
+  for (const [id, name] of Object.entries(incoming.extraNames)) {
+    if (!Object.hasOwn(target.extraNames, id)) target.extraNames[id] = name;
+  }
   mergeList(target.gold, incoming.gold);
   // Hidden lists only grow with an import. They do not count as added words.
   for (const [id, words] of Object.entries(incoming.hidden)) {
-    const to = (target.hidden[id] ??= emptyWords());
+    const to = ownOrCreate(target.hidden, id, emptyWords);
     for (const d of DIFFICULTIES) {
       const add = listAdder(to[d]);
       for (const w of words[d]) add(w);

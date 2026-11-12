@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
 import { firstFreeColor, TEAM_COLORS } from '@/config/teamColors';
-import { MAX_TEAMS, MIN_TEAMS, minCategoriesFor } from '@/game/board';
-import type { Mode, Settings } from '@/game/types';
+import { MAX_TEAMS, MIN_TEAMS, minCategoriesFor, trimmedTileCount } from '@/game/board';
+import { DIFFICULTIES, type Mode, type Settings } from '@/game/types';
 import { loadJson, saveJson } from '@/services/storage';
 
 const SETUP_STORAGE_KEY = 'pantomime:setup';
@@ -58,11 +58,8 @@ export const useSetupStore = defineStore('setup', () => {
   const minCategories = computed(() => minCategoriesFor(teamCount.value));
 
   /** Tiles left on the board after trimming for the current selection. */
-  const tileCount = computed(() => {
-    const raw = categoryIds.value.length * 3;
-    return raw - (raw % teamCount.value);
-  });
-  const trimmedCount = computed(() => categoryIds.value.length * 3 - tileCount.value);
+  const trimmedCount = computed(() => trimmedTileCount(categoryIds.value.length, teamCount.value));
+  const tileCount = computed(() => categoryIds.value.length * DIFFICULTIES.length - trimmedCount.value);
 
   function addTeam() {
     if (teamColors.value.length < MAX_TEAMS) {

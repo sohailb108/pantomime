@@ -77,27 +77,13 @@
     </div>
 
     <div v-else-if="phase === 'play'" class="col column q-gutter-y-md">
-      <div class="row justify-center">
-        <q-circular-progress
-          class="timer-ring"
-          show-value
-          :value="
-            countdown.total.value ? countdown.remainingMs.value / (countdown.total.value * 1000) : 0
-          "
-          :min="0"
-          :max="1"
-          size="132px"
-          :thickness="0.12"
-          rounded
-          reverse
-          track-color="grey-4"
-          :color="countdown.secondsLeft.value <= 10 ? 'negative' : 'amber-8'"
-        >
-          <div class="timer text-center" :class="{ low: countdown.secondsLeft.value <= 10 }">
-            {{ fmt(countdown.secondsLeft.value) }}
-          </div>
-        </q-circular-progress>
-      </div>
+      <TimerRing
+        :remaining-ms="countdown.remainingMs.value"
+        :total-seconds="countdown.total.value"
+        :seconds-left="countdown.secondsLeft.value"
+        color="amber-8"
+        :label="fmt(countdown.secondsLeft.value)"
+      />
       <div class="col column justify-center">
         <PeekWord :word="word ?? ''" :label="t('turn.peek')" />
       </div>
@@ -154,12 +140,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
 import PeekWord from '@/components/PeekWord.vue';
+import TimerRing from '@/components/TimerRing.vue';
+import { useConfirmTap } from '@/composables/confirmTap';
 import { useCountdown } from '@/composables/countdown';
 import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
@@ -191,12 +179,12 @@ const deck = ref<string[]>([]);
 const noGoldWords = ref(false);
 const word = ref<string | null>(null);
 const success = ref(false);
-const confirmGiveUp = ref(false);
+const giveUpTap = useConfirmTap();
+const confirmGiveUp = giveUpTap.armed;
 /** Color of the team that just attempted, kept because the queue moves on after resolving. */
 const attemptColor = ref('');
 const { teamName, teamHex } = useTeamDisplay();
 const colorStyle = (color: string | undefined) => ({ color: teamHex(color ?? '') });
-let confirmTimer: ReturnType<typeof setTimeout> | undefined;
 
 const countdown = useCountdown(() => {
   if (phase.value === 'play') cue('end');
@@ -220,7 +208,6 @@ onMounted(() => {
   deck.value = game.goldDeck();
   noGoldWords.value = deck.value.length === 0;
 });
-onBeforeUnmount(() => clearTimeout(confirmTimer));
 
 function showWord() {
   const next = deck.value.shift();
@@ -247,19 +234,13 @@ function startPlay() {
   countdown.start(gold.value.timerSeconds);
 }
 function giveUp() {
-  if (!confirmGiveUp.value) {
-    confirmGiveUp.value = true;
-    clearTimeout(confirmTimer);
-    confirmTimer = setTimeout(() => (confirmGiveUp.value = false), 3000);
-    return;
-  }
-  resolve(false);
+  giveUpTap.tap(() => resolve(false));
 }
 function resolve(ok: boolean) {
   if (phase.value !== 'play') return;
   countdown.stop();
   if (ok) cue('good');
-  confirmGiveUp.value = false;
+  giveUpTap.reset();
   success.value = ok;
   attemptColor.value = team.value?.color ?? '';
   game.finishGold(ok);
@@ -331,21 +312,7 @@ function next() {
   border: 2px solid rgba(255, 193, 7, 0.6);
   overflow-wrap: anywhere;
 }
-.timer {
-  font-size: 2.6rem;
-  font-weight: 700;
-  line-height: 1;
-  &.low {
-    color: var(--q-negative);
-  }
-}
 @media (max-height: 500px) {
-  .timer-ring {
-    font-size: 84px !important;
-  }
-  .timer {
-    font-size: 1.8rem;
-  }
   .word-card {
     padding: 12px 16px;
   }
