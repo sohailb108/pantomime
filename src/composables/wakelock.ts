@@ -8,9 +8,12 @@ import { onBeforeUnmount, onMounted } from 'vue';
 export function useWakeLock() {
   let sentinel: WakeLockSentinel | null = null;
   let wanted = false;
+  // A request is in flight: another one would create a second lock and orphan the first.
+  let requesting = false;
 
   async function acquire() {
-    if (!wanted || sentinel || document.visibilityState !== 'visible') return;
+    if (!wanted || sentinel || requesting || document.visibilityState !== 'visible') return;
+    requesting = true;
     try {
       const lock = (await navigator.wakeLock?.request('screen')) ?? null;
       // Unmounted (or hidden again) while the request was pending: do not keep the lock.
@@ -22,6 +25,8 @@ export function useWakeLock() {
       lock?.addEventListener('release', () => (sentinel = null));
     } catch {
       sentinel = null;
+    } finally {
+      requesting = false;
     }
   }
 
