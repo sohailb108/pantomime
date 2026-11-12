@@ -181,6 +181,10 @@ export default {
     import: 'Import',
     exported: 'Saved a file with your words for this language.',
     imported: 'Imported {n} word. | Imported {n} words.',
+    importMerged:
+      '{n} category was merged into a built-in one. | {n} categories were merged into built-in ones.',
+    alreadyExists: 'This category already exists. Add your words here.',
+    nameTaken: 'A category with this name already exists.',
     err: {
       invalid: 'Enter a word of 1 to 80 characters.',
       duplicate: 'This word is already in the list.',

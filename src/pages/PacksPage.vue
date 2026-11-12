@@ -126,6 +126,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { DIFFICULTIES } from '@/game/types';
@@ -136,6 +137,7 @@ import { useCustomStore } from '@/stores/custom';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
+const $q = useQuasar();
 const router = useRouter();
 const settings = useSettingsStore();
 const custom = useCustomStore();
@@ -163,10 +165,11 @@ function openNew() {
   newOpen.value = true;
 }
 function create() {
-  const id = custom.addCategory(lang.value, newName.value);
-  if (id === null) return;
+  const result = custom.addCategory(lang.value, newName.value);
+  if (result === null) return;
   newOpen.value = false;
-  void router.push(`/packs/${id}`);
+  if (result.existing) $q.notify({ message: t('packs.alreadyExists'), timeout: 3000 });
+  void router.push(`/packs/${result.id}`);
 }
 
 // Export and import
@@ -197,8 +200,13 @@ async function doImport(event: Event) {
   input.value = '';
   if (!file) return;
   const result = custom.importJson(lang.value, await file.text());
-  if (result.ok) say(t('packs.imported', { n: fmt(result.added) }, result.added), true);
-  else say(t(`packs.importErr.${result.error}`), false);
+  if (result.ok) {
+    let text = t('packs.imported', { n: fmt(result.added) }, result.added);
+    if (result.merged > 0) {
+      text += ` ${t('packs.importMerged', { n: fmt(result.merged) }, result.merged)}`;
+    }
+    say(text, true);
+  } else say(t(`packs.importErr.${result.error}`), false);
 }
 </script>
 

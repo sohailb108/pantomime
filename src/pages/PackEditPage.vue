@@ -127,6 +127,7 @@
 // Marker color of each difficulty card: easy, medium, hard.
 const TONES: Record<number, string> = { 1: '#21ba45', 2: '#f2c037', 3: '#c10015' };
 import { computed, onMounted, ref } from 'vue';
+import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import WordList from '@/components/WordList.vue';
@@ -139,6 +140,7 @@ import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
+const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
 const settings = useSettingsStore();
@@ -177,9 +179,9 @@ function openEdit() {
   editOpen.value = true;
 }
 function saveEdit() {
-  if (custom.updateCategory(lang.value, id.value, editName.value)) {
-    editOpen.value = false;
-  }
+  const result = custom.updateCategory(lang.value, id.value, editName.value);
+  if (result === 'ok') editOpen.value = false;
+  else if (result === 'exists') $q.notify({ message: t('packs.nameTaken'), type: 'negative' });
 }
 function remove() {
   custom.removeCategory(lang.value, id.value);

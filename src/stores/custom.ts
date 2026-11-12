@@ -8,12 +8,14 @@ import {
   buildExport,
   emptyLang,
   emptyWords,
+  findCategoryByName,
   mergeInto,
   MAX_CATEGORIES,
   normalizeLang,
   normalizeName,
   hasWord,
   parseImport,
+  restoreOrphanedExtras,
   type AddResult,
   type CustomCategory,
   type CustomLang,
@@ -29,6 +31,17 @@ function newId(): string {
   return `c-${Math.random().toString(36).slice(2, 10).padEnd(8, '0')}`;
 }
 
+/**
+ * Keeps custom data consistent with the built-in categories: words of categories that no longer
+ * exist become custom categories again, and custom categories named like a built-in one are merged
+ * into it. Returns how many categories were merged.
+ */
+function reconcile(data: CustomLang, lang: string): number {
+  const builtins = listBuiltinCategories(lang);
+  restoreOrphanedExtras(data, builtins, newId);
+  return absorbBuiltinDuplicates(data, builtins);
+}
+
 /** Custom categories and words, per language. Auto-saved. */
 export const useCustomStore = defineStore('custom', () => {
   const saved = loadJson<Record<string, Partial<CustomLang>>>(KEY) ?? {};
@@ -36,7 +49,7 @@ export const useCustomStore = defineStore('custom', () => {
     Object.fromEntries(
       Object.entries(saved).map(([lang, d]) => {
         const normalized = normalizeLang(d);
-        absorbBuiltinDuplicates(normalized, listBuiltinCategories(lang));
+        reconcile(normalized, lang);
         return [lang, normalized];
       }),
     ),
@@ -51,23 +64,34 @@ export const useCustomStore = defineStore('custom', () => {
     return (data.value[lang] ??= emptyLang());
   }
 
-  function addCategory(lang: string, rawName: string): string | null {
+  /**
+   * Creates a category. If a built-in or custom category already has that name, nothing is created
+   * and that category is returned with `existing: true`, so the user adds words there instead.
+   */
+  function addCategory(lang: string, rawName: string): { id: string; existing: boolean } | null {
     const name = normalizeName(rawName);
+    if (name === null) return null;
+    const found = findCategoryByName(name, listBuiltinCategories(lang), of(lang).categories);
+    if (found) return { id: found.id, existing: true };
     const target = ensure(lang);
-    if (name === null || target.categories.length >= MAX_CATEGORIES) return null;
+    if (target.categories.length >= MAX_CATEGORIES) return null;
     const id = newId();
     target.categories.push({ id, name, words: emptyWords() });
-    return id;
+    return { id, existing: false };
   }
   function findCategory(lang: string, id: string): CustomCategory | undefined {
     return of(lang).categories.find((c) => c.id === id);
   }
-  function updateCategory(lang: string, id: string, rawName: string): boolean {
+  /** Renames a category. A name already used by another category is refused. */
+  function updateCategory(lang: string, id: string, rawName: string): 'ok' | 'invalid' | 'exists' {
     const category = data.value[lang]?.categories.find((c) => c.id === id);
     const name = normalizeName(rawName);
-    if (!category || name === null) return false;
+    if (!category || name === null) return 'invalid';
+    if (findCategoryByName(name, listBuiltinCategories(lang), of(lang).categories, id)) {
+      return 'exists';
+    }
     category.name = name;
-    return true;
+    return 'ok';
   }
   function removeCategory(lang: string, id: string) {
     const target = data.value[lang];
@@ -146,11 +170,13 @@ export const useCustomStore = defineStore('custom', () => {
   function importJson(
     lang: string,
     text: string,
-  ): { ok: true; added: number } | { ok: false; error: ImportError } {
+  ): { ok: true; added: number; merged: number } | { ok: false; error: ImportError } {
     const parsed = parseImport(text);
     if (!parsed.ok) return parsed;
     if (parsed.lang !== lang) return { ok: false, error: 'language' };
-    return { ok: true, added: mergeInto(ensure(lang), parsed.data) };
+    const target = ensure(lang);
+    const added = mergeInto(target, parsed.data);
+    return { ok: true, added, merged: reconcile(target, lang) };
   }
 
   return {

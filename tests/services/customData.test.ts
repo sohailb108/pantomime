@@ -6,7 +6,10 @@ import {
   emptyWords,
   isComplete,
   MAX_WORD_LENGTH,
+  absorbBuiltinDuplicates,
+  findCategoryByName,
   mergeInto,
+  restoreOrphanedExtras,
   normalizeLang,
   normalizeWord,
   parseImport,
@@ -104,5 +107,59 @@ describe('legacy category color', () => {
     const old = { categories: [{ id: 'c-1', name: 'X', color: '#000000', words: emptyWords() }] };
     const lang = normalizeLang(old);
     expect(lang.categories[0]).not.toHaveProperty('color');
+  });
+});
+
+describe('built-in category merging', () => {
+  const builtins = [{ id: 'animals', name: 'Animals' }];
+
+  it('merges a same-named custom category and remembers its name', () => {
+    const data = normalizeLang({});
+    const words = emptyWords();
+    words[1].push('cat');
+    data.categories.push({ id: 'c-1', name: 'animals', words });
+    expect(absorbBuiltinDuplicates(data, builtins)).toBe(1);
+    expect(data.categories).toEqual([]);
+    expect(data.extra.animals![1]).toEqual(['cat']);
+    expect(data.extraNames.animals).toBe('animals');
+  });
+
+  it('restores extras of a removed built-in category as a custom category', () => {
+    const data = normalizeLang({});
+    data.extra.zoo = emptyWords();
+    data.extra.zoo[2].push('lion');
+    data.extraNames.zoo = 'Zoo';
+    data.extra.empty = emptyWords();
+    expect(restoreOrphanedExtras(data, builtins, () => 'c-new')).toBe(1);
+    expect(data.categories).toEqual([
+      { id: 'c-new', name: 'Zoo', words: { 1: [], 2: ['lion'], 3: [] } },
+    ]);
+    expect(data.extra).toEqual({});
+    expect(data.extraNames).toEqual({});
+  });
+
+  it('falls back to the old id as the name when none was saved', () => {
+    const data = normalizeLang({});
+    data.extra.zoo = emptyWords();
+    data.extra.zoo[1].push('lion');
+    restoreOrphanedExtras(data, builtins, () => 'c-new');
+    expect(data.categories[0]!.name).toBe('zoo');
+  });
+
+  it('keeps names through export and import', () => {
+    const data = normalizeLang({});
+    data.extraNames.animals = 'Animals';
+    const parsed = parseImport(JSON.stringify(buildExport('en', data)));
+    expect(parsed.ok && parsed.data.extraNames).toEqual({ animals: 'Animals' });
+  });
+
+  it('finds categories by name, ignoring case and one id', () => {
+    const customs = [{ id: 'c-1', name: 'Sports' }];
+    expect(findCategoryByName('ANIMALS', builtins, customs)).toEqual({
+      id: 'animals',
+      builtin: true,
+    });
+    expect(findCategoryByName('sports', builtins, customs)).toEqual({ id: 'c-1', builtin: false });
+    expect(findCategoryByName('sports', builtins, customs, 'c-1')).toBeUndefined();
   });
 });

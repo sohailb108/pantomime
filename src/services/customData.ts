@@ -14,6 +14,8 @@ export interface CustomLang {
   categories: CustomCategory[];
   /** Extra words for built-in categories, by category id. */
   extra: Record<string, WordsByDifficulty>;
+  /** Names of custom categories that were merged into built-in ones, by built-in category id. */
+  extraNames: Record<string, string>;
   /** Extra gold-round words. */
   gold: string[];
   /** Built-in words the user hid, by category id. */
@@ -34,7 +36,7 @@ export function emptyWords(): WordsByDifficulty {
   return { 1: [], 2: [], 3: [] };
 }
 export function emptyLang(): CustomLang {
-  return { categories: [], extra: {}, gold: [], hidden: {}, hiddenGold: [] };
+  return { categories: [], extra: {}, extraNames: {}, gold: [], hidden: {}, hiddenGold: [] };
 }
 /** Fills fields that older saved data does not have. */
 export function normalizeLang(data: Partial<CustomLang>): CustomLang {
@@ -46,23 +48,70 @@ export function normalizeLang(data: Partial<CustomLang>): CustomLang {
 
 /**
  * Moves the words of custom categories that share a name with a built-in category into that
- * built-in category's extra words, and removes the custom category. Needed when a built-in
- * category is added that the user had already created themselves. Returns whether anything moved.
+ * built-in category's extra words, and removes the custom category. The name is kept so the
+ * words can become a custom category again if the built-in one is removed later.
+ * Returns how many categories were merged.
  */
 export function absorbBuiltinDuplicates(
   data: CustomLang,
   builtins: readonly { id: string; name: string }[],
-): boolean {
-  let changed = false;
+): number {
+  let merged = 0;
   data.categories = data.categories.filter((c) => {
     const builtin = builtins.find((b) => same(b.name, c.name));
     if (!builtin) return true;
     const to = (data.extra[builtin.id] ??= emptyWords());
     for (const d of DIFFICULTIES) for (const w of c.words[d]) addToList(to[d], w);
-    changed = true;
+    data.extraNames[builtin.id] ??= c.name;
+    merged++;
     return false;
   });
-  return changed;
+  return merged;
+}
+
+/**
+ * Turns extra words of categories that no longer exist (a built-in category removed by an update)
+ * back into custom categories, so the user's words are never lost. Uses the saved name, or the old
+ * id when none was saved. Returns how many categories were restored.
+ */
+export function restoreOrphanedExtras(
+  data: CustomLang,
+  builtins: readonly { id: string }[],
+  newId: () => string,
+): number {
+  let restored = 0;
+  for (const [id, words] of Object.entries(data.extra)) {
+    if (builtins.some((b) => b.id === id) || data.categories.some((c) => c.id === id)) continue;
+    const hasWords = DIFFICULTIES.some((d) => words[d].length > 0);
+    if (hasWords) {
+      const name = normalizeName(data.extraNames[id] ?? id) ?? id.slice(0, MAX_NAME_LENGTH);
+      let target = data.categories.find((c) => same(c.name, name));
+      if (!target) {
+        if (data.categories.length >= MAX_CATEGORIES) continue;
+        target = { id: newId(), name, words: emptyWords() };
+        data.categories.push(target);
+        restored++;
+      }
+      for (const d of DIFFICULTIES) for (const w of words[d]) addToList(target.words[d], w);
+    }
+    delete data.extra[id];
+    delete data.extraNames[id];
+    delete data.hidden[id];
+  }
+  return restored;
+}
+
+/** Finds a built-in or custom category by name (ignoring case), optionally skipping one id. */
+export function findCategoryByName(
+  name: string,
+  builtins: readonly { id: string; name: string }[],
+  customs: readonly { id: string; name: string }[],
+  exceptId?: string,
+): { id: string; builtin: boolean } | undefined {
+  const b = builtins.find((c) => same(c.name, name));
+  if (b) return { id: b.id, builtin: true };
+  const c = customs.find((c) => c.id !== exceptId && same(c.name, name));
+  return c ? { id: c.id, builtin: false } : undefined;
 }
 
 /** Case-insensitive membership test. */
@@ -108,6 +157,7 @@ export interface ExportFile {
   lang: string;
   categories: CustomCategory[];
   extra: Record<string, WordsByDifficulty>;
+  extraNames: Record<string, string>;
   gold: string[];
   hidden: Record<string, WordsByDifficulty>;
   hiddenGold: string[];
@@ -185,6 +235,15 @@ export function parseImport(text: string): ParsedImport {
     data.extra[id] = words;
   }
 
+  const names = raw.extraNames ?? {};
+  if (!isObject(names)) return { ok: false, error: 'invalid' };
+  if (Object.keys(names).length > MAX_CATEGORIES) return { ok: false, error: 'tooLarge' };
+  for (const [id, value] of Object.entries(names)) {
+    const name = typeof value === 'string' ? normalizeName(value) : null;
+    if (!CATEGORY_KEY.test(id) || name === null) return { ok: false, error: 'invalid' };
+    data.extraNames[id] = name;
+  }
+
   const gold = raw.gold === undefined ? [] : cleanList(raw.gold);
   if (gold === null) return { ok: false, error: 'invalid' };
   data.gold = gold;
@@ -228,6 +287,7 @@ export function mergeInto(target: CustomLang, incoming: CustomLang): number {
   for (const [id, words] of Object.entries(incoming.extra)) {
     mergeWords((target.extra[id] ??= emptyWords()), words);
   }
+  for (const [id, name] of Object.entries(incoming.extraNames)) target.extraNames[id] ??= name;
   mergeList(target.gold, incoming.gold);
   // Hidden lists only grow with an import. They do not count as added words.
   for (const [id, words] of Object.entries(incoming.hidden)) {
