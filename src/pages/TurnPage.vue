@@ -207,6 +207,16 @@
       </div>
       <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
       <PeekWord class="full-width" :word="word ?? ''" :label="t('turn.peek')" />
+      <q-btn
+        v-if="undoTo"
+        outline
+        size="lg"
+        rounded
+        no-caps
+        color="primary"
+        :label="t('turn.undo')"
+        @click="undo"
+      />
       <div class="row no-wrap full-width q-mt-lg action-bar">
         <div class="col">
           <q-btn
@@ -302,15 +312,26 @@
         </q-card>
       </div>
 
-      <q-btn
-        class="action-bar full-width"
-        color="primary"
-        size="lg"
-        rounded
-        no-caps
-        :label="t('turn.next')"
-        @click="finish"
-      />
+      <div class="column action-bar q-gutter-y-md">
+        <q-btn
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
+          :label="t('turn.next')"
+          @click="finish"
+        />
+        <q-btn
+          v-if="undoTo && !isMulti"
+          outline
+          size="lg"
+          rounded
+          no-caps
+          color="primary"
+          :label="t('turn.undo')"
+          @click="undo"
+        />
+      </div>
     </div>
     <LeaveDialog v-model="leave.open.value" kind="turn" @board="exit('/board')" @home="exit('/')" />
   </q-page>
@@ -409,7 +430,8 @@ watch(leave.open, (open) => {
     countdown.pause();
     getReady.pause();
   } else {
-    countdown.resume();
+    // Only a running turn continues; a clock kept paused for Undo stays paused.
+    if (phase.value === 'play') countdown.resume();
     getReady.resume();
   }
 });
@@ -536,26 +558,58 @@ function startSingle() {
   phase.value = 'play';
   countdown.start(singleTimer(tile.value!.difficulty, single.value));
 }
+// Undo (single-word mode). Scores are only saved on "Continue", so a mistaken tap is reverted by
+// going back a phase, dropping the deltas that tap added and continuing the paused clock.
+/** The phase Undo returns to, or null when there is nothing to undo (e.g. time ran out). */
+const undoTo = ref<'play' | 'steal' | null>(null);
+/** How many entries at the end of `deltas` the last tap added. */
+const undoPop = ref(0);
+function undo() {
+  const to = undoTo.value;
+  if (!to) return;
+  deltas.value.splice(deltas.value.length - undoPop.value);
+  undoPop.value = 0;
+  bonus.value = 0;
+  giveUpTap.reset();
+  if (to === 'play') {
+    undoTo.value = null;
+    phase.value = 'play';
+    countdown.resume();
+  } else {
+    undoTo.value = 'play';
+    phase.value = 'steal';
+  }
+}
 function guessed() {
   cue('good');
   const score = scoreSingleSuccess(tileValue.value, countdown.elapsedSeconds(), single.value);
-  countdown.stop();
+  countdown.pause();
   bonus.value = score.bonus;
   deltas.value.push({ teamId: team.value!.id, points: score.total });
+  undoTo.value = 'play';
+  undoPop.value = 1;
   phase.value = 'result';
 }
 function giveUp() {
-  giveUpTap.tap(failSingle);
+  giveUpTap.tap(() => failSingle());
 }
-function failSingle() {
-  countdown.stop();
+function failSingle(timedOut = false) {
+  // Time that ran out cannot be given back, so only a deliberate give-up can be undone.
+  if (timedOut) countdown.stop();
+  else countdown.pause();
+  undoTo.value = timedOut ? null : 'play';
+  undoPop.value = 0;
   giveUpTap.reset();
   phase.value = stealer.value === null ? 'result' : 'steal';
 }
 function steal(right: boolean) {
   if (right && stealer.value !== null) {
     deltas.value.push({ teamId: stealer.value, points: stealValue.value });
+    undoPop.value = 1;
+  } else {
+    undoPop.value = 0;
   }
+  undoTo.value = 'steal';
   phase.value = 'result';
 }
 
@@ -566,7 +620,7 @@ function onTimeEnd() {
     if (multi.value.lastSecondBonus && word.value) phase.value = 'timeup';
     else endMulti();
   } else {
-    failSingle();
+    failSingle(true);
   }
 }
 

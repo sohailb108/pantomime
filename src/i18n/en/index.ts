@@ -153,6 +153,7 @@ export default {
     stealHint: 'One guess, out loud. The actor of the other team holds the phone (hold the card to check the word) and taps the result.',
     stealRight: 'Right guess',
     stealWrong: 'Wrong',
+    undo: 'Undo',
     resultTitle: 'Turn over',
     noPoints: 'No points this turn',
     wordWas: 'The word was: {word}',
