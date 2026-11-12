@@ -23,16 +23,30 @@
       </div>
 
       <div class="column q-gutter-y-sm">
-        <q-btn
-          v-if="canResume"
-          color="primary"
-          size="lg"
-          rounded
-          no-caps
-          icon="play_arrow"
-          :label="t('home.resume')"
-          to="/board"
-        />
+        <div v-if="canResume" class="row no-wrap resume-row">
+          <q-btn
+            class="col"
+            color="primary"
+            size="lg"
+            rounded
+            no-caps
+            no-wrap
+            icon="play_arrow"
+            :label="t('home.resume')"
+            to="/board"
+          />
+          <q-btn
+            class="col"
+            color="primary"
+            size="lg"
+            rounded
+            no-caps
+            no-wrap
+            icon="stop_circle"
+            :label="t('home.endGame')"
+            @click="endOpen = true"
+          />
+        </div>
         <q-btn
           :color="canResume ? undefined : 'primary'"
           :outline="canResume"
@@ -139,6 +153,27 @@
       </div>
     </div>
 
+    <q-dialog v-model="endOpen">
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="stop_circle" size="22px" /></div>
+          <div class="text-h6 text-weight-bold">{{ t('home.endTitle') }}</div>
+        </div>
+        <p class="q-mb-none">{{ t('home.endBody') }}</p>
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
+          <q-btn
+            v-close-popup
+            rounded
+            no-caps
+            color="primary"
+            :label="t('home.endConfirm')"
+            @click="game.abort()"
+          />
+        </div>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="iosOpen">
       <q-card flat class="dialog-card">
         <div class="dialog-head">
@@ -189,6 +224,7 @@ const dark = computed({
 });
 const iosHint = needsIosHint();
 const iosOpen = ref(false);
+const endOpen = ref(false);
 
 async function install() {
   if ((await promptInstall()) === 'unavailable') iosOpen.value = true;
@@ -213,6 +249,21 @@ const vibration = computed({
 <style scoped lang="scss">
 .home-col {
   max-width: 480px;
+}
+
+.resume-row {
+  gap: 8px;
+
+  // Two buttons share one row on a phone, so the text is a little smaller and never wraps.
+  :deep(.q-btn) {
+    min-width: 0;
+    font-size: 15px;
+    padding-inline: 10px;
+  }
+
+  :deep(.q-icon.on-left) {
+    margin-inline-end: 8px;
+  }
 }
 
 // The switcher is always left-to-right, so its end buttons keep their own rounded sides.

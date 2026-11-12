@@ -1,6 +1,7 @@
 import { useCustomStore } from '@/stores/custom';
 import { listBuiltinCategories, type CategoryInfo } from './builtinPacks';
-import { isComplete } from './customData';
+import { DIFFICULTIES } from '@/game/types';
+import { getPool } from './words';
 
 /** Built-in categories followed by the user's custom ones, with `custom` marking the latter. */
 export function listAllCategories(lang: string): (CategoryInfo & { custom: boolean })[] {
@@ -13,11 +14,12 @@ export function listAllCategories(lang: string): (CategoryInfo & { custom: boole
 }
 
 /**
- * Categories a game can use: built-in ones, plus custom ones that have a word at every difficulty
- * (otherwise one of their tiles would have nothing to draw).
+ * Categories a game can use: those with a word to draw at every difficulty (otherwise one of their
+ * tiles would have nothing to draw). A new custom category stays out until it has enough words, and
+ * a built-in one stays out if all of a difficulty's words were hidden (for example by an import).
  */
 export function listCategories(lang: string): CategoryInfo[] {
-  const custom = useCustomStore().of(lang);
-  const complete = new Set(custom.categories.filter(isComplete).map((c) => c.id));
-  return listAllCategories(lang).filter((c) => !c.custom || complete.has(c.id));
+  return listAllCategories(lang).filter((c) =>
+    DIFFICULTIES.every((d) => getPool(lang, c.id, d).length > 0),
+  );
 }

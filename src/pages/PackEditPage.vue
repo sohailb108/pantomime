@@ -40,6 +40,11 @@
         <div>{{ t('packs.incompleteHint') }}</div>
       </div>
 
+      <div v-if="builtinEmpty" class="hint-card q-mb-md">
+        <q-icon name="info" color="warning" size="24px" />
+        <div>{{ t('packs.emptyBuiltinHint') }}</div>
+      </div>
+
       <template v-if="isGold">
         <WordList
           :title="t('packs.gold')"
@@ -63,7 +68,7 @@
           :hidden="custom.hiddenOf(lang, id, d)"
           @unhide="(w) => custom.unhideWord(lang, id, d, w)"
           :on-add="(w) => custom.addWord(lang, id, d, w)"
-          @remove="(w) => custom.removeWord(lang, id, d, w)"
+          @remove="(w) => removeWord(d, w)"
         />
       </template>
     </div>
@@ -131,10 +136,10 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import WordList from '@/components/WordList.vue';
-import { DIFFICULTIES } from '@/game/types';
+import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { listAllCategories } from '@/services/packs';
-import { builtinGoldWords, builtinWords } from '@/services/words';
+import { builtinGoldWords, builtinWords, getPool } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
@@ -154,6 +159,13 @@ const info = computed(() => listAllCategories(lang.value).find((c) => c.id === i
 const ready = computed(() => isGold.value || !!info.value);
 const customCategory = computed(() => custom.findCategory(lang.value, id.value));
 const complete = computed(() => !!customCategory.value && isComplete(customCategory.value));
+// A built-in category with a level whose words are all hidden is left out of new games.
+const builtinEmpty = computed(
+  () =>
+    !isGold.value &&
+    !customCategory.value &&
+    DIFFICULTIES.some((d) => getPool(lang.value, id.value, d).length === 0),
+);
 const title = computed(() => (isGold.value ? t('packs.gold') : (info.value?.name ?? '')));
 const builtinGoldCount = computed(() => builtinGoldWords(lang.value).length);
 
@@ -173,6 +185,15 @@ const inActiveGame = computed(
     game.lang === lang.value &&
     game.state.tiles.some((tile) => tile.categoryId === id.value),
 );
+
+/** Removing a word can empty a pool that the running game's tiles use, so it waits until the game ends. */
+function removeWord(difficulty: Difficulty, word: string) {
+  if (customCategory.value && inActiveGame.value) {
+    $q.notify({ message: t('packs.editInGame'), type: 'warning', timeout: 4000 });
+    return;
+  }
+  custom.removeWord(lang.value, id.value, difficulty, word);
+}
 
 function openEdit() {
   editName.value = title.value;

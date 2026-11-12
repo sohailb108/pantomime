@@ -117,6 +117,12 @@ export const useGameStore = defineStore('game', () => {
     if (state.value) state.value = resolveGoldAttempt(state.value, success);
   }
 
+  /** Discards the running game (and its saved copy). */
+  function abort() {
+    state.value = null;
+    pickedTile.value = null;
+  }
+
   function declineGold() {
     if (state.value) state.value = declineGoldAttempt(state.value);
   }
@@ -134,5 +140,6 @@ export const useGameStore = defineStore('game', () => {
     finish,
     finishGold,
     declineGold,
+    abort,
   };
 });

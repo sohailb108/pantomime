@@ -71,7 +71,7 @@
           color="primary"
           icon="upload"
           :label="t('packs.import')"
-          @click="fileInput?.click()"
+          @click="openImport"
         />
         <input
           ref="fileInput"
@@ -134,10 +134,12 @@ import { isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { formatNumber } from '@/services/format';
 import { listAllCategories } from '@/services/packs';
 import { useCustomStore } from '@/stores/custom';
+import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 const $q = useQuasar();
+const game = useGameStore();
 const router = useRouter();
 const settings = useSettingsStore();
 const custom = useCustomStore();
@@ -166,7 +168,10 @@ function openNew() {
 }
 function create() {
   const result = custom.addCategory(lang.value, newName.value);
-  if (result === null) return;
+  if (result === null) {
+    $q.notify({ message: t('packs.createFailed'), type: 'negative', timeout: 4000 });
+    return;
+  }
   newOpen.value = false;
   if (result.existing) $q.notify({ message: t('packs.alreadyExists'), timeout: 3000 });
   void router.push(`/packs/${result.id}`);
@@ -194,12 +199,28 @@ function doExport() {
   say(t('packs.exported'), true);
 }
 
+function openImport() {
+  // Importing can merge or remove categories that a running game still uses.
+  if (game.state !== null && game.state.status !== 'finished' && game.lang === lang.value) {
+    $q.notify({ message: t('packs.importInGame'), type: 'warning', timeout: 4000 });
+    return;
+  }
+  fileInput.value?.click();
+}
+
 async function doImport(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
   input.value = '';
   if (!file) return;
-  const result = custom.importJson(lang.value, await file.text());
+  let content: string;
+  try {
+    content = await file.text();
+  } catch {
+    say(t('packs.readFailed'), false);
+    return;
+  }
+  const result = custom.importJson(lang.value, content);
   if (result.ok) {
     let text = t('packs.imported', { n: fmt(result.added) }, result.added);
     if (result.merged > 0) {

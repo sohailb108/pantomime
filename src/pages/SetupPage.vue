@@ -457,16 +457,18 @@ const canAdvance = computed(() => {
 });
 
 // Skip limit: null means unlimited. Remember the last number while the switch is on.
+const DEFAULT_SKIP = 3;
+const lastSkipLimit = ref(setup.settings.multi.skipLimit ?? DEFAULT_SKIP);
 const skipUnlimited = computed({
   get: () => setup.settings.multi.skipLimit === null,
   set: (v: boolean) => {
-    setup.settings.multi.skipLimit = v ? null : DEFAULT_SKIP;
+    setup.settings.multi.skipLimit = v ? null : lastSkipLimit.value;
   },
 });
-const DEFAULT_SKIP = 3;
 const skipLimitValue = computed({
-  get: () => setup.settings.multi.skipLimit ?? DEFAULT_SKIP,
+  get: () => setup.settings.multi.skipLimit ?? lastSkipLimit.value,
   set: (v: number) => {
+    lastSkipLimit.value = v;
     setup.settings.multi.skipLimit = v;
   },
 });

@@ -44,8 +44,6 @@ export function getPool(lang: string, categoryId: string, difficulty: Difficulty
   ];
 }
 
-const distinct = (words: string[]) => new Set(words.map((w) => w.toLowerCase())).size;
-
 /** What hiding a word changed, so it can be undone. */
 export interface HideResult {
   builtin: boolean;
@@ -54,15 +52,15 @@ export interface HideResult {
 
 /**
  * Takes a word out of the game: a built-in word is hidden, a custom word is removed.
- * Returns null when it is the last word of its pool, which is never taken out.
+ * The last word of a pool can be taken out too. Setup then no longer offers that category (see
+ * `listCategories`) until a word is put back.
  */
 export function hidePoolWord(
   lang: string,
   categoryId: string,
   difficulty: Difficulty,
   word: string,
-): HideResult | null {
-  if (distinct(getPool(lang, categoryId, difficulty)) <= 1) return null;
+): HideResult {
   const custom = useCustomStore();
   const result = {
     builtin: hasWord(builtinWords(lang, categoryId, difficulty), word),

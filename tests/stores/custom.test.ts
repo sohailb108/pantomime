@@ -4,7 +4,7 @@ import { nextTick } from 'vue';
 import { useCustomStore } from '@/stores/custom';
 import { saveJson } from '@/services/storage';
 import { listCategories } from '@/services/packs';
-import { getGoldPool, getPool, hidePoolWord, restorePoolWord } from '@/services/words';
+import { builtinWords, getGoldPool, getPool, hidePoolWord, restorePoolWord } from '@/services/words';
 
 function memoryStorage() {
   const data = new Map<string, string>();
@@ -56,6 +56,15 @@ describe('custom store', () => {
     expect(listCategories('en').some((c) => c.id === id)).toBe(false);
   });
 
+  it('does not offer a built-in category whose words are all hidden', () => {
+    const s = fresh();
+    expect(listCategories('en').some((c) => c.id === 'animals')).toBe(true);
+    // A crafted import can hide every word of a pool, which the UI itself refuses to do.
+    for (const w of builtinWords('en', 'animals', 1)) s.hideWord('en', 'animals', 1, w);
+    expect(getPool('en', 'animals', 1)).toEqual([]);
+    expect(listCategories('en').some((c) => c.id === 'animals')).toBe(false);
+  });
+
   it('imports into the right language only', () => {
     const a = fresh();
     a.addGold('en', 'numbat');
@@ -84,18 +93,17 @@ describe('hiding built-in words', () => {
     expect(getPool('en', 'food', 1)).toContain(word);
   });
 
-  it('never hides the last word', () => {
+  it('can hide the last word, which takes the category out of new games', () => {
     fresh();
-    const pool = getPool('en', 'food', 1);
-    for (const w of pool.slice(0, -1)) expect(hidePoolWord('en', 'food', 1, w)).not.toBeNull();
-    expect(hidePoolWord('en', 'food', 1, pool.at(-1)!)).toBeNull();
-    expect(getPool('en', 'food', 1)).toHaveLength(1);
+    for (const w of getPool('en', 'food', 1)) hidePoolWord('en', 'food', 1, w);
+    expect(getPool('en', 'food', 1)).toHaveLength(0);
+    expect(listCategories('en').some((c) => c.id === 'food')).toBe(false);
   });
 
   it('removes a custom word when hiding it, and restores it', () => {
     const s = fresh();
     s.addWord('en', 'food', 1, 'zzcustom');
-    const was = hidePoolWord('en', 'food', 1, 'zzcustom')!;
+    const was = hidePoolWord('en', 'food', 1, 'zzcustom');
     expect(was).toEqual({ builtin: false, custom: true });
     expect(getPool('en', 'food', 1)).not.toContain('zzcustom');
     restorePoolWord('en', 'food', 1, 'zzcustom', was);

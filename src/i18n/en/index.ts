@@ -3,7 +3,11 @@ export default {
   tagline: 'The party game of acting out words',
   home: {
     newGame: 'New game',
-    resume: 'Resume game',
+    resume: 'Resume',
+    endGame: 'End game',
+    endTitle: 'End this game?',
+    endBody: 'The game and its scores will be discarded. This cannot be undone.',
+    endConfirm: 'End game',
     packs: 'Categories and words',
     help: 'Help',
     settings: 'Settings',
@@ -176,7 +180,10 @@ export default {
     showWord: 'Show {word}',
     show: 'Show',
     showConfirm: 'Put "{word}" back in the game?',
-    lastWord: 'The last word of a list cannot be hidden.',
+    emptiedHint:
+      'That was the last word of this list. This category will not be offered in new games until you show a word again (Categories and words).',
+    emptyBuiltinHint:
+      'All words of one level are hidden, so this category is not offered in new games. Show a word again to use it.',
     customCount: '{n} of your words',
     noCustomWords: 'No words of your own yet.',
     addWord: 'Add a word',
@@ -192,7 +199,9 @@ export default {
     edit: 'Edit category',
     deleteCategory: 'Delete category',
     deleteConfirm: 'Delete the category "{name}" and all its words?',
-    deleteInGame: 'This category is used by the game in progress. Finish or quit the game first.',
+    deleteInGame: 'This category is used by the game in progress. End the game from the home page first.',
+    editInGame: 'A game is in progress. End the game from the home page before changing these words.',
+    importInGame: 'A game is in progress. End the game from the home page before importing.',
     incomplete: 'Needs at least one word at every difficulty to be used in a game',
     incompleteHint:
       'Add at least one easy, one medium and one hard word to use this category in a game.',
@@ -204,6 +213,8 @@ export default {
       '{n} category was merged into a built-in one. | {n} categories were merged into built-in ones.',
     alreadyExists: 'This category already exists. Add your words here.',
     nameTaken: 'A category with this name already exists.',
+    createFailed: 'Could not create the category. Use a name of 1 to 30 characters. You can have at most 100 categories.',
+    readFailed: 'Could not read this file.',
     err: {
       invalid: 'Enter a word of 1 to 80 characters.',
       duplicate: 'This word is already in the list.',
@@ -447,8 +458,8 @@ export default {
         title: 'About',
         items: [
           {
-            t: 'Pantomime',
-            b: 'Version {version}. A free party game with no tracking and no accounts.',
+            t: 'Pantomime - version {version}',
+            b: 'A free party game with no tracking and no accounts.',
           },
         ],
       },

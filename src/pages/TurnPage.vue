@@ -294,8 +294,8 @@
           <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1 wrap-anywhere">
             {{ t('turn.wordWas', { word }) }}
           </div>
-          <div v-if="lastWordMsg" class="q-px-md q-py-sm text-caption text-negative">
-            {{ t('packs.lastWord') }}
+          <div v-if="emptiedMsg" class="q-px-md q-py-sm text-caption text-warning">
+            {{ t('packs.emptiedHint') }}
           </div>
           <div v-if="noWords" class="q-pa-md text-grey-7">{{ t('turn.noMoreWords') }}</div>
         </q-card>
@@ -338,7 +338,7 @@ import type { ScoreDelta } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
 import { listAllCategories } from '@/services/packs';
 import { longWordClass } from '@/config/limits';
-import { hidePoolWord, restorePoolWord, type HideResult } from '@/services/words';
+import { getPool, hidePoolWord, restorePoolWord, type HideResult } from '@/services/words';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -379,7 +379,8 @@ const word = ref<string | null>(null);
 const shown = ref<string[]>([]);
 /** Words hidden from the result screen, with what hiding changed so it can be undone. */
 const hiddenNow = ref<Record<string, HideResult | undefined>>({});
-const lastWordMsg = ref(false);
+/** Shown when hiding emptied the word list, so the category is left out of new games. */
+const emptiedMsg = ref(false);
 const deltas = ref<ScoreDelta[]>([]);
 const tally = ref({ correct: 0, skips: 0 });
 const rerolled = ref(false);
@@ -492,7 +493,8 @@ const stealer = computed(() => stealTeam(team.value!.id, state.value!.teams.leng
 const stealerName = computed(() => (stealer.value === null ? '' : nameOf(stealer.value)));
 
 function reroll() {
-  if (rerolled.value || !draw()) return;
+  // Check first: `draw()` clears the current word when the deck is empty.
+  if (rerolled.value || deck.value.length === 0 || !draw()) return;
   rerolled.value = true;
   deltas.value.push(...rerollDelta(team.value!.id, single.value));
 }
@@ -570,12 +572,12 @@ function toggleHide(w: string) {
   if (was) {
     restorePoolWord(game.lang, t.categoryId, t.difficulty, w, was);
     hiddenNow.value[w] = undefined;
-    lastWordMsg.value = false;
+    emptiedMsg.value = false;
     return;
   }
   const result = hidePoolWord(game.lang, t.categoryId, t.difficulty, w);
-  lastWordMsg.value = result === null;
-  if (result) hiddenNow.value[w] = result;
+  hiddenNow.value[w] = result;
+  emptiedMsg.value = getPool(game.lang, t.categoryId, t.difficulty).length === 0;
 }
 
 function finish() {

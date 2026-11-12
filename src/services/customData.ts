@@ -61,7 +61,10 @@ export function absorbBuiltinDuplicates(
     const builtin = builtins.find((b) => same(b.name, c.name));
     if (!builtin) return true;
     const to = (data.extra[builtin.id] ??= emptyWords());
-    for (const d of DIFFICULTIES) for (const w of c.words[d]) addToList(to[d], w);
+    for (const d of DIFFICULTIES) {
+      const add = listAdder(to[d]);
+      for (const w of c.words[d]) add(w);
+    }
     data.extraNames[builtin.id] ??= c.name;
     merged++;
     return false;
@@ -92,7 +95,10 @@ export function restoreOrphanedExtras(
         data.categories.push(target);
         restored++;
       }
-      for (const d of DIFFICULTIES) for (const w of words[d]) addToList(target.words[d], w);
+      for (const d of DIFFICULTIES) {
+        const add = listAdder(target.words[d]);
+        for (const w of words[d]) add(w);
+      }
     }
     delete data.extra[id];
     delete data.extraNames[id];
@@ -144,6 +150,24 @@ export function addToList(list: string[], raw: string): AddResult {
   return 'ok';
 }
 
+/**
+ * Like `addToList` for many words into one list: remembers the lowercased words in a Set, so each
+ * add is O(1) instead of a scan of the whole list. Use it for imports and merges.
+ */
+export function listAdder(list: string[]): (raw: string) => AddResult {
+  const seen = new Set(list.map((w) => w.toLowerCase()));
+  return (raw) => {
+    const word = normalizeWord(raw);
+    if (word === null) return 'invalid';
+    const key = word.toLowerCase();
+    if (seen.has(key)) return 'duplicate';
+    if (list.length >= MAX_WORDS_PER_LIST) return 'full';
+    seen.add(key);
+    list.push(word);
+    return 'ok';
+  };
+}
+
 /** Whether a custom category has a word at every difficulty. */
 export function isComplete(category: CustomCategory): boolean {
   return DIFFICULTIES.every((d) => category.words[d].length > 0);
@@ -180,8 +204,9 @@ function cleanList(value: unknown): string[] | null {
   if (!Array.isArray(value)) return null;
   if (value.length > MAX_WORDS_PER_LIST) return null;
   const out: string[] = [];
+  const add = listAdder(out);
   for (const item of value) {
-    if (typeof item === 'string') addToList(out, item);
+    if (typeof item === 'string') add(item);
   }
   return out;
 }
@@ -268,7 +293,8 @@ export function parseImport(text: string): ParsedImport {
 export function mergeInto(target: CustomLang, incoming: CustomLang): number {
   let added = 0;
   const mergeList = (to: string[], from: string[]) => {
-    for (const w of from) if (addToList(to, w) === 'ok') added++;
+    const add = listAdder(to);
+    for (const w of from) if (add(w) === 'ok') added++;
   };
   const mergeWords = (to: WordsByDifficulty, from: WordsByDifficulty) => {
     for (const d of DIFFICULTIES) mergeList(to[d], from[d]);
@@ -292,8 +318,12 @@ export function mergeInto(target: CustomLang, incoming: CustomLang): number {
   // Hidden lists only grow with an import. They do not count as added words.
   for (const [id, words] of Object.entries(incoming.hidden)) {
     const to = (target.hidden[id] ??= emptyWords());
-    for (const d of DIFFICULTIES) for (const w of words[d]) addToList(to[d], w);
+    for (const d of DIFFICULTIES) {
+      const add = listAdder(to[d]);
+      for (const w of words[d]) add(w);
+    }
   }
-  for (const w of incoming.hiddenGold) addToList(target.hiddenGold, w);
+  const addHiddenGold = listAdder(target.hiddenGold);
+  for (const w of incoming.hiddenGold) addHiddenGold(w);
   return added;
 }
