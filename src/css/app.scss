@@ -11,6 +11,19 @@ body,
   font-family: var(--app-font);
 }
 
+// A quick second tap on a control counts as a tap, not a double-tap, so iOS does not zoom the page.
+// Scrolling and pinch zoom still work.
+button,
+a,
+label,
+[role='button'],
+.q-btn,
+.q-item,
+.q-toggle,
+.q-tab {
+  touch-action: manipulation;
+}
+
 // Direction-sensitive icons flip automatically in RTL.
 [dir='rtl'] .flip-rtl {
   transform: scaleX(-1);
