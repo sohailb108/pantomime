@@ -1,9 +1,23 @@
 <template>
   <q-page class="q-pa-md setup-page">
     <div class="row items-center q-mb-sm">
-      <q-btn flat round icon="close" :aria-label="t('setup.close')" to="/" />
+      <q-btn flat round icon="close" :aria-label="t('setup.exit')" to="/" />
       <div class="text-h5 text-weight-bold q-mx-sm">{{ t('setup.title') }}</div>
     </div>
+
+    <q-dialog v-model="leave.open.value">
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="logout" size="22px" /></div>
+          <div class="text-h6 text-weight-bold">{{ t('setup.discardTitle') }}</div>
+        </div>
+        <p class="q-mb-none">{{ t('setup.discardBody') }}</p>
+        <div class="dialog-actions">
+          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.keepEditing')" />
+          <q-btn rounded no-caps color="primary" :label="t('setup.discard')" @click="discard" />
+        </div>
+      </q-card>
+    </q-dialog>
 
     <q-stepper v-model="step" flat animated alternative-labels class="setup-stepper">
       <q-step name="mode" :title="t('setup.steps.mode')" icon="tune" :done="stepIndex > 0">
@@ -390,6 +404,7 @@ import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import NumberStepper from '@/components/NumberStepper.vue';
+import { useLeaveGuard } from '@/composables/leaveGuard';
 import { TEAM_COLORS, teamHex } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS } from '@/game/board';
 import { canSteal } from '@/game/scoring';
@@ -505,10 +520,21 @@ const skipLimitValue = computed({
   },
 });
 
+/** Teams and categories as the page first shows them. Mode and settings are remembered anyway. */
+const choices = () => JSON.stringify([setup.teamColors, [...setup.categoryIds].sort()]);
+let initialChoices = '';
+// Leaving with changed teams or categories asks first (the X button and the browser's back).
+const leave = useLeaveGuard(() => initialChoices !== '' && choices() !== initialChoices);
+function discard() {
+  leave.allow();
+  void router.push('/');
+}
+
 onMounted(() => {
   setup.reset();
   // All categories start selected; players remove the ones they do not want.
   setup.categoryIds = categories.value.map((c) => c.id);
+  initialChoices = choices();
 });
 
 // Selected categories must exist in the current language's pack.
@@ -525,6 +551,7 @@ function start() {
     settings: JSON.parse(JSON.stringify(setup.settings)) as Settings,
     lang: settings.language,
   });
+  leave.allow();
   void router.push('/board');
 }
 </script>
