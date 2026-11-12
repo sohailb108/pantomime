@@ -111,7 +111,7 @@
             <q-item-section>{{ t('settings.sound') }}</q-item-section>
             <q-item-section side><q-toggle v-model="sound" /></q-item-section>
           </q-item>
-          <q-item tag="label" v-ripple>
+          <q-item v-if="vibrationSupported" tag="label" v-ripple>
             <q-item-section avatar>
               <div class="item-icon"><q-icon name="vibration" color="white" size="20px" /></div>
             </q-item-section>
@@ -158,6 +158,7 @@ import AppLogo from '@/components/AppLogo.vue';
 import { PALETTES } from '@/config/palettes';
 import { languages } from '@/i18n/languages';
 import { installAvailable, needsIosHint, promptInstall } from '@/services/install';
+import { vibrationSupported } from '@/services/feedback';
 import { shareApp } from '@/services/share';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';

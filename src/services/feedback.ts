@@ -34,6 +34,23 @@ function audio(): AudioContext | undefined {
   }
 }
 
+/** True when the browser can vibrate. iOS browsers cannot. */
+export const vibrationSupported = typeof navigator !== 'undefined' && 'vibrate' in navigator;
+
+/**
+ * Creates and resumes the audio context on the first tap, click or key press. Browsers with strict
+ * autoplay rules (iOS) only allow that inside a user gesture, and the first cues of a game come
+ * from timers, not taps. Stops listening once the context is running.
+ */
+export function unlockAudioOnGesture(): void {
+  const events = ['touchend', 'click', 'keydown'] as const;
+  const unlock = () => {
+    const c = audio();
+    if (c?.state === 'running') events.forEach((e) => document.removeEventListener(e, unlock, true));
+  };
+  events.forEach((e) => document.addEventListener(e, unlock, true));
+}
+
 /** Plays a short synthesized cue and vibrates, each only if enabled and supported. Never throws. */
 export function cue(name: Cue): void {
   try {
