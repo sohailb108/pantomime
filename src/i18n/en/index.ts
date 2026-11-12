@@ -51,6 +51,8 @@ export default {
     close: 'Cancel',
     steps: { mode: 'Teams and mode', categories: 'Categories' },
     teamsTitle: 'Teams',
+    customTag: 'Custom',
+    wordCount: '{n} word | {n} words',
     next: 'Next',
     back: 'Back',
     start: 'Start game',

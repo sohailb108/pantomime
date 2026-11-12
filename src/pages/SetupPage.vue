@@ -348,6 +348,12 @@
                 size="sm"
               />
               <div class="text-subtitle1 text-weight-bold">{{ c.name }}</div>
+              <div class="cat-meta text-caption">
+                <span v-if="c.custom" class="custom-tag">
+                  <q-icon name="edit_note" size="14px" />{{ t('setup.customTag') }}
+                </span>
+                <span>{{ t('setup.wordCount', { n: fmt(c.words) }, c.words) }}</span>
+              </div>
             </q-card>
           </div>
         </div>
@@ -388,7 +394,7 @@ import { TEAM_COLORS, teamHex } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS } from '@/game/board';
 import { canSteal } from '@/game/scoring';
 import { DIFFICULTIES, type Settings } from '@/game/types';
-import { listCategories } from '@/services/packs';
+import { categoryWordCount, listCategories } from '@/services/packs';
 import { formatNumber } from '@/services/format';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
@@ -442,7 +448,12 @@ const modes = [
 ] as const;
 const stealAllowed = computed(() => canSteal(setup.teamCount));
 const stepIndex = computed(() => steps.indexOf(step.value));
-const categories = computed(() => listCategories(settings.language));
+const categories = computed(() =>
+  listCategories(settings.language).map((c) => ({
+    ...c,
+    words: categoryWordCount(settings.language, c.id),
+  })),
+);
 
 const fmt = (n: number) => formatNumber(n, settings.language);
 const allSelected = computed(
@@ -642,11 +653,31 @@ function start() {
   height: 100%;
   min-height: 72px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 16px;
   background: rgba(128, 128, 128, 0.1);
   border: 2px solid transparent;
+
+  .cat-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px 8px;
+    opacity: 0.75;
+  }
+
+  .custom-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 6px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    font-weight: 600;
+  }
 
   &.selected {
     border-color: var(--q-primary);

@@ -51,6 +51,8 @@ export default {
     close: 'انصراف',
     steps: { mode: 'تیم‌ها و حالت', categories: 'دسته‌بندی‌ها' },
     teamsTitle: 'تیم‌ها',
+    customTag: 'شخصی',
+    wordCount: '{n} کلمه | {n} کلمه',
     next: 'بعدی',
     back: 'قبلی',
     start: 'شروع بازی',
