@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 import type { Difficulty } from '@/game/types';
+import { listBuiltinCategories } from '@/services/packs';
 import {
+  absorbBuiltinDuplicates,
   addToList,
   buildExport,
   emptyLang,
@@ -31,7 +33,13 @@ function newId(): string {
 export const useCustomStore = defineStore('custom', () => {
   const saved = loadJson<Record<string, Partial<CustomLang>>>(KEY) ?? {};
   const data = ref<CustomData>(
-    Object.fromEntries(Object.entries(saved).map(([lang, d]) => [lang, normalizeLang(d)])),
+    Object.fromEntries(
+      Object.entries(saved).map(([lang, d]) => {
+        const normalized = normalizeLang(d);
+        absorbBuiltinDuplicates(normalized, listBuiltinCategories(lang));
+        return [lang, normalized];
+      }),
+    ),
   );
   watch(data, () => saveJson(KEY, data.value), { deep: true });
 

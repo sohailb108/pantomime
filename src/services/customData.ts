@@ -42,6 +42,27 @@ export function normalizeLang(data: Partial<CustomLang>): CustomLang {
   return lang;
 }
 
+/**
+ * Moves the words of custom categories that share a name with a built-in category into that
+ * built-in category's extra words, and removes the custom category. Needed when a built-in
+ * category is added that the user had already created themselves. Returns whether anything moved.
+ */
+export function absorbBuiltinDuplicates(
+  data: CustomLang,
+  builtins: readonly { id: string; name: string }[],
+): boolean {
+  let changed = false;
+  data.categories = data.categories.filter((c) => {
+    const builtin = builtins.find((b) => same(b.name, c.name));
+    if (!builtin) return true;
+    const to = (data.extra[builtin.id] ??= emptyWords());
+    for (const d of DIFFICULTIES) for (const w of c.words[d]) addToList(to[d], w);
+    changed = true;
+    return false;
+  });
+  return changed;
+}
+
 /** Case-insensitive membership test. */
 export function hasWord(list: readonly string[], word: string): boolean {
   return list.some((w) => same(w, word));
