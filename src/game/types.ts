@@ -30,6 +30,8 @@ export interface GoldSettings {
   enabled: boolean;
   bonus: number;
   penalty: number;
+  /** Length of a gold attempt in seconds. */
+  timerSeconds: number;
 }
 
 export interface Settings {

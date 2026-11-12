@@ -22,5 +22,6 @@ export function helpValues(code: string): Record<string, string> {
     fastBonus: f(d.single.fastGuessBonus),
     goldBonus: f(d.gold.bonus),
     goldPenalty: f(d.gold.penalty),
+    goldSeconds: f(d.gold.timerSeconds),
   };
 }

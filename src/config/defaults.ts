@@ -20,5 +20,6 @@ export const DEFAULT_GAME_SETTINGS: Settings = {
     enabled: true,
     bonus: 20,
     penalty: 20,
+    timerSeconds: 90,
   },
 };

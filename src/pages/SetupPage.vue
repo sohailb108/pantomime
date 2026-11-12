@@ -303,6 +303,17 @@
                         <NumberStepper v-model="setup.settings.gold.penalty" :max="100" :step="5" />
                       </q-item-section>
                     </q-item>
+                    <q-item>
+                      <q-item-section>{{ t('setup.goldTimer') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper
+                          v-model="setup.settings.gold.timerSeconds"
+                          :min="10"
+                          :max="300"
+                          :step="5"
+                        />
+                      </q-item-section>
+                    </q-item>
                   </template>
                 </q-list>
               </div>

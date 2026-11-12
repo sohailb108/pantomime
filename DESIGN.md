@@ -330,5 +330,3 @@ Setup rule (decided): a game needs at least `ceil(teams / 3)` categories, otherw
 - "My words", as a tile, with difficult bonus
 - Success rates for the words
 - Encrypt word lists
-- Navigations buttons (Back, Exit, Home, ...) everywhere. Specially for poor iOs users!
-- In game settings, the +/- buttons for number inputs is not convenient. Tapping fast multiple times zooms the screen in some browsers (in iOS, both Safari and Chrome).

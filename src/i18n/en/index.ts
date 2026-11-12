@@ -41,6 +41,8 @@ export default {
     vibration: 'Vibration',
   },
   setup: {
+    decrease: 'Decrease',
+    increase: 'Increase',
     title: 'New game',
     close: 'Cancel',
     steps: { teams: 'Teams', categories: 'Categories', mode: 'Mode' },
@@ -79,6 +81,7 @@ export default {
     goldEnabled: 'Gold round (last chance)',
     goldBonus: 'Gold bonus',
     goldPenalty: 'Gold failure penalty',
+    goldTimer: 'Gold attempt time (seconds)',
     gameSettings: 'Game settings',
     resetDefaults: 'Reset to defaults',
     done: 'Done',
@@ -332,7 +335,7 @@ export default {
           },
           {
             t: 'Gold bonus / Gold failure penalty',
-            b: 'Points a team gains for a correct gold word (default {goldBonus}) and loses for a failure (default {goldPenalty}, 0 for none).',
+            b: 'Points a team gains for a correct gold word (default {goldBonus}) and loses for a failure (default {goldPenalty}, 0 for none). The attempt lasts {goldSeconds} seconds by default.',
           },
           { g: 'App settings' },
           {

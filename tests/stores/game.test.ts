@@ -61,6 +61,16 @@ describe('game store persistence', () => {
     expect(freshStore().state?.settings.points).toEqual({ 1: 2, 2: 4, 3: 6 });
   });
 
+  it('fills in the gold timer for a game saved before it was configurable', async () => {
+    const a = freshStore();
+    a.start(options);
+    await nextTick();
+    const saved = JSON.parse(localStorage.getItem('pantomime:game')!);
+    delete saved.data.state.settings.gold.timerSeconds;
+    localStorage.setItem('pantomime:game', JSON.stringify(saved));
+    expect(freshStore().state?.settings.gold.timerSeconds).toBe(90);
+  });
+
   it('gives colors to teams of a game saved with names', async () => {
     const a = freshStore();
     a.start(options);

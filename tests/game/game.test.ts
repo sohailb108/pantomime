@@ -195,7 +195,7 @@ describe('gold round', () => {
   it('uses the configured bonus and penalty', () => {
     const settings: Settings = {
       ...DEFAULT_GAME_SETTINGS,
-      gold: { enabled: true, bonus: 7, penalty: 0 },
+      gold: { enabled: true, bonus: 7, penalty: 0, timerSeconds: 90 },
     };
     const g = playAll(newGame({ settings }), (t) => (t === 0 ? 2 : 1));
     expect(resolveGoldAttempt(g, false).teams[1]!.score).toBe(g.teams[1]!.score);

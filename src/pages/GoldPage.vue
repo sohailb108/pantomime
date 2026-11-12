@@ -166,7 +166,6 @@ import { useWakeLock } from '@/composables/wakelock';
 import { cue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
 import { longWordClass } from '@/config/limits';
-import { singleTimer } from '@/game/scoring';
 import { formatNumber, formatSigned } from '@/services/format';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
@@ -245,7 +244,7 @@ function decline() {
 }
 function startPlay() {
   phase.value = 'play';
-  countdown.start(singleTimer(3, state.value!.settings.single));
+  countdown.start(gold.value.timerSeconds);
 }
 function giveUp() {
   if (!confirmGiveUp.value) {
