@@ -304,7 +304,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
 import PeekWord from '@/components/PeekWord.vue';
@@ -379,7 +379,12 @@ const countdown = useCountdown(onTimeEnd);
 useWakeLock();
 
 // Once the word is shown, leaving would throw the turn away, so it is confirmed first.
-const leave = useLeaveGuard(() => phase.value !== 'handoff');
+const leave = useLeaveGuard(() => phase.value !== 'handoff' && phase.value !== 'result');
+// The turn is already decided on the result screen: leaving it any way (home, back button) still
+// scores it, so the tile is not left unplayed.
+onBeforeRouteLeave(() => {
+  if (phase.value === 'result') game.finish(deltas.value);
+});
 watch(leave.open, (open) => (open ? countdown.pause() : countdown.resume()));
 
 // Tick during the last seconds of a running timer.
