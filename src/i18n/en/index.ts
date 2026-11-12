@@ -146,6 +146,8 @@ export default {
     intro: 'Last chance! {team} gets one very hard word.',
     rules: 'Success: {bonus} and the game ends. Failure: {penalty}.',
     decline: 'Keep my points (skip)',
+    noWords:
+      'There are no gold words left to play. They were all hidden in the words list. You can keep your points.',
     attempt: '{team}: gold word',
     successTitle: 'Gold! {team} wins {n} points',
     failTitle: '{team} missed the gold word',

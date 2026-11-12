@@ -21,6 +21,7 @@
           })
         }}
       </div>
+      <div v-if="noGoldWords" class="rules-card text-grey-8">{{ t('gold.noWords') }}</div>
       <div class="row no-wrap full-width gold-actions">
         <q-btn
           class="col"
@@ -28,6 +29,7 @@
           size="lg"
           rounded
           no-caps
+          :disable="noGoldWords"
           :label="t('turn.showWord')"
           @click="showWord"
         />
@@ -173,6 +175,8 @@ const fmt = (n: number) => formatNumber(n, settings.language);
 
 const phase = ref<Phase>('intro');
 const deck = ref<string[]>([]);
+/** The gold pool is empty (every gold word was hidden), so there is nothing to attempt. */
+const noGoldWords = ref(false);
 const word = ref<string | null>(null);
 const success = ref(false);
 const confirmGiveUp = ref(false);
@@ -198,12 +202,18 @@ onMounted(() => {
     return;
   }
   deck.value = game.goldDeck();
+  noGoldWords.value = deck.value.length === 0;
 });
 onBeforeUnmount(() => clearTimeout(confirmTimer));
 
 function showWord() {
-  word.value = deck.value.shift() ?? '';
-  if (word.value) game.markGoldSeen(word.value);
+  const next = deck.value.shift();
+  if (next === undefined) {
+    noGoldWords.value = true;
+    return;
+  }
+  word.value = next;
+  game.markGoldSeen(next);
   phase.value = 'prep';
 }
 /** The team keeps its points and skips the attempt. */
