@@ -124,6 +124,16 @@
           {{ fmt(tally.correct) }} ✓ ·
           {{ skipsText }}
         </div>
+        <q-btn
+          v-if="phase === 'play' && history.length > 0"
+          class="self-center"
+          outline
+          rounded
+          no-caps
+          color="primary"
+          :label="t('turn.undoLast')"
+          @click="undoLast"
+        />
         <div class="row no-wrap action-bar">
           <div class="col">
             <q-btn
@@ -157,7 +167,7 @@
               rounded
               no-caps
               :label="t('turn.done')"
-              @click="endMulti"
+              @click="done"
             />
           </div>
         </div>
@@ -285,7 +295,7 @@
           <div v-if="shown.length > 0" class="q-pa-md q-pb-none text-subtitle2 text-grey-7">
             {{ t('turn.wordsShown') }}
           </div>
-          <q-list v-if="shown.length > 0" separator>
+          <q-list v-if="shown.length > 0" class="words-list" separator>
             <q-item v-for="w in shown" :key="w">
               <q-item-section class="text-subtitle1 wrap-anywhere">{{ w }}</q-item-section>
               <q-item-section side>
@@ -322,14 +332,14 @@
           @click="finish"
         />
         <q-btn
-          v-if="undoTo && !isMulti"
+          v-if="isMulti ? multiEnd : undoTo"
           outline
           size="lg"
           rounded
           no-caps
           color="primary"
           :label="t('turn.undo')"
-          @click="undo"
+          @click="isMulti ? undoEnd() : undo()"
         />
       </div>
     </div>
@@ -509,17 +519,32 @@ const skipsText = computed(() =>
     : t('turn.skipsLeft', { n: fmt(Math.max(0, multi.value.skipLimit - tally.value.skips)) }),
 );
 
+// Undo (multi-word mode). Each Correct/Skip that drew a new word is remembered so it can be taken
+// back (the clock keeps running). Ending the turn from the time-up screen can be taken back too.
+interface MultiSnap {
+  word: string | null;
+  correct: number;
+  skips: number;
+}
+const history = ref<(MultiSnap & { drawn: string })[]>([]);
+const multiEnd = ref<MultiSnap | null>(null);
+const snap = (): MultiSnap => ({ word: word.value, ...tally.value });
+
 function multiCorrect() {
+  const before = snap();
   tally.value.correct++;
   cue('good');
-  if (phase.value === 'timeup') return endMulti();
+  if (phase.value === 'timeup') return endMulti(before);
   if (!draw()) {
     noWords.value = true;
     endMulti();
+    return;
   }
+  history.value.push({ ...before, drawn: word.value! });
 }
 function multiSkip() {
   if (!canSkipNow.value) return;
+  const before = snap();
   // A skip with no replacement word has no effect, so it is not counted or charged.
   if (!draw()) {
     noWords.value = true;
@@ -527,9 +552,33 @@ function multiSkip() {
     return;
   }
   tally.value.skips++;
+  history.value.push({ ...before, drawn: word.value! });
   cue('skip');
 }
-function endMulti() {
+function undoLast() {
+  const last = history.value.pop();
+  if (!last || phase.value !== 'play') return;
+  // The word drawn by that tap goes back to the front of the deck and off the shown list.
+  deck.value.unshift(last.drawn);
+  const i = shown.value.lastIndexOf(last.drawn);
+  if (i >= 0) shown.value.splice(i, 1);
+  word.value = last.word;
+  tally.value = { correct: last.correct, skips: last.skips };
+}
+function done() {
+  endMulti(snap());
+}
+function undoEnd() {
+  const before = multiEnd.value;
+  if (!before) return;
+  multiEnd.value = null;
+  deltas.value = [];
+  word.value = before.word;
+  tally.value = { correct: before.correct, skips: before.skips };
+  phase.value = 'timeup';
+}
+function endMulti(undoable: MultiSnap | null = null) {
+  multiEnd.value = undoable;
   countdown.stop();
   const points = scoreMultiTurn(tileValue.value, tally.value, multi.value);
   deltas.value = points !== 0 ? [{ teamId: team.value!.id, points }] : [];
@@ -706,6 +755,15 @@ function finish() {
 .role-chip {
   margin-bottom: 8px;
   opacity: 0.8;
+}
+.words-list {
+  // A long turn shows many words: the list scrolls instead of being cropped.
+  max-height: 40vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.soft-card {
+  flex-shrink: 0;
 }
 .hint-text {
   max-width: 320px;

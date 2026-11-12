@@ -154,6 +154,7 @@ export default {
     stealRight: 'Right guess',
     stealWrong: 'Wrong',
     undo: 'Undo',
+    undoLast: 'Undo last',
     resultTitle: 'Turn over',
     noPoints: 'No points this turn',
     wordWas: 'The word was: {word}',
@@ -469,7 +470,7 @@ export default {
           },
           {
             t: 'Can I undo a point?',
-            b: 'Not at the moment, so check before tapping Correct or Guessed.',
+            b: 'Yes, until you tap Continue. In multi-word mode, tap Undo last to take back a Correct or Skip while the clock is running, or Undo on the result screen after ending from the time-up screen. In single-word mode, Undo on the steal and result screens takes back Guessed, Give up and the steal answer. Time that ran out cannot be given back.',
           },
           {
             t: 'Why can a score go below zero?',
