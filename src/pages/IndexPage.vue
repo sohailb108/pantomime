@@ -133,6 +133,10 @@
           @click="install"
         />
       </div>
+
+      <div dir="ltr" class="text-caption text-center text-grey-7 q-pb-sm">
+        Pantomime v{{ appVersion }}
+      </div>
     </div>
 
     <q-dialog v-model="iosOpen">
@@ -168,6 +172,7 @@ const $q = useQuasar();
 const settings = useSettingsStore();
 const game = useGameStore();
 
+const appVersion = __APP_VERSION__;
 const canResume = computed(() => !!game.state && game.state.status !== 'finished');
 
 // Left-to-right languages first, so the order never depends on the page direction.
