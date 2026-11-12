@@ -2,11 +2,41 @@
   "schema": 1,
   "lang": "en",
   "categories": [
-    { "id": "animals", "name": "Animals" },
-    { "id": "movies", "name": "Movies and shows" },
-    { "id": "jobs", "name": "Jobs" },
-    { "id": "food", "name": "Food and drink" },
-    { "id": "places", "name": "Places" },
-    { "id": "objects", "name": "Objects" }
+    {
+      "id": "animals",
+      "name": "Animals"
+    },
+    {
+      "id": "movies",
+      "name": "Movies and shows"
+    },
+    {
+      "id": "jobs",
+      "name": "Jobs"
+    },
+    {
+      "id": "food",
+      "name": "Food and drink"
+    },
+    {
+      "id": "places",
+      "name": "Places"
+    },
+    {
+      "id": "objects",
+      "name": "Objects"
+    },
+    {
+      "id": "books",
+      "name": "Books"
+    },
+    {
+      "id": "cartoons",
+      "name": "Cartoons"
+    },
+    {
+      "id": "proverbs",
+      "name": "Proverbs"
+    }
   ]
 }

@@ -168,23 +168,23 @@ Adding a language = add `src/i18n/<lang>/`, add `src/packs/<lang>/`, and add one
 
 ### 5.1 Screens
 
-| Screen            | Purpose                                                                                                                           |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Screen            | Purpose                                                                                                                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Home              | Logo and title, New game (Resume game when one is saved), a card linking Word packs and Help, a Settings card (theme swatches, dark mode, sound, vibration), then Install and Share |
-| Setup: Teams      | 2 to 6 teams, each with a color from the palette                                                                                  |
-| Setup: Categories | Pick categories, preview the board                                                                                                |
-| Setup: Mode       | Mode cards, a settings summary and a settings dialog (scoring, mode rules, gold round)                                            |
-| Board             | Tiles by category x difficulty, scores, whose turn                                                                                |
-| Pass to actor     | Handoff screen                                                                                                                    |
-| Turn (multi)      | Hidden word, reveal, timer, Correct/Skip                                                                                          |
-| Turn (single)     | Start, covered word with hold-to-peek, timer, Guessed/Give up (with confirm)                                                      |
-| Steal             | Opposing team's single guess                                                                                                      |
-| Gold round        | Last-chance intro, one attempt per eligible team, result                                                                          |
-| Turn result       | Points gained and updated score                                                                                                   |
-| Final results     | Ranking, play again                                                                                                               |
-| Word packs        | `/packs`: categories, custom categories, gold words, import and export. `/packs/:id`: custom words of one category per difficulty |
-| Settings          | Language, theme, sound, vibration                                                                                                 |
-| Help              | Quick start, rules, settings guide, tips, custom words, data, install, FAQ, about                                                 |
+| Setup: Teams      | 2 to 6 teams, each with a color from the palette                                                                                                                                    |
+| Setup: Categories | Pick categories, preview the board                                                                                                                                                  |
+| Setup: Mode       | Mode cards, a settings summary and a settings dialog (scoring, mode rules, gold round)                                                                                              |
+| Board             | Tiles by category x difficulty, scores, whose turn                                                                                                                                  |
+| Pass to actor     | Handoff screen                                                                                                                                                                      |
+| Turn (multi)      | Hidden word, reveal, timer, Correct/Skip                                                                                                                                            |
+| Turn (single)     | Start, covered word with hold-to-peek, timer, Guessed/Give up (with confirm)                                                                                                        |
+| Steal             | Opposing team's single guess                                                                                                                                                        |
+| Gold round        | Last-chance intro, one attempt per eligible team, result                                                                                                                            |
+| Turn result       | Points gained and updated score                                                                                                                                                     |
+| Final results     | Ranking, play again                                                                                                                                                                 |
+| Word packs        | `/packs`: categories, custom categories, gold words, import and export. `/packs/:id`: custom words of one category per difficulty                                                   |
+| Settings          | Language, theme, sound, vibration                                                                                                                                                   |
+| Help              | Quick start, rules, settings guide, tips, custom words, data, install, FAQ, about                                                                                                   |
 
 ### 5.2 Help page
 
@@ -329,3 +329,4 @@ Setup rule (decided): a game needs at least `ceil(teams / 3)` categories, otherw
 
 - "My words", as a tile, with difficult bonus
 - Success rates for the words
+- Encrypt word lists

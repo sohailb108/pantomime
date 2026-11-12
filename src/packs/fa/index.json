@@ -2,11 +2,41 @@
   "schema": 1,
   "lang": "fa",
   "categories": [
-    { "id": "animals", "name": "حیوانات" },
-    { "id": "movies", "name": "فیلم و سریال" },
-    { "id": "jobs", "name": "مشاغل" },
-    { "id": "food", "name": "غذا و خوراکی" },
-    { "id": "places", "name": "مکان‌ها" },
-    { "id": "objects", "name": "اشیا" }
+    {
+      "id": "animals",
+      "name": "حیوانات"
+    },
+    {
+      "id": "movies",
+      "name": "فیلم و سریال"
+    },
+    {
+      "id": "jobs",
+      "name": "مشاغل"
+    },
+    {
+      "id": "food",
+      "name": "غذا و خوراکی"
+    },
+    {
+      "id": "places",
+      "name": "مکان‌ها"
+    },
+    {
+      "id": "objects",
+      "name": "اشیا"
+    },
+    {
+      "id": "books",
+      "name": "کتاب"
+    },
+    {
+      "id": "cartoons",
+      "name": "کارتون"
+    },
+    {
+      "id": "proverbs",
+      "name": "ضرب‌المثل"
+    }
   ]
 }

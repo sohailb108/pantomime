@@ -6,17 +6,47 @@
   "name": "Places",
   "color": "#8D6E63",
   "words": {
-    "1": ["school", "beach", "hospital", "zoo", "kitchen", "park", "bank", "bakery"],
-    "2": ["airport", "library", "cinema", "mountain", "supermarket", "farm", "circus", "gym"],
+    "1": [
+      "Eiffel Tower",
+      "Pyramids of Giza",
+      "Statue of Liberty",
+      "Big Ben",
+      "Great Wall of China",
+      "Disneyland",
+      "Niagara Falls",
+      "Times Square",
+      "Hollywood Sign",
+      "Mount Everest",
+      "Sahara Desert",
+      "Amazon Rainforest"
+    ],
+    "2": [
+      "Taj Mahal",
+      "Colosseum",
+      "Leaning Tower of Pisa",
+      "Sydney Opera House",
+      "Grand Canyon",
+      "Machu Picchu",
+      "Golden Gate Bridge",
+      "Buckingham Palace",
+      "Burj Khalifa",
+      "Christ the Redeemer",
+      "Mount Fuji",
+      "Venice canals"
+    ],
     "3": [
-      "lighthouse",
-      "planetarium",
-      "volcano",
-      "submarine",
-      "observatory",
-      "greenhouse",
-      "car wash",
-      "laundromat"
+      "Stonehenge",
+      "Petra",
+      "Angkor Wat",
+      "Acropolis",
+      "Kremlin",
+      "Alhambra",
+      "Neuschwanstein Castle",
+      "Easter Island",
+      "Santorini",
+      "Forbidden City",
+      "Hagia Sophia",
+      "Chichen Itza"
     ]
   }
 }

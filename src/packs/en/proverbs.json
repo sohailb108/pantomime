@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "id": "proverbs",
+  "lang": "en",
+  "version": 1,
+  "name": "Proverbs",
+  "color": "#9CCC65",
+  "words": {
+    "1": [
+      "Actions speak louder than words",
+      "Easy come, easy go",
+      "Better late than never",
+      "Practice makes perfect",
+      "Two heads are better than one",
+      "Honesty is the best policy",
+      "Time is money",
+      "Don't judge a book by its cover",
+      "Out of sight, out of mind",
+      "Slow and steady wins the race",
+      "The early bird catches the worm",
+      "Look before you leap"
+    ],
+    "2": [
+      "Don't count your chickens before they hatch",
+      "A watched pot never boils",
+      "Don't put all your eggs in one basket",
+      "Every cloud has a silver lining",
+      "Birds of a feather flock together",
+      "A picture is worth a thousand words",
+      "Too many cooks spoil the broth",
+      "When in Rome, do as the Romans do",
+      "The grass is always greener on the other side",
+      "Curiosity killed the cat",
+      "You can't teach an old dog new tricks",
+      "Rome wasn't built in a day"
+    ],
+    "3": [
+      "Don't cry over spilled milk",
+      "Let sleeping dogs lie",
+      "Beggars can't be choosers",
+      "Don't bite the hand that feeds you",
+      "The pen is mightier than the sword",
+      "Barking dogs seldom bite",
+      "Kill two birds with one stone",
+      "Strike while the iron is hot",
+      "A bird in the hand is worth two in the bush",
+      "Don't look a gift horse in the mouth",
+      "A rolling stone gathers no moss",
+      "Absence makes the heart grow fonder"
+    ]
+  }
+}

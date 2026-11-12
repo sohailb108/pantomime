@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "id": "cartoons",
+  "lang": "en",
+  "version": 1,
+  "name": "Cartoons",
+  "color": "#29B6F6",
+  "words": {
+    "1": [
+      "Tom and Jerry",
+      "Mickey Mouse",
+      "SpongeBob",
+      "Donald Duck",
+      "Bugs Bunny",
+      "Winnie the Pooh",
+      "Dora the Explorer",
+      "Peppa Pig",
+      "Pikachu",
+      "The Simpsons",
+      "Scooby-Doo",
+      "Mr. Bean"
+    ],
+    "2": [
+      "Shrek",
+      "Frozen",
+      "Toy Story",
+      "Finding Nemo",
+      "The Lion King",
+      "Aladdin",
+      "Kung Fu Panda",
+      "Minions",
+      "Moana",
+      "Cars",
+      "Ice Age",
+      "Madagascar"
+    ],
+    "3": [
+      "Popeye",
+      "Pink Panther",
+      "Road Runner",
+      "Johnny Bravo",
+      "Ben 10",
+      "Doraemon",
+      "Naruto",
+      "Dragon Ball",
+      "Courage the Cowardly Dog",
+      "Tweety and Sylvester",
+      "Inside Out",
+      "Up"
+    ]
+  }
+}
