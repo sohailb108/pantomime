@@ -60,11 +60,7 @@ export function absorbBuiltinDuplicates(
   data.categories = data.categories.filter((c) => {
     const builtin = builtins.find((b) => same(b.name, c.name));
     if (!builtin) return true;
-    const to = (data.extra[builtin.id] ??= emptyWords());
-    for (const d of DIFFICULTIES) {
-      const add = listAdder(to[d]);
-      for (const w of c.words[d]) add(w);
-    }
+    addWords((data.extra[builtin.id] ??= emptyWords()), c.words);
     data.extraNames[builtin.id] ??= c.name;
     merged++;
     return false;
@@ -95,10 +91,7 @@ export function restoreOrphanedExtras(
         data.categories.push(target);
         restored++;
       }
-      for (const d of DIFFICULTIES) {
-        const add = listAdder(target.words[d]);
-        for (const w of words[d]) add(w);
-      }
+      addWords(target.words, words);
     }
     delete data.extra[id];
     delete data.extraNames[id];
@@ -175,6 +168,22 @@ export function listAdder(list: string[]): (raw: string) => AddResult {
     list.push(word);
     return 'ok';
   };
+}
+
+/** Removes a word from a list in place (ignoring case). */
+export function removeFromList(list: string[], word: string) {
+  const i = list.findIndex((w) => same(w, word));
+  if (i >= 0) list.splice(i, 1);
+}
+
+/** Adds the words of `from` to `to`, skipping duplicates. Returns how many were added. */
+function addWords(to: WordsByDifficulty, from: WordsByDifficulty): number {
+  return DIFFICULTIES.reduce((sum, d) => sum + addAll(to[d], from[d]), 0);
+}
+
+function addAll(to: string[], from: readonly string[]): number {
+  const add = listAdder(to);
+  return from.filter((w) => add(w) === 'ok').length;
 }
 
 /** Whether a custom category has a word at every difficulty. */
@@ -310,13 +319,6 @@ function ownOrCreate<T>(record: Record<string, T>, id: string, make: () => T): T
 /** Merges imported data into `target` in place: only adds, never removes or overwrites. Returns how many words were added. */
 export function mergeInto(target: CustomLang, incoming: CustomLang): number {
   let added = 0;
-  const mergeList = (to: string[], from: string[]) => {
-    const add = listAdder(to);
-    for (const w of from) if (add(w) === 'ok') added++;
-  };
-  const mergeWords = (to: WordsByDifficulty, from: WordsByDifficulty) => {
-    for (const d of DIFFICULTIES) mergeList(to[d], from[d]);
-  };
 
   for (const c of incoming.categories) {
     // Same id, or the same name under another id (the category was created by hand on both sides).
@@ -328,24 +330,19 @@ export function mergeInto(target: CustomLang, incoming: CustomLang): number {
       existing = { id: c.id, name: c.name, words: emptyWords() };
       target.categories.push(existing);
     }
-    mergeWords(existing.words, c.words);
+    added += addWords(existing.words, c.words);
   }
   for (const [id, words] of Object.entries(incoming.extra)) {
-    mergeWords(ownOrCreate(target.extra, id, emptyWords), words);
+    added += addWords(ownOrCreate(target.extra, id, emptyWords), words);
   }
   for (const [id, name] of Object.entries(incoming.extraNames)) {
     if (!Object.hasOwn(target.extraNames, id)) target.extraNames[id] = name;
   }
-  mergeList(target.gold, incoming.gold);
+  added += addAll(target.gold, incoming.gold);
   // Hidden lists only grow with an import. They do not count as added words.
   for (const [id, words] of Object.entries(incoming.hidden)) {
-    const to = ownOrCreate(target.hidden, id, emptyWords);
-    for (const d of DIFFICULTIES) {
-      const add = listAdder(to[d]);
-      for (const w of words[d]) add(w);
-    }
+    addWords(ownOrCreate(target.hidden, id, emptyWords), words);
   }
-  const addHiddenGold = listAdder(target.hiddenGold);
-  for (const w of incoming.hiddenGold) addHiddenGold(w);
+  addAll(target.hiddenGold, incoming.hiddenGold);
   return added;
 }

@@ -14,6 +14,7 @@ import {
   normalizeLang,
   normalizeName,
   hasWord,
+  removeFromList,
   parseImport,
   restoreOrphanedExtras,
   type AddResult,
@@ -121,9 +122,7 @@ export const useCustomStore = defineStore('custom', () => {
     return addToList(listFor(lang, categoryId, difficulty), word);
   }
   function removeWord(lang: string, categoryId: string, difficulty: Difficulty, word: string) {
-    const list = listFor(lang, categoryId, difficulty);
-    const i = list.indexOf(word);
-    if (i >= 0) list.splice(i, 1);
+    removeFromList(listFor(lang, categoryId, difficulty), word);
   }
 
   function goldWords(lang: string): string[] {
@@ -133,9 +132,7 @@ export const useCustomStore = defineStore('custom', () => {
     return addToList(ensure(lang).gold, word);
   }
   function removeGold(lang: string, word: string) {
-    const list = ensure(lang).gold;
-    const i = list.indexOf(word);
-    if (i >= 0) list.splice(i, 1);
+    removeFromList(ensure(lang).gold, word);
   }
 
   /** Built-in words hidden in a category at one difficulty. */
@@ -147,9 +144,7 @@ export const useCustomStore = defineStore('custom', () => {
     if (!hasWord(list, word)) list.push(word);
   }
   function unhideWord(lang: string, categoryId: string, difficulty: Difficulty, word: string) {
-    const list = ensure(lang).hidden[categoryId]?.[difficulty];
-    if (list)
-      ensure(lang).hidden[categoryId]![difficulty] = list.filter((w) => !hasWord([word], w));
+    removeFromList(ensure(lang).hidden[categoryId]?.[difficulty] ?? [], word);
   }
   function hiddenGold(lang: string): string[] {
     return of(lang).hiddenGold;
@@ -159,8 +154,7 @@ export const useCustomStore = defineStore('custom', () => {
     if (!hasWord(list, word)) list.push(word);
   }
   function unhideGold(lang: string, word: string) {
-    const target = ensure(lang);
-    target.hiddenGold = target.hiddenGold.filter((w) => !hasWord([word], w));
+    removeFromList(ensure(lang).hiddenGold, word);
   }
 
   function exportJson(lang: string): string {

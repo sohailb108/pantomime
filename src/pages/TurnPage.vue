@@ -497,28 +497,27 @@ function draw(): string | null {
   return next;
 }
 
+/** Draws a word, or ends the turn right away when the deck has run out. */
+function drawOrEnd(): boolean {
+  if (draw()) return true;
+  noWords.value = true;
+  if (isMulti.value) endMulti();
+  else phase.value = 'result';
+  return false;
+}
+
 function begin() {
   if (isMulti.value) {
     // The word is only drawn once the countdown is over, so nobody sees it early.
     phase.value = 'getready';
     getReady.start(GET_READY_SECONDS);
-    return;
+  } else if (drawOrEnd()) {
+    phase.value = 'prep';
   }
-  if (!draw()) {
-    noWords.value = true;
-    phase.value = 'result';
-    return;
-  }
-  phase.value = 'prep';
 }
 
 function startMulti() {
-  if (phase.value !== 'getready') return;
-  if (!draw()) {
-    noWords.value = true;
-    phase.value = 'result';
-    return;
-  }
+  if (phase.value !== 'getready' || !drawOrEnd()) return;
   phase.value = 'play';
   countdown.start(state.value!.settings.multi.turnSeconds);
 }
@@ -551,22 +550,14 @@ function multiCorrect() {
   tally.value.correct++;
   cue('good');
   if (phase.value === 'timeup') return endMulti(before);
-  if (!draw()) {
-    noWords.value = true;
-    endMulti();
-    return;
-  }
+  if (!drawOrEnd()) return;
   history.value.push({ ...before, drawn: word.value! });
 }
 function multiSkip() {
   if (!canSkipNow.value) return;
   const before = snap();
   // A skip with no replacement word has no effect, so it is not counted or charged.
-  if (!draw()) {
-    noWords.value = true;
-    endMulti();
-    return;
-  }
+  if (!drawOrEnd()) return;
   tally.value.skips++;
   history.value.push({ ...before, drawn: word.value! });
   cue('skip');
