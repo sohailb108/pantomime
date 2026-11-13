@@ -224,7 +224,7 @@
       >
         {{ t('turn.stealTitle', { team: stealerName, n: fmt(stealValue) }) }}
       </div>
-      <div class="text-grey-7">{{ t('turn.stealHint') }}</div>
+      <div>{{ t('turn.stealHint', { team: stealerName }) }}</div>
       <PeekWord class="full-width" :word="word ?? ''" :label="t('turn.peek')" />
       <q-btn
         v-if="undoTo"

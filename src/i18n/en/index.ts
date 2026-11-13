@@ -154,7 +154,7 @@ export default {
     noMoreWords: 'No more words in this category.',
     noRerollWords: 'No other word is left in this category, so the word cannot be changed.',
     stealTitle: '{team} can steal {n} points!',
-    stealHint: 'One guess, out loud. The actor of the other team holds the phone (hold the card to check the word) and taps the result.',
+    stealHint: '{team}: say your one guess out loud. The actor of the other team holds the phone, checks the word (hold the card) and taps the result.',
     stealRight: 'Right guess',
     stealWrong: 'Wrong',
     undo: 'Undo',
