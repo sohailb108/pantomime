@@ -539,7 +539,7 @@ const skipLimitValue = computed({
   },
 });
 
-/** Teams and categories as the page first shows them. Mode and settings are remembered anyway. */
+/** Teams and categories as the page first shows them. */
 const choices = () => JSON.stringify([setup.teamColors, [...setup.categoryIds].sort()]);
 let initialChoices = '';
 // Leaving with changed teams or categories asks first (the X button and the browser's back).
@@ -550,9 +550,8 @@ function discard() {
 }
 
 onMounted(() => {
-  setup.reset();
-  // All categories start selected; players remove the ones they do not want.
-  setup.categoryIds = categories.value.map((c) => c.id);
+  // Teams, categories, mode and settings start as the last game had them.
+  setup.syncCategories(categories.value.map((c) => c.id));
   initialChoices = choices();
 });
 

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
+import { saveJson } from '@/services/storage';
 import { useSetupStore } from '@/stores/setup';
 
 describe('setup store', () => {
@@ -38,17 +39,36 @@ describe('setup store', () => {
     expect(s.teamCount).toBe(6);
   });
 
-  it('reset clears teams and categories but keeps mode and settings', () => {
-    const s = useSetupStore();
-    s.toggleCategory('a');
-    s.addTeam();
-    s.mode = 'multi';
-    s.settings.multi.turnSeconds = 45;
-    s.reset();
-    expect(s.categoryIds).toEqual([]);
-    expect(s.teamCount).toBe(2);
-    expect(s.mode).toBe('multi');
-    expect(s.settings.multi.turnSeconds).toBe(45);
+  it('remembers teams and categories for the next game', async () => {
+    const first = useSetupStore();
+    first.addTeam();
+    first.setColor(0, 'purple');
+    first.syncCategories(['a', 'b', 'c']);
+    first.toggleCategory('b');
+    await nextTick();
+    setActivePinia(createPinia());
+    const next = useSetupStore();
+    expect(next.teamColors).toEqual(['purple', 'blue', 'green']);
+    next.syncCategories(['a', 'b', 'c']);
+    expect(next.categoryIds).toEqual(['a', 'c']);
+  });
+
+  it('selects new categories, drops removed ones, and falls back to all', async () => {
+    const first = useSetupStore();
+    first.syncCategories(['a', 'b']);
+    first.toggleCategory('b');
+    await nextTick();
+    setActivePinia(createPinia());
+    const next = useSetupStore();
+    next.syncCategories(['a', 'b', 'c']);
+    expect(next.categoryIds).toEqual(['a', 'c']);
+    next.syncCategories(['x', 'y']);
+    expect(next.categoryIds).toEqual(['x', 'y']);
+  });
+
+  it('ignores invalid saved teams', () => {
+    saveJson('pantomime:setup', { mode: 'single', settings: {}, teamColors: ['red', 'red'] });
+    expect(useSetupStore().teamColors).toEqual(['red', 'blue']);
   });
 
   it('remembers mode and settings for the next game', async () => {
