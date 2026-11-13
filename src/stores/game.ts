@@ -28,6 +28,10 @@ export const useGameStore = defineStore('game', () => {
   if (state.value) {
     state.value.settings.points ??= { ...DEFAULT_GAME_SETTINGS.points };
     state.value.settings.single.stealHalf ??= false;
+    // Games saved before the reveal existed are already under way.
+    state.value.startRevealed ??= true;
+    // The starter of older games is unknown, so their turn order shows from team 0.
+    state.value.starter ??= 0;
     state.value.settings.gold.timerSeconds ??= DEFAULT_GAME_SETTINGS.gold.timerSeconds;
     // Games saved when teams still had names get palette colors by team order.
     state.value.teams.forEach((team, i) => {
@@ -114,6 +118,11 @@ export const useGameStore = defineStore('game', () => {
     pickedTile.value = null;
   }
 
+  /** The first-team card was shown; it is not shown again for this game. */
+  function revealStart() {
+    if (state.value) state.value.startRevealed = true;
+  }
+
   function finishGold(success: boolean) {
     if (state.value) state.value = resolveGoldAttempt(state.value, success);
   }
@@ -139,6 +148,7 @@ export const useGameStore = defineStore('game', () => {
     markTileSeen,
     markGoldSeen,
     finish,
+    revealStart,
     finishGold,
     declineGold,
     abort,

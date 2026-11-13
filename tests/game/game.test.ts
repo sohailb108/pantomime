@@ -13,13 +13,16 @@ import type { GameState, Settings } from '@/game/types';
 
 const rng = () => seededRng(42);
 
-function newGame(opts: { teams?: string[]; cats?: string[]; settings?: Settings } = {}) {
+function newGame(
+  opts: { teams?: string[]; cats?: string[]; settings?: Settings; starter?: number } = {},
+) {
   return createGame({
     teamColors: opts.teams ?? ['red', 'blue'],
     categoryIds: opts.cats ?? ['x', 'y'],
     mode: 'multi',
     settings: opts.settings ?? DEFAULT_GAME_SETTINGS,
     rng: rng(),
+    starter: opts.starter ?? 0,
   });
 }
 
@@ -39,6 +42,29 @@ function playAll(state: GameState, points: (team: number, turn: number) => numbe
 }
 
 describe('createGame', () => {
+  it('picks the starting team at random, in range, unless one is given', () => {
+    const base = {
+      teamColors: ['red', 'blue', 'green'],
+      categoryIds: ['x', 'y', 'z'],
+      mode: 'multi' as const,
+      settings: DEFAULT_GAME_SETTINGS,
+    };
+    expect(createGame({ ...base, rng: () => 0 }).currentTeam).toBe(0);
+    expect(createGame({ ...base, rng: () => 0.5 }).currentTeam).toBe(1);
+    expect(createGame({ ...base, rng: () => 0.999999 }).currentTeam).toBe(2);
+    expect(createGame({ ...base, rng: () => 0, starter: 2 }).currentTeam).toBe(2);
+    expect(createGame({ ...base, rng: () => 0.5 }).starter).toBe(1);
+    const seen = new Set<number>();
+    for (let seed = 1; seed < 60; seed++) {
+      seen.add(createGame({ ...base, rng: seededRng(seed) }).currentTeam);
+    }
+    expect([...seen].sort()).toEqual([0, 1, 2]);
+  });
+
+  it('has not shown the first-team card yet', () => {
+    expect(newGame().startRevealed).toBe(false);
+  });
+
   it('starts with team 0, zero scores and a trimmed board', () => {
     const g = newGame({ cats: ['x', 'y', 'z'] });
     expect(g.teams.map((t) => t.score)).toEqual([0, 0]);

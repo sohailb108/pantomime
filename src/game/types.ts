@@ -70,11 +70,15 @@ export interface GameState {
   teams: Team[];
   tiles: Tile[];
   currentTeam: number;
+  /** Team that went first; the turn order starts here and wraps around. */
+  starter: number;
   mode: Mode;
   settings: Settings;
   /** Eligible team ids during the gold round, lowest score first, consumed as attempts finish. */
   goldQueue: number[];
   status: GameStatus;
+  /** The "who goes first" card on the board has been shown. */
+  startRevealed: boolean;
 }
 
 /** A score change for one team. Negative values are penalties, scores may go below zero. */

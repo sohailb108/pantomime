@@ -9,22 +9,30 @@ export interface NewGameOptions {
   mode: Mode;
   settings: Settings;
   rng: Rng;
+  /** Team that goes first. Random when left out. */
+  starter?: number;
 }
 
-/** Creates a game with a trimmed board. Team 0 starts. */
+/** Creates a game with a trimmed board. A random team starts unless `starter` is given. */
 export function createGame(options: NewGameOptions): GameState {
   const { teamColors, categoryIds, mode, settings, rng } = options;
   if (teamColors.length < MIN_TEAMS || teamColors.length > MAX_TEAMS) {
     throw new RangeError(`Team count must be between ${MIN_TEAMS} and ${MAX_TEAMS}`);
   }
+  const tiles = buildBoard(categoryIds, teamColors.length, rng);
+  // After the board, so the board of a seeded game does not depend on who starts.
+  const currentTeam =
+    options.starter ?? Math.min(teamColors.length - 1, Math.floor(rng() * teamColors.length));
   return {
     teams: teamColors.map((color, id) => ({ id, color, score: 0 })),
-    tiles: buildBoard(categoryIds, teamColors.length, rng),
-    currentTeam: 0,
+    tiles,
+    currentTeam,
+    starter: currentTeam,
     mode,
     settings,
     goldQueue: [],
     status: 'playing',
+    startRevealed: false,
   };
 }
 

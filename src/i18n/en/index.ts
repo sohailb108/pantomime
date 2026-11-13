@@ -118,6 +118,10 @@ export default {
   board: {
     title: 'Board',
     turnOf: "{team}'s turn",
+    firstTitle: 'Who goes first?',
+    firstTeam: '{team} goes first',
+    firstOk: "Let's play",
+    order: 'Turn order',
     points: '{n} pt',
     home: 'Home',
     playedBy: 'Played by {team}',
@@ -268,7 +272,7 @@ export default {
           },
           {
             t: '2. Pick a tile',
-            b: 'Teams take turns. Choose a tile: the category sets the word pool and the difficulty sets the points.',
+            b: 'The team that goes first is chosen at random. Teams take turns. Choose a tile: the category sets the word pool and the difficulty sets the points.',
           },
           {
             t: '3. Act it out',

@@ -8,7 +8,7 @@
 
       <div class="scores q-mb-md">
         <div
-          v-for="team in state.teams"
+          v-for="team in turnOrder"
           :key="team.id"
           class="score-card text-center text-white"
           :class="{ current: team.id === state.currentTeam }"
@@ -61,6 +61,39 @@
         </div>
       </div>
     </div>
+
+    <q-dialog :model-value="!state.startRevealed" persistent>
+      <q-card flat class="dialog-card text-center">
+        <div class="text-subtitle1 text-grey-7">{{ t('board.firstTitle') }}</div>
+        <div
+          class="first-team text-h5 text-weight-bold text-white"
+          :style="{ background: teamHex(state.teams[state.currentTeam]?.color ?? '') }"
+        >
+          {{ t('board.firstTeam', { team: teamName(state.teams[state.currentTeam]?.color) }) }}
+        </div>
+        <div v-if="turnOrder.length > 2" class="text-body2 text-grey-7">{{ t('board.order') }}</div>
+        <div v-if="turnOrder.length > 2" class="order-row">
+          <span
+            v-for="(team, i) in turnOrder"
+            :key="team.id"
+            class="order-chip text-white text-weight-bold"
+            :style="{ background: teamHex(team.color) }"
+            :aria-label="teamName(team.color)"
+          >
+            {{ fmt(i + 1) }}
+          </span>
+        </div>
+        <div class="dialog-actions">
+          <q-btn
+            rounded
+            no-caps
+            color="primary"
+            :label="t('board.firstOk')"
+            @click="game.revealStart()"
+          />
+        </div>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -82,6 +115,13 @@ const game = useGameStore();
 const state = computed(() => game.state);
 
 const { teamName, teamHex } = useTeamDisplay();
+
+/** Teams in play order: the team that went first, then the rest, wrapping around. */
+const turnOrder = computed(() => {
+  const teams = state.value?.teams ?? [];
+  const start = state.value?.starter ?? 0;
+  return [...teams.slice(start), ...teams.slice(0, start)];
+});
 const fmt = (n: number) => formatNumber(n, settings.language);
 
 // Columns follow the order tiles were built in, one per distinct category. Each column holds its
@@ -245,6 +285,27 @@ onMounted(() => {
   border-radius: 50%;
   border: 2px solid #fff;
   vertical-align: middle;
+}
+.order-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.order-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+.first-team {
+  margin: 16px 0;
+  padding: 24px 16px;
+  border-radius: 16px;
+  overflow-wrap: anywhere;
 }
 .tile-removed {
   min-height: 56px;
