@@ -369,7 +369,7 @@ import { useCountdown } from '@/composables/countdown';
 import { usePause } from '@/composables/pause';
 import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
-import { cue } from '@/services/feedback';
+import { cue, timerCue } from '@/services/feedback';
 import {
   canSkip,
   rerollDelta,
@@ -462,7 +462,9 @@ watch(getReady.secondsLeft, (n) => {
 
 // Tick during the last seconds of a running timer.
 watch(countdown.secondsLeft, (n) => {
-  if (phase.value === 'play' && countdown.running.value && n > 0 && n <= 5) cue('tick');
+  if (phase.value !== 'play' || !countdown.running.value) return;
+  const name = timerCue(n, countdown.total.value);
+  if (name) cue(name);
 });
 
 onMounted(() => {

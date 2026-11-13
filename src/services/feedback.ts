@@ -1,6 +1,6 @@
 import { useSettingsStore } from '@/stores/settings';
 
-type Cue = 'tick' | 'end' | 'good' | 'skip';
+type Cue = 'tick' | 'warn' | 'end' | 'good' | 'skip' | 'gold';
 
 const TONES: Record<Cue, { freq: number; ms: number; type: OscillatorType; gain: number }[]> = {
   tick: [{ freq: 880, ms: 60, type: 'square', gain: 0.05 }],
@@ -13,6 +13,15 @@ const TONES: Record<Cue, { freq: number; ms: number; type: OscillatorType; gain:
     { freq: 990, ms: 140, type: 'sine', gain: 0.12 },
   ],
   skip: [{ freq: 330, ms: 120, type: 'triangle', gain: 0.1 }],
+  // One soft low tone: a heads-up at 10 seconds that is clearly not the 5-second tick.
+  warn: [{ freq: 440, ms: 220, type: 'triangle', gain: 0.08 }],
+  // Rising arpeggio for the gold word: the biggest moment of a game.
+  gold: [
+    { freq: 523, ms: 110, type: 'sine', gain: 0.12 },
+    { freq: 659, ms: 110, type: 'sine', gain: 0.12 },
+    { freq: 784, ms: 110, type: 'sine', gain: 0.12 },
+    { freq: 1047, ms: 320, type: 'sine', gain: 0.12 },
+  ],
 };
 
 const VIBRATION: Record<Cue, number | number[]> = {
@@ -20,6 +29,8 @@ const VIBRATION: Record<Cue, number | number[]> = {
   end: [200, 80, 300],
   good: 40,
   skip: 25,
+  warn: 20,
+  gold: [40, 40, 40, 40, 120],
 };
 
 let ctx: AudioContext | undefined;
@@ -50,6 +61,16 @@ export function unlockAudioOnGesture(): void {
     audio();
   };
   events.forEach((e) => document.addEventListener(e, unlock, true));
+}
+
+/** Shortest timer that gets the 10-second heads-up; on shorter ones it would run into the ticks. */
+const WARN_MIN_TOTAL = 15;
+
+/** Which cue, if any, a running timer plays when it reaches `secondsLeft`. */
+export function timerCue(secondsLeft: number, totalSeconds: number): Cue | undefined {
+  if (secondsLeft > 0 && secondsLeft <= 5) return 'tick';
+  if (secondsLeft === 10 && totalSeconds > WARN_MIN_TOTAL) return 'warn';
+  return undefined;
 }
 
 /** Plays a short synthesized cue and vibrates, each only if enabled and supported. Never throws. */

@@ -162,7 +162,7 @@ import { useCountdown } from '@/composables/countdown';
 import { usePause } from '@/composables/pause';
 import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
-import { cue } from '@/services/feedback';
+import { cue, timerCue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
 import { longWordClass } from '@/config/limits';
 import { formatNumber, formatSigned } from '@/services/format';
@@ -212,7 +212,9 @@ watch(leave.open, (open) => {
 });
 
 watch(countdown.secondsLeft, (n) => {
-  if (phase.value === 'play' && countdown.running.value && n > 0 && n <= 5) cue('tick');
+  if (phase.value !== 'play' || !countdown.running.value) return;
+  const name = timerCue(n, countdown.total.value);
+  if (name) cue(name);
 });
 
 onMounted(() => {
@@ -254,7 +256,7 @@ function giveUp() {
 function resolve(ok: boolean) {
   if (phase.value !== 'play') return;
   countdown.stop();
-  if (ok) cue('good');
+  if (ok) cue('gold');
   giveUpTap.reset();
   success.value = ok;
   attemptColor.value = team.value?.color ?? '';
