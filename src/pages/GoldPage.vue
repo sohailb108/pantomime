@@ -83,7 +83,7 @@
         :seconds-left="countdown.secondsLeft.value"
         color="amber-8"
         low-color="amber-8"
-        pulse
+        :pulse="countdown.running.value"
         :label="fmt(countdown.secondsLeft.value)"
       />
       <div class="col column justify-center">

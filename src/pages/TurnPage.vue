@@ -638,7 +638,8 @@ function undo() {
     phase.value = 'play';
     countdown.resume();
   } else {
-    undoTo.value = 'play';
+    // After a timeout the steal screen is as far back as Undo goes.
+    undoTo.value = timedOut.value ? null : 'play';
     phase.value = 'steal';
   }
 }
@@ -655,11 +656,14 @@ function guessed() {
 function giveUp() {
   giveUpTap.tap(() => failSingle());
 }
-function failSingle(timedOut = false) {
+/** The clock ran out (it was stopped, not paused), so the turn can never go back to play. */
+const timedOut = ref(false);
+function failSingle(timeUp = false) {
   // Time that ran out cannot be given back, so only a deliberate give-up can be undone.
-  if (timedOut) countdown.stop();
+  timedOut.value = timeUp;
+  if (timeUp) countdown.stop();
   else countdown.pause();
-  undoTo.value = timedOut ? null : 'play';
+  undoTo.value = timeUp ? null : 'play';
   undoPop.value = 0;
   giveUpTap.reset();
   phase.value = stealer.value === null ? 'result' : 'steal';

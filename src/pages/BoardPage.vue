@@ -11,16 +11,9 @@
           :aria-label="t('board.back')"
           to="/results"
         />
-        <q-btn
-          v-else
-          flat
-          round
-          icon="home"
-          :aria-label="t('board.home')"
-          to="/"
-        />
+        <q-btn v-else flat round icon="home" :aria-label="t('board.home')" to="/" />
         <div class="text-h5 text-weight-bold q-mx-sm">
-          {{ t("board.title") }}
+          {{ t('board.title') }}
         </div>
       </div>
 
@@ -29,7 +22,7 @@
           v-for="team in turnOrder"
           :key="team.id"
           class="score-card text-center text-white"
-          :class="{ current: !finished && team.id === state.currentTeam }"
+          :class="{ current: !finished && team.id === (goldTeamId ?? state.currentTeam) }"
           :style="{ background: teamHex(team.color) }"
           role="group"
           :aria-label="teamName(team.color)"
@@ -49,46 +42,33 @@
       >
         <q-icon name="play_circle" size="20px" class="q-mr-xs" />
         {{
-          t("board.turnOf", {
+          t('board.turnOf', {
             team: teamName(state.teams[state.currentTeam]?.color),
           })
         }}
       </div>
 
-      <div
-        v-if="goldTeamObj"
-        class="gold-offer"
-        role="region"
-        :aria-label="t('gold.title')"
-      >
+      <div v-if="goldTeamObj" class="gold-offer" role="region" :aria-label="t('gold.title')">
         <div class="row items-center justify-center q-gutter-x-sm">
           <q-icon name="emoji_events" size="24px" />
-          <span class="text-subtitle1 text-weight-bold">{{
-            t("gold.title")
-          }}</span>
+          <span class="text-subtitle1 text-weight-bold">{{ t('gold.title') }}</span>
         </div>
         <div
           class="text-subtitle1 text-weight-bold text-center q-mt-xs"
           :style="{ color: teamHex(goldTeamObj.color) }"
         >
-          {{ t("gold.intro", { team: teamName(goldTeamObj.color) }) }}
+          {{ t('gold.intro', { team: teamName(goldTeamObj.color) }) }}
         </div>
         <div class="text-body2 text-grey-8 text-center q-mt-xs">
           {{
-            t("gold.rules", {
+            t('gold.rules', {
               bonus: formatSigned(state.settings.gold.bonus, settings.language),
-              penalty: formatSigned(
-                -state.settings.gold.penalty,
-                settings.language,
-              ),
+              penalty: formatSigned(-state.settings.gold.penalty, settings.language),
             })
           }}
         </div>
-        <div
-          v-if="noGoldWords"
-          class="text-body2 text-grey-8 text-center q-mt-xs"
-        >
-          {{ t("gold.noWords") }}
+        <div v-if="noGoldWords" class="text-body2 text-grey-8 text-center q-mt-xs">
+          {{ t('gold.noWords') }}
         </div>
         <div class="row no-wrap q-mt-sm gold-actions">
           <q-btn
@@ -127,23 +107,14 @@
               :aria-label="t('board.points', { n: fmt(pointsOf(cell.d)) })"
               @click="pickTile(cell.index)"
             >
-              <div
-                v-if="cell.played"
-                class="tile-played"
-                :aria-label="cell.played.label"
-              >
+              <div v-if="cell.played" class="tile-played" :aria-label="cell.played.label">
                 <div class="text-weight-bold">{{ cell.played.points }}</div>
                 <div v-if="cell.played.stolen" class="steal-line">
-                  <span
-                    class="dot"
-                    :style="{ background: cell.played.stolen.hex }"
-                  />
+                  <span class="dot" :style="{ background: cell.played.stolen.hex }" />
                   {{ cell.played.stolen.points }}
                 </div>
               </div>
-              <template v-else>{{
-                t("board.points", { n: fmt(pointsOf(cell.d)) })
-              }}</template>
+              <template v-else>{{ t('board.points', { n: fmt(pointsOf(cell.d)) }) }}</template>
             </q-btn>
             <div v-else class="tile-removed" />
           </template>
@@ -158,14 +129,9 @@
       >
         <div class="row items-center q-gutter-x-sm q-mb-xs text-weight-bold">
           <q-icon name="emoji_events" size="22px" color="amber" />
-          <span>{{ t("gold.title") }}</span>
+          <span>{{ t('gold.title') }}</span>
         </div>
-        <div
-          v-for="(row, i) in goldRows"
-          :key="i"
-          class="gold-row"
-          :style="{ '--team': row.hex }"
-        >
+        <div v-for="(row, i) in goldRows" :key="i" class="gold-row" :style="{ '--team': row.hex }">
           <span class="text-weight-bold">{{ row.name }}</span>
           <span class="gold-outcome">{{ row.text }}</span>
         </div>
@@ -188,28 +154,19 @@
           :style="{
             '--a': `${(n - 1) * 20}deg`,
             '--d': `${130 + (n % 3) * 40}px`,
-            background:
-              n % 2
-                ? '#fff'
-                : teamHex(turnOrder[n % turnOrder.length]?.color ?? ''),
+            background: n % 2 ? '#fff' : teamHex(turnOrder[n % turnOrder.length]?.color ?? ''),
           }"
         />
         <div class="reveal-body">
           <div class="reveal-title text-h6 text-white">
-            {{ t("board.firstTitle") }}
+            {{ t('board.firstTitle') }}
           </div>
-          <div
-            class="reveal-team text-h2 text-weight-bold text-white"
-            aria-live="polite"
-          >
+          <div class="reveal-team text-h2 text-weight-bold text-white" aria-live="polite">
             {{ teamName(state.teams[state.currentTeam]?.color) }}
           </div>
           <template v-if="turnOrder.length > 2">
-            <div
-              class="reveal-late text-body1 text-white q-mt-xl"
-              style="--delay: 1.5s"
-            >
-              {{ t("board.order") }}
+            <div class="reveal-late text-body1 text-white q-mt-xl" style="--delay: 1.5s">
+              {{ t('board.order') }}
             </div>
             <div class="order-row reveal-late" style="--delay: 1.6s">
               <span
@@ -242,16 +199,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
-import { useTeamDisplay } from "@/composables/teams";
-import { goldTeam } from "@/game/game";
-import { DIFFICULTIES, type Difficulty } from "@/game/types";
-import { formatNumber, formatSigned } from "@/services/format";
-import { categoryOrFallback, listAllCategories } from "@/services/packs";
-import { useGameStore } from "@/stores/game";
-import { useSettingsStore } from "@/stores/settings";
+import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { useTeamDisplay } from '@/composables/teams';
+import { goldTeam } from '@/game/game';
+import { DIFFICULTIES, type Difficulty } from '@/game/types';
+import { formatNumber, formatSigned } from '@/services/format';
+import { categoryOrFallback, listAllCategories } from '@/services/packs';
+import { useGameStore } from '@/stores/game';
+import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -273,9 +230,7 @@ const fmt = (n: number) => formatNumber(n, settings.language);
 // tiles' index and played state, computed once per change instead of once per template lookup.
 const columns = computed(() => {
   const tiles = state.value?.tiles ?? [];
-  const indexOf = new Map(
-    tiles.map((tile, i) => [`${tile.categoryId}:${tile.difficulty}`, i]),
-  );
+  const indexOf = new Map(tiles.map((tile, i) => [`${tile.categoryId}:${tile.difficulty}`, i]));
   const ids = [...new Set(tiles.map((tile) => tile.categoryId))];
   const all = listAllCategories(game.lang);
   return ids.map((id) => {
@@ -292,7 +247,7 @@ const columns = computed(() => {
   });
 });
 
-const finished = computed(() => state.value?.status === "finished");
+const finished = computed(() => state.value?.status === 'finished');
 
 /** Finished gold attempts, in play order, for the list under the tiles. */
 const goldRows = computed(() =>
@@ -300,10 +255,10 @@ const goldRows = computed(() =>
     const color = state.value?.teams[r.teamId]?.color;
     const outcome = t(`gold.result.${r.outcome}`);
     return {
-      hex: teamHex(color ?? ""),
+      hex: teamHex(color ?? ''),
       name: teamName(color),
       text:
-        r.outcome === "declined"
+        r.outcome === 'declined'
           ? outcome
           : `${outcome} ${formatSigned(r.points, settings.language)}`,
     };
@@ -325,10 +280,9 @@ function played(index: number) {
   const teams = state.value?.teams;
   if (!state.value || !teams || tile?.playedBy === undefined) return undefined;
   const by = teams[tile.playedBy]?.color;
-  const stolenBy =
-    tile.stolenBy === undefined ? undefined : teams[tile.stolenBy]?.color;
+  const stolenBy = tile.stolenBy === undefined ? undefined : teams[tile.stolenBy]?.color;
   return {
-    hex: teamHex(by ?? ""),
+    hex: teamHex(by ?? ''),
     label: teamName(by),
     points: formatSigned(tile.points ?? 0, settings.language),
     stolen: stolenBy
@@ -344,13 +298,9 @@ function played(index: number) {
 }
 
 /** In the gold round the board is only for reading the standings; no tile can be picked. */
-const goldTeamId = computed(() =>
-  state.value ? goldTeam(state.value) : undefined,
-);
+const goldTeamId = computed(() => (state.value ? goldTeam(state.value) : undefined));
 const goldTeamObj = computed(() =>
-  goldTeamId.value === undefined
-    ? undefined
-    : state.value?.teams[goldTeamId.value],
+  goldTeamId.value === undefined ? undefined : state.value?.teams[goldTeamId.value],
 );
 /** Every gold word was hidden, so the team can only keep its points. */
 const noGoldWords = ref(false);
@@ -364,22 +314,21 @@ watch(
 /** The team keeps its points and skips the attempt. */
 function decline() {
   game.declineGold();
-  if (state.value?.status !== "gold") void router.replace("/results");
+  if (state.value?.status !== 'gold') void router.replace('/results');
 }
 
 function pickTile(index: number) {
-  if (goldTeamId.value !== undefined || finished.value || isPlayed(index))
-    return;
+  if (goldTeamId.value !== undefined || finished.value || isPlayed(index)) return;
   game.pick(index);
-  void router.push("/turn");
+  void router.push('/turn');
 }
 
 const starterHex = computed(() =>
-  teamHex(state.value?.teams[state.value.currentTeam]?.color ?? ""),
+  teamHex(state.value?.teams[state.value.currentTeam]?.color ?? ''),
 );
 
 onMounted(() => {
-  if (!game.state) void router.replace("/");
+  if (!game.state) void router.replace('/');
 });
 </script>
 

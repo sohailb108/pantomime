@@ -15,6 +15,32 @@ export function setRegistration(r: ServiceWorkerRegistration) {
 
 export type UpdateCheck = 'ready' | 'latest' | 'failed';
 
+/** How long a manual check waits for a found update to finish downloading. */
+const INSTALL_TIMEOUT_MS = 30_000;
+
+/** Resolves with the worker's state once it settles (installed, activated or redundant), or 'timeout'. */
+function waitForInstall(worker: ServiceWorker): Promise<ServiceWorkerState | 'timeout'> {
+  return new Promise((resolve) => {
+    const finish = (result: ServiceWorkerState | 'timeout') => {
+      clearTimeout(timer);
+      worker.removeEventListener('statechange', check);
+      resolve(result);
+    };
+    const check = () => {
+      if (
+        worker.state === 'installed' ||
+        worker.state === 'activated' ||
+        worker.state === 'redundant'
+      ) {
+        finish(worker.state);
+      }
+    };
+    const timer = setTimeout(() => finish('timeout'), INSTALL_TIMEOUT_MS);
+    worker.addEventListener('statechange', check);
+    check();
+  });
+}
+
 /** Asks the server for a newer version and waits until it has been downloaded. */
 export async function checkForUpdate(): Promise<UpdateCheck> {
   if (!registration) return 'failed';
@@ -23,22 +49,12 @@ export async function checkForUpdate(): Promise<UpdateCheck> {
     await registration.update();
     const worker = registration.installing;
     if (worker) {
-      await new Promise<void>((resolve) => {
-        const done = () => {
-          if (
-            worker.state === 'installed' ||
-            worker.state === 'activated' ||
-            worker.state === 'redundant'
-          ) {
-            worker.removeEventListener('statechange', done);
-            resolve();
-          }
-        };
-        worker.addEventListener('statechange', done);
-        done();
-      });
+      const result = await waitForInstall(worker);
+      // A worker that failed to install, or never finished, is not "up to date".
+      if (result === 'redundant' || result === 'timeout') return 'failed';
     }
-    return updateReady.value ? 'ready' : 'latest';
+    // A downloaded update that is already waiting counts as ready even if the prompt has not shown.
+    return updateReady.value || registration.waiting ? 'ready' : 'latest';
   } catch {
     return 'failed';
   }
@@ -54,8 +70,6 @@ export async function resetApp(): Promise<void> {
       // Ignored on purpose.
     }
   };
-  await attempt(() => localStorage.clear());
-  await attempt(() => sessionStorage.clear());
   await attempt(async () => {
     const regs = await navigator.serviceWorker.getRegistrations();
     await Promise.all(regs.map((r) => r.unregister()));
@@ -77,5 +91,8 @@ export async function resetApp(): Promise<void> {
       ),
     );
   });
+  // Last, right before the reload, so no store watcher can write its state back in between.
+  await attempt(() => localStorage.clear());
+  await attempt(() => sessionStorage.clear());
   window.location.reload();
 }

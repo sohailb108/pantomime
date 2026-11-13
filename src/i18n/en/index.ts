@@ -51,7 +51,7 @@ export default {
     close: 'Cancel',
     exit: 'Close',
     discardTitle: 'Leave setup?',
-    discardBody: 'The teams and categories you chose will be lost.',
+    discardBody: 'Your teams and categories are saved, so they will be here next time.',
     keepEditing: 'Keep editing',
     discard: 'Leave',
     steps: { mode: 'Teams and mode', categories: 'Categories' },

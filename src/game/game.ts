@@ -1,6 +1,6 @@
-import { buildBoard, MAX_TEAMS, MIN_TEAMS } from "./board";
-import { buildGoldQueue } from "./gold";
-import type { GameState, Mode, Rng, ScoreDelta, Settings } from "./types";
+import { buildBoard, MAX_TEAMS, MIN_TEAMS } from './board';
+import { buildGoldQueue } from './gold';
+import type { GameState, Mode, Rng, ScoreDelta, Settings } from './types';
 
 export interface NewGameOptions {
   /** One color id per team, in turn order. */
@@ -17,15 +17,12 @@ export interface NewGameOptions {
 export function createGame(options: NewGameOptions): GameState {
   const { teamColors, categoryIds, mode, settings, rng } = options;
   if (teamColors.length < MIN_TEAMS || teamColors.length > MAX_TEAMS) {
-    throw new RangeError(
-      `Team count must be between ${MIN_TEAMS} and ${MAX_TEAMS}`,
-    );
+    throw new RangeError(`Team count must be between ${MIN_TEAMS} and ${MAX_TEAMS}`);
   }
   const tiles = buildBoard(categoryIds, teamColors.length, rng);
   // After the board, so the board of a seeded game does not depend on who starts.
   const currentTeam =
-    options.starter ??
-    Math.min(teamColors.length - 1, Math.floor(rng() * teamColors.length));
+    options.starter ?? Math.min(teamColors.length - 1, Math.floor(rng() * teamColors.length));
   return {
     teams: teamColors.map((color, id) => ({ id, color, score: 0 })),
     tiles,
@@ -35,28 +32,21 @@ export function createGame(options: NewGameOptions): GameState {
     settings,
     goldQueue: [],
     goldResults: [],
-    status: "playing",
+    status: 'playing',
     startRevealed: false,
   };
 }
 
-function applyDeltas(
-  state: GameState,
-  deltas: readonly ScoreDelta[],
-): GameState["teams"] {
+function applyDeltas(state: GameState, deltas: readonly ScoreDelta[]): GameState['teams'] {
   return state.teams.map((team) => {
-    const total = deltas
-      .filter((d) => d.teamId === team.id)
-      .reduce((sum, d) => sum + d.points, 0);
+    const total = deltas.filter((d) => d.teamId === team.id).reduce((sum, d) => sum + d.points, 0);
     return total === 0 ? team : { ...team, score: team.score + total };
   });
 }
 
 /** Tile indexes that have not been played yet. */
 export function remainingTiles(state: GameState): number[] {
-  return state.tiles.flatMap((tile, i) =>
-    tile.playedBy === undefined ? [i] : [],
-  );
+  return state.tiles.flatMap((tile, i) => (tile.playedBy === undefined ? [i] : []));
 }
 
 /**
@@ -71,24 +61,19 @@ export function finishTurn(
   deltas: readonly ScoreDelta[],
   rng: Rng,
 ): GameState {
-  if (state.status !== "playing")
-    throw new Error("The game is not in the normal phase");
+  if (state.status !== 'playing') throw new Error('The game is not in the normal phase');
   const tile = state.tiles[tileIndex];
   if (!tile) throw new RangeError(`No tile at index ${tileIndex}`);
-  if (tile.playedBy !== undefined) throw new Error("Tile already played");
+  if (tile.playedBy !== undefined) throw new Error('Tile already played');
 
   const own = deltas.filter((d) => d.teamId === state.currentTeam);
-  const stolen = deltas.find(
-    (d) => d.teamId !== state.currentTeam && d.points > 0,
-  );
+  const stolen = deltas.find((d) => d.teamId !== state.currentTeam && d.points > 0);
   const result = {
     playedBy: state.currentTeam,
     points: own.reduce((sum, d) => sum + d.points, 0),
     ...(stolen ? { stolenBy: stolen.teamId, stolenPoints: stolen.points } : {}),
   };
-  const tiles = state.tiles.map((t, i) =>
-    i === tileIndex ? { ...t, ...result } : t,
-  );
+  const tiles = state.tiles.map((t, i) => (i === tileIndex ? { ...t, ...result } : t));
   const next: GameState = {
     ...state,
     tiles,
@@ -97,17 +82,15 @@ export function finishTurn(
   };
   if (remainingTiles(next).length > 0) return next;
 
-  const goldQueue = next.settings.gold.enabled
-    ? buildGoldQueue(next.teams, rng)
-    : [];
+  const goldQueue = next.settings.gold.enabled ? buildGoldQueue(next.teams, rng) : [];
   return goldQueue.length > 0
-    ? { ...next, status: "gold", goldQueue }
-    : { ...next, status: "finished", goldQueue: [] };
+    ? { ...next, status: 'gold', goldQueue }
+    : { ...next, status: 'finished', goldQueue: [] };
 }
 
 /** The team whose gold attempt is next, if the gold round is running. */
 export function goldTeam(state: GameState): number | undefined {
-  return state.status === "gold" ? state.goldQueue[0] : undefined;
+  return state.status === 'gold' ? state.goldQueue[0] : undefined;
 }
 
 /**
@@ -115,18 +98,17 @@ export function goldTeam(state: GameState): number | undefined {
  * team leaves the queue and the next one is offered the attempt. The game ends when the queue is empty.
  */
 export function declineGoldAttempt(state: GameState): GameState {
-  if (goldTeam(state) === undefined)
-    throw new Error("The game is not in the gold round");
+  if (goldTeam(state) === undefined) throw new Error('The game is not in the gold round');
   const goldQueue = state.goldQueue.slice(1);
   const goldResults = [
     ...state.goldResults,
-    { teamId: state.goldQueue[0]!, outcome: "declined" as const, points: 0 },
+    { teamId: state.goldQueue[0]!, outcome: 'declined' as const, points: 0 },
   ];
   return {
     ...state,
     goldQueue,
     goldResults,
-    status: goldQueue.length > 0 ? "gold" : "finished",
+    status: goldQueue.length > 0 ? 'gold' : 'finished',
   };
 }
 
@@ -135,13 +117,9 @@ export function declineGoldAttempt(state: GameState): GameState {
  * may go below zero). Either way the next eligible team goes, so every team except the leader gets
  * an attempt. The game ends when the queue is empty.
  */
-export function resolveGoldAttempt(
-  state: GameState,
-  success: boolean,
-): GameState {
+export function resolveGoldAttempt(state: GameState, success: boolean): GameState {
   const teamId = goldTeam(state);
-  if (teamId === undefined)
-    throw new Error("The game is not in the gold round");
+  if (teamId === undefined) throw new Error('The game is not in the gold round');
   const { bonus, penalty } = state.settings.gold;
   const points = success ? bonus : -penalty;
   const teams = applyDeltas(state, [{ teamId, points }]);
@@ -150,7 +128,7 @@ export function resolveGoldAttempt(
     ...state.goldResults,
     {
       teamId,
-      outcome: success ? ("success" as const) : ("failure" as const),
+      outcome: success ? ('success' as const) : ('failure' as const),
       points,
     },
   ];
@@ -159,6 +137,6 @@ export function resolveGoldAttempt(
     teams,
     goldQueue,
     goldResults,
-    status: goldQueue.length > 0 ? "gold" : "finished",
+    status: goldQueue.length > 0 ? 'gold' : 'finished',
   };
 }
