@@ -119,13 +119,14 @@ A final comeback chance for the teams that are not clearly leading (or are tied 
 - Word rules: trimmed, whitespace collapsed, 1 to 80 characters, no duplicates inside the same list (case-insensitive). A word that also exists in the built-in list is allowed (decks drop duplicates).
 - A custom category can be chosen in setup only when it has at least one word at every difficulty (otherwise a tile would have nothing to draw). The packs screen marks incomplete categories.
 - **Built-in words are never listed** in the packs pages (players could memorize them); only the count and the hidden words are shown, and a hidden word can be shown again there. Words are hidden only from the turn result screen.
-- On the turn **result screen** every word shown in the turn (in single-word mode that includes a word that was rerolled) is listed under "Words shown this turn" with its own Hide button next to the word, so it is always clear which word a button affects (with undo until leaving the screen). It hides a built-in word or removes a custom one, in the tile's category and difficulty.
+- On the turn **result screen** every word shown in the turn (in single-word mode that includes a word that was rerolled) is listed under "Words shown this turn" with its own Hide button next to the word, so it is always clear which word a button affects (with undo until leaving the screen). It hides a built-in word or removes a custom one, in the tile's category and difficulty. **Hiding is independent of the game's Undo:** Undo only reverts the turn's scoring actions (a Correct, Skip, Guessed or Give up tap). It never reverts a hide, because hiding edits the word packs, not the game. The player reverts a hide with its own undo button. This is by design, so it is not a bug.
 - **Export and import** use JSON of the current language: `{ "schema": 1, "custom": true, "lang": "fa", "categories": [...], "extra": { "<categoryId>": { "1": [], "2": [], "3": [] } }, "gold": [...], "hidden": {...}, "hiddenGold": [...] }`. Import validates the structure and limits (word rules, at most 100 categories and 2000 words per list), then **merges** into the current data (new categories are added, words are added without duplicates). Nothing is overwritten or deleted by an import. A file for another language is rejected with a message.
 
 ### 3.3 Word history
 
 - Used words are tracked per language, category and difficulty so they do not repeat across games. When every word of a pool has been used, the history of that pool resets and drawing starts over. (A visible notice is deferred to the polish milestone.)
 - Stored in localStorage (a few strings per pool, read synchronously).
+- A word is recorded as used the moment it is drawn, and **Undo does not remove it from the history** (same principle as hiding: Undo reverts the turn's scoring, not stored word data). The word goes back on the turn's deck, and if the turn ends before it is shown again it counts as used. This is by design, so it is not a bug.
 
 ### 3.4 Remote pack updates (later, optional)
 

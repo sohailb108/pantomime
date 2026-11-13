@@ -102,15 +102,21 @@ export function goldTeam(state: GameState): number | undefined {
  */
 export function declineGoldAttempt(state: GameState): GameState {
   if (goldTeam(state) === undefined) throw new Error('The game is not in the gold round');
+  return recordGoldAttempt(state, state.teams, { outcome: 'declined', points: 0 });
+}
+
+/** Takes the current team off the gold queue and records its result. The game ends with the queue. */
+function recordGoldAttempt(
+  state: GameState,
+  teams: GameState['teams'],
+  result: { outcome: 'success' | 'failure' | 'declined'; points: number },
+): GameState {
   const goldQueue = state.goldQueue.slice(1);
-  const goldResults = [
-    ...state.goldResults,
-    { teamId: state.goldQueue[0]!, outcome: 'declined' as const, points: 0 },
-  ];
   return {
     ...state,
+    teams,
     goldQueue,
-    goldResults,
+    goldResults: [...state.goldResults, { teamId: state.goldQueue[0]!, ...result }],
     status: goldQueue.length > 0 ? 'gold' : 'finished',
   };
 }
@@ -126,20 +132,5 @@ export function resolveGoldAttempt(state: GameState, success: boolean): GameStat
   const { bonus, penalty } = state.settings.gold;
   const points = success ? bonus : -penalty;
   const teams = applyDeltas(state, [{ teamId, points }]);
-  const goldQueue = state.goldQueue.slice(1);
-  const goldResults = [
-    ...state.goldResults,
-    {
-      teamId,
-      outcome: success ? ('success' as const) : ('failure' as const),
-      points,
-    },
-  ];
-  return {
-    ...state,
-    teams,
-    goldQueue,
-    goldResults,
-    status: goldQueue.length > 0 ? 'gold' : 'finished',
-  };
+  return recordGoldAttempt(state, teams, { outcome: success ? 'success' : 'failure', points });
 }

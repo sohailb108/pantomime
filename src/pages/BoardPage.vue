@@ -208,6 +208,7 @@ import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
 import { categoryOrFallback, listAllCategories } from '@/services/packs';
 import { useGameStore } from '@/stores/game';
+import { getGoldPool } from '@/services/words';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
@@ -307,7 +308,7 @@ const noGoldWords = ref(false);
 watch(
   goldTeamId,
   (id) => {
-    noGoldWords.value = id !== undefined && game.goldDeck().length === 0;
+    noGoldWords.value = id !== undefined && getGoldPool(game.lang).length === 0;
   },
   { immediate: true },
 );
