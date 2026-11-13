@@ -28,7 +28,7 @@ register(import.meta.env.QUASAR_SERVICE_WORKER_FILE, {
     console.info('[sw] New version found, downloading.');
   },
 
-  // The new service worker is already active. This page still runs the old code until it reloads.
+  // The new version is downloaded (the worker skips waiting). This page keeps the old code until it reloads.
   updated(/* registration */) {
     updateReady.value = true;
   },

@@ -13,7 +13,7 @@ export function setRegistration(r: ServiceWorkerRegistration) {
   updateSupported.value = true;
 }
 
-export type UpdateCheck = 'ready' | 'latest' | 'failed';
+export type UpdateCheck = 'ready' | 'downloading' | 'latest' | 'failed';
 
 /** How long a manual check waits for a found update to finish downloading. */
 const INSTALL_TIMEOUT_MS = 30_000;
@@ -50,8 +50,12 @@ export async function checkForUpdate(): Promise<UpdateCheck> {
     const worker = registration.installing;
     if (worker) {
       const result = await waitForInstall(worker);
-      // A worker that failed to install, or never finished, is not "up to date".
-      if (result === 'redundant' || result === 'timeout') return 'failed';
+      // A worker that failed to install is not "up to date".
+      if (result === 'redundant') return 'failed';
+      // Still downloading: the refresh prompt appears by itself once it is done.
+      if (result === 'timeout') return 'downloading';
+      // The worker skips waiting, so it may already be active and nothing is left waiting.
+      return 'ready';
     }
     // A downloaded update that is already waiting counts as ready even if the prompt has not shown.
     return updateReady.value || registration.waiting ? 'ready' : 'latest';

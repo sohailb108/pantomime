@@ -40,8 +40,9 @@
               <div class="help-text">{{ i18n.rt(item.b ?? '', values) }}</div>
             </div>
           </template>
-          <div v-if="id === 'about' && updateSupported" class="q-pt-sm">
+          <div v-if="id === 'about'" class="q-pt-sm row" style="gap: 8px">
             <q-btn
+              v-if="updateSupported"
               outline
               rounded
               no-caps
@@ -52,7 +53,6 @@
               @click="checkUpdate"
             />
             <q-btn
-              class="q-ml-sm"
               outline
               rounded
               no-caps
@@ -160,6 +160,8 @@ async function checkUpdate() {
   checking.value = false;
   // A downloaded update already shows the refresh prompt from App.vue.
   if (result === 'latest') $q.notify({ message: t('update.latest'), icon: 'check_circle' });
+  else if (result === 'downloading')
+    $q.notify({ message: t('update.downloading'), icon: 'downloading' });
   else if (result === 'failed') $q.notify({ message: t('update.failed'), icon: 'error_outline' });
 }
 

@@ -122,7 +122,8 @@ export const useSetupStore = defineStore('setup', () => {
     const next = categoryIds.value.filter((id) => all.has(id));
     for (const id of allIds) if (!known.has(id) && !next.includes(id)) next.push(id);
     categoryIds.value = next.length > 0 ? next : [...allIds];
-    knownCategoryIds.value = [...allIds];
+    // Keep ids of other languages, so a deselection survives a language switch.
+    knownCategoryIds.value = [...new Set([...known, ...allIds])];
   }
 
   return {

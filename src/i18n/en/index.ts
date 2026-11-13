@@ -196,6 +196,7 @@ export default {
     check: 'Check for updates',
     latest: "You're on the latest version.",
     failed: "Couldn't check for updates. Check your connection and try again.",
+    downloading: 'The update is still downloading. You will be asked to refresh when it is ready.',
     available: 'A new version is available.',
     refresh: 'Refresh',
   },

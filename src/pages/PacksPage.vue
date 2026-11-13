@@ -81,7 +81,7 @@
           @change="doImport"
         />
       </div>
-      <div v-if="message" class="status-banner q-mt-md" :class="messageOk ? 'ok' : 'fail'">
+      <div v-if="message" class="status-banner q-mt-md">
         <q-icon
           :name="messageOk ? 'check_circle' : 'error'"
           size="24px"
