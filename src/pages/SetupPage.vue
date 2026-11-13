@@ -391,7 +391,15 @@
         :disable="!canAdvance"
         @click="step = steps[stepIndex + 1]!"
       />
-      <q-btn v-else color="primary" rounded no-caps :label="t('setup.start')" @click="start" />
+      <q-btn
+        v-else
+        color="primary"
+        rounded
+        no-caps
+        :label="t('setup.start')"
+        :disable="!enoughCategories"
+        @click="start"
+      />
     </div>
   </q-page>
 </template>

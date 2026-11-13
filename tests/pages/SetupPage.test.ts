@@ -91,9 +91,7 @@ describe('SetupPage', () => {
     expect(router.currentRoute.value.path).toBe('/board');
   });
 
-  // Known bug: canAdvance only guards the Next button, so Start stays enabled and tapping it
-  // throws in createGame. Remove `.fails` once Start is disabled below the minimum.
-  it.fails('disables Start with too few categories', async () => {
+  it('disables Start with too few categories', async () => {
     const { wrapper, setup } = await openSetup();
     await press(wrapper, en.next);
     setup.categoryIds = [];
