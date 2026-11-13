@@ -62,37 +62,60 @@
       </div>
     </div>
 
-    <q-dialog :model-value="!state.startRevealed" persistent>
-      <q-card flat class="dialog-card text-center">
-        <div class="text-subtitle1 text-grey-7">{{ t('board.firstTitle') }}</div>
-        <div
-          class="first-team text-h5 text-weight-bold text-white"
-          :style="{ background: teamHex(state.teams[state.currentTeam]?.color ?? '') }"
-        >
-          {{ t('board.firstTeam', { team: teamName(state.teams[state.currentTeam]?.color) }) }}
-        </div>
-        <div v-if="turnOrder.length > 2" class="text-body2 text-grey-7">{{ t('board.order') }}</div>
-        <div v-if="turnOrder.length > 2" class="order-row">
-          <span
-            v-for="(team, i) in turnOrder"
-            :key="team.id"
-            class="order-chip text-white text-weight-bold"
-            :style="{ background: teamHex(team.color) }"
-            :aria-label="teamName(team.color)"
-          >
-            {{ fmt(i + 1) }}
-          </span>
-        </div>
-        <div class="dialog-actions">
+    <q-dialog
+      :model-value="!state.startRevealed"
+      persistent
+      maximized
+      transition-show="fade"
+      transition-hide="fade"
+    >
+      <div class="reveal" :style="{ '--team': starterHex }">
+        <div class="reveal-flood" />
+        <span
+          v-for="n in 18"
+          :key="n"
+          class="spark"
+          :style="{
+            '--a': `${(n - 1) * 20}deg`,
+            '--d': `${130 + (n % 3) * 40}px`,
+            background: n % 2 ? '#fff' : teamHex(turnOrder[n % turnOrder.length]?.color ?? ''),
+          }"
+        />
+        <div class="reveal-body">
+          <div class="reveal-title text-h6 text-white">{{ t('board.firstTitle') }}</div>
+          <div class="reveal-team text-h2 text-weight-bold text-white" aria-live="polite">
+            {{ teamName(state.teams[state.currentTeam]?.color) }}
+          </div>
+          <template v-if="turnOrder.length > 2">
+            <div class="reveal-late text-body1 text-white q-mt-xl" style="--delay: 1.5s">
+              {{ t('board.order') }}
+            </div>
+            <div class="order-row reveal-late" style="--delay: 1.6s">
+              <span
+                v-for="(team, i) in turnOrder"
+                :key="team.id"
+                class="order-chip text-weight-bold"
+                :style="{ background: '#fff', color: teamHex(team.color) }"
+                :aria-label="teamName(team.color)"
+              >
+                {{ fmt(i + 1) }}
+              </span>
+            </div>
+          </template>
           <q-btn
+            class="reveal-late q-mt-xl"
+            style="--delay: 1.8s"
             rounded
             no-caps
-            color="primary"
+            unelevated
+            size="lg"
+            color="white"
+            text-color="dark"
             :label="t('board.firstOk')"
             @click="game.revealStart()"
           />
         </div>
-      </q-card>
+      </div>
     </q-dialog>
   </q-page>
 </template>
@@ -178,6 +201,8 @@ function pickTile(index: number) {
   game.pick(index);
   void router.push('/turn');
 }
+
+const starterHex = computed(() => teamHex(state.value?.teams[state.value.currentTeam]?.color ?? ''));
 
 onMounted(() => {
   if (!game.state) void router.replace('/');
@@ -297,15 +322,110 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
 }
-.first-team {
-  margin: 16px 0;
-  padding: 24px 16px;
-  border-radius: 16px;
+.reveal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: #1b1b1b;
+}
+// The starter's colour floods the screen from the centre, then the name pops in.
+.reveal-flood {
+  position: absolute;
+  inset: 0;
+  background: var(--team);
+  animation: flood 0.7s cubic-bezier(0.5, 0, 0.2, 1) 0.2s both;
+}
+.reveal-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  text-align: center;
+  max-width: 560px;
+}
+.reveal-title {
+  opacity: 0.9;
+  animation: rise 0.5s ease-out 0.7s both;
+}
+.reveal-team {
+  margin-top: 12px;
   overflow-wrap: anywhere;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  animation: pop 0.7s cubic-bezier(0.2, 1.8, 0.4, 1) 1s both;
+}
+.reveal-late {
+  animation: rise 0.5s ease-out var(--delay) both;
+}
+// A burst of confetti dots from the middle as the name lands.
+.spark {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: burst 0.9s ease-out 1s both;
+}
+@keyframes flood {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes burst {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(var(--d)) scale(0.3);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-flood,
+  .reveal-title,
+  .reveal-team,
+  .reveal-late {
+    animation: none;
+  }
+  .spark {
+    display: none;
+  }
 }
 .tile-removed {
   min-height: 56px;

@@ -116,7 +116,6 @@ export default {
     title: 'صفحه بازی',
     turnOf: 'نوبت {team}',
     firstTitle: 'کدام تیم اول بازی می‌کند؟',
-    firstTeam: '{team} اول بازی می‌کند',
     firstOk: 'شروع',
     order: 'ترتیب نوبت',
     points: '{n} امتیاز',

@@ -119,7 +119,6 @@ export default {
     title: 'Board',
     turnOf: "{team}'s turn",
     firstTitle: 'Who goes first?',
-    firstTeam: '{team} goes first',
     firstOk: "Let's play",
     order: 'Turn order',
     points: '{n} pt',
