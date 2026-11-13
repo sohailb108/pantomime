@@ -50,10 +50,19 @@ export async function checkForUpdate(): Promise<UpdateCheck> {
     const worker = registration.installing;
     if (worker) {
       const result = await waitForInstall(worker);
-      // A worker that failed to install is not "up to date".
-      if (result === 'redundant') return 'failed';
       // Still downloading: the refresh prompt appears by itself once it is done.
       if (result === 'timeout') return 'downloading';
+      if (result === 'redundant') {
+        // Redundant means failed or replaced by a newer worker, so look at what is left.
+        if (registration.waiting) {
+          updateReady.value = true;
+          return 'ready';
+        }
+        // A newer worker is installing; the refresh prompt appears by itself once it is done.
+        if (registration.installing) return 'downloading';
+        // Nothing replaced it, so the install failed and this is not "up to date".
+        return updateReady.value ? 'ready' : 'failed';
+      }
       // The worker skips waiting, so it may already be active and nothing is left waiting.
       updateReady.value = true;
       return 'ready';
