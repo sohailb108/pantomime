@@ -22,6 +22,7 @@
       </div>
 
       <div
+        v-if="goldTeamId === undefined"
         class="turn-pill text-weight-bold q-mb-lg"
         :style="{
           color: teamHex(state.teams[state.currentTeam]?.color ?? ''),
@@ -30,6 +31,47 @@
       >
         <q-icon name="play_circle" size="20px" class="q-mr-xs" />
         {{ t('board.turnOf', { team: teamName(state.teams[state.currentTeam]?.color) }) }}
+      </div>
+
+      <div v-if="goldTeamObj" class="gold-offer" role="region" :aria-label="t('gold.title')">
+        <div class="row items-center justify-center q-gutter-x-sm">
+          <q-icon name="emoji_events" size="24px" />
+          <span class="text-subtitle1 text-weight-bold">{{ t('gold.title') }}</span>
+        </div>
+        <div class="text-subtitle1 text-weight-bold text-center q-mt-xs" :style="{ color: teamHex(goldTeamObj.color) }">
+          {{ t('gold.intro', { team: teamName(goldTeamObj.color) }) }}
+        </div>
+        <div class="text-body2 text-grey-8 text-center q-mt-xs">
+          {{
+            t('gold.rules', {
+              bonus: formatSigned(state.settings.gold.bonus, settings.language),
+              penalty: formatSigned(-state.settings.gold.penalty, settings.language),
+            })
+          }}
+        </div>
+        <div v-if="noGoldWords" class="text-body2 text-grey-8 text-center q-mt-xs">
+          {{ t('gold.noWords') }}
+        </div>
+        <div class="row no-wrap q-mt-sm gold-actions">
+          <q-btn
+            class="col"
+            color="primary"
+            rounded
+            no-caps
+            :disable="noGoldWords"
+            :label="t('turn.start')"
+            @click="router.push('/gold')"
+          />
+          <q-btn
+            class="col"
+            outline
+            color="primary"
+            rounded
+            no-caps
+            :label="t('gold.decline')"
+            @click="decline"
+          />
+        </div>
       </div>
 
       <div v-for="cat in columns" :key="cat.id" class="board-row">
@@ -121,10 +163,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
+import { goldTeam } from '@/game/game';
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
 import { categoryOrFallback, listAllCategories } from '@/services/packs';
@@ -196,8 +239,28 @@ function played(index: number) {
   };
 }
 
+/** In the gold round the board is only for reading the standings; no tile can be picked. */
+const goldTeamId = computed(() => (state.value ? goldTeam(state.value) : undefined));
+const goldTeamObj = computed(() =>
+  goldTeamId.value === undefined ? undefined : state.value?.teams[goldTeamId.value],
+);
+/** Every gold word was hidden, so the team can only keep its points. */
+const noGoldWords = ref(false);
+watch(
+  goldTeamId,
+  (id) => {
+    noGoldWords.value = id !== undefined && game.goldDeck().length === 0;
+  },
+  { immediate: true },
+);
+/** The team keeps its points and skips the attempt. */
+function decline() {
+  game.declineGold();
+  if (state.value?.status !== 'gold') void router.replace('/results');
+}
+
 function pickTile(index: number) {
-  if (isPlayed(index)) return;
+  if (goldTeamId.value !== undefined || isPlayed(index)) return;
   game.pick(index);
   void router.push('/turn');
 }
@@ -206,7 +269,6 @@ const starterHex = computed(() => teamHex(state.value?.teams[state.value.current
 
 onMounted(() => {
   if (!game.state) void router.replace('/');
-  else if (game.state.status === 'gold') void router.replace('/gold');
   else if (game.state.status === 'finished') void router.replace('/results');
 });
 </script>
@@ -256,6 +318,20 @@ onMounted(() => {
   border: 2px solid;
   border-radius: 999px;
   font-size: 1.05rem;
+}
+.gold-offer {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border-top: 5px solid #ffc107;
+  background: rgba(255, 193, 7, 0.14);
+  color: #f9a825;
+}
+.gold-actions {
+  gap: 12px;
+  .q-btn {
+    min-height: 48px;
+  }
 }
 // One card per category: the title, then its three difficulty tiles side by side.
 .board-row {

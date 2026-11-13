@@ -728,7 +728,7 @@ function finish() {
   leave.allow();
   game.finish(deltas.value);
   const status = state.value?.status;
-  void router.replace(status === 'gold' ? '/gold' : status === 'finished' ? '/results' : '/board');
+  void router.replace(status === 'finished' ? '/results' : '/board');
 }
 </script>
 

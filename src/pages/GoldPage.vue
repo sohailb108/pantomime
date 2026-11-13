@@ -26,42 +26,32 @@
     </div>
 
     <div
-      v-if="phase === 'intro'"
-      class="col column items-center justify-center q-gutter-y-md text-center"
+      v-if="phase === 'handoff'"
+      class="col column items-center justify-center q-gutter-y-lg text-center"
     >
-      <div class="gold-medal"><q-icon name="emoji_events" size="56px" color="white" /></div>
+      <div class="handoff-icon" :style="{ background: teamHex(team?.color ?? '') }">
+        <q-icon name="swap_horiz" size="48px" color="white" />
+      </div>
       <div class="text-h5 text-weight-bold" :style="colorStyle(team?.color)">
-        {{ t('gold.intro', { team: teamName(team?.color) }) }}
+        {{ t('turn.passTo', { team: teamName(team?.color) }) }}
       </div>
-      <div class="rules-card text-grey-8">
-        {{
-          t('gold.rules', {
-            bonus: formatSigned(gold.bonus, settings.language),
-            penalty: formatSigned(-gold.penalty, settings.language),
-          })
-        }}
-      </div>
-      <div v-if="noGoldWords" class="rules-card text-grey-8">{{ t('gold.noWords') }}</div>
-      <div class="row no-wrap full-width gold-actions">
+      <div class="column full-width turn-actions">
         <q-btn
-          class="col"
           color="primary"
           size="lg"
           rounded
           no-caps
-          :disable="noGoldWords"
           :label="t('turn.showWord')"
           @click="showWord"
         />
         <q-btn
-          class="col"
           outline
-          color="primary"
           size="lg"
           rounded
           no-caps
-          :label="t('gold.decline')"
-          @click="decline"
+          color="primary"
+          :label="t('turn.back')"
+          @click="router.replace('/board')"
         />
       </div>
     </div>
@@ -125,7 +115,7 @@
       </div>
     </div>
 
-    <div v-else class="col column items-center justify-center q-gutter-y-md text-center">
+    <div v-else-if="phase === 'result'" class="col column items-center justify-center q-gutter-y-md text-center">
       <div class="result-icon" :class="success ? 'ok' : 'fail'">
         <q-icon :name="success ? 'check' : 'close'" size="56px" color="white" />
       </div>
@@ -165,11 +155,11 @@ import { useWakeLock } from '@/composables/wakelock';
 import { cue, timerCue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
 import { longWordClass } from '@/config/limits';
-import { formatNumber, formatSigned } from '@/services/format';
+import { formatNumber } from '@/services/format';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
-type Phase = 'intro' | 'prep' | 'play' | 'result';
+type Phase = 'loading' | 'handoff' | 'prep' | 'play' | 'result';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -184,10 +174,8 @@ const team = computed(() =>
 );
 const fmt = (n: number) => formatNumber(n, settings.language);
 
-const phase = ref<Phase>('intro');
+const phase = ref<Phase>('loading');
 const deck = ref<string[]>([]);
-/** The gold pool is empty (every gold word was hidden), so there is nothing to attempt. */
-const noGoldWords = ref(false);
 const word = ref<string | null>(null);
 const success = ref(false);
 const giveUpTap = useConfirmTap();
@@ -223,15 +211,16 @@ onMounted(() => {
     return;
   }
   deck.value = game.goldDeck();
-  noGoldWords.value = deck.value.length === 0;
+  // The board offers the attempt first; with no gold words left it only offers to keep the points.
+  if (deck.value.length === 0) void router.replace('/board');
+  // The word stays hidden until the actor has the phone and taps Show the word.
+  else phase.value = 'handoff';
 });
 
+/** Draws and shows the gold word. Does nothing when the pool is empty (every word was hidden). */
 function showWord() {
   const next = deck.value.shift();
-  if (next === undefined) {
-    noGoldWords.value = true;
-    return;
-  }
+  if (next === undefined) return;
   word.value = next;
   game.markGoldSeen(next);
   phase.value = 'prep';
@@ -240,11 +229,6 @@ function showWord() {
 function exit() {
   leave.allow();
   void router.replace('/');
-}
-/** The team keeps its points and skips the attempt. */
-function decline() {
-  game.declineGold();
-  if (state.value?.status !== 'gold') void router.replace('/results');
 }
 function startPlay() {
   phase.value = 'play';
@@ -264,12 +248,8 @@ function resolve(ok: boolean) {
   phase.value = 'result';
 }
 function next() {
-  if (state.value?.status === 'gold') {
-    phase.value = 'intro';
-    deck.value = deck.value.length ? deck.value : game.goldDeck();
-  } else {
-    void router.replace('/results');
-  }
+  // The board shows the next team's offer, or the game is over.
+  void router.replace(state.value?.status === 'gold' ? '/board' : '/results');
 }
 </script>
 
@@ -283,6 +263,22 @@ function next() {
   inset-inline-start: auto;
   inset-inline-end: 4px;
 }
+.turn-actions {
+  max-width: 320px;
+  gap: 12px;
+  .q-btn {
+    min-height: 56px;
+  }
+}
+.handoff-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
 .gold-header {
   position: relative;
   display: flex;
@@ -294,7 +290,6 @@ function next() {
   border-top: 5px solid #ffc107;
   color: #f9a825;
 }
-.gold-medal,
 .result-icon {
   display: flex;
   align-items: center;
@@ -304,27 +299,11 @@ function next() {
   border-radius: 50%;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
-.gold-medal {
-  background: linear-gradient(135deg, #ffd54f, #f9a825);
-  outline: 4px solid rgba(255, 193, 7, 0.35);
-}
 .result-icon.ok {
   background: linear-gradient(135deg, #ffd54f, #f9a825);
 }
 .result-icon.fail {
   background: var(--q-primary);
-}
-.gold-actions {
-  gap: 12px;
-  .q-btn {
-    min-height: 56px;
-  }
-}
-.rules-card {
-  max-width: 420px;
-  padding: 12px 16px;
-  border-radius: 16px;
-  background: rgba(128, 128, 128, 0.1);
 }
 .word-card {
   width: 100%;
