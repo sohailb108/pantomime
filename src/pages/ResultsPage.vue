@@ -47,6 +47,16 @@
           size="lg"
           rounded
           no-caps
+          icon="grid_view"
+          :label="t('results.board')"
+          to="/board"
+        />
+        <q-btn
+          outline
+          color="primary"
+          size="lg"
+          rounded
+          no-caps
           :label="t('results.home')"
           to="/"
         />

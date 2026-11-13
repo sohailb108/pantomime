@@ -64,6 +64,14 @@ export interface Tile {
   stolenPoints?: number;
 }
 
+/** How one team's gold attempt went. */
+export interface GoldAttempt {
+  teamId: number;
+  outcome: 'success' | 'failure' | 'declined';
+  /** Score change from the attempt: the bonus, minus the penalty, or 0 when declined. */
+  points: number;
+}
+
 export type GameStatus = 'playing' | 'gold' | 'finished';
 
 export interface GameState {
@@ -76,6 +84,8 @@ export interface GameState {
   settings: Settings;
   /** Eligible team ids during the gold round, lowest score first, consumed as attempts finish. */
   goldQueue: number[];
+  /** Finished gold attempts in play order, kept so the board can show them afterwards. */
+  goldResults: GoldAttempt[];
   status: GameStatus;
   /** The "who goes first" card on the board has been shown. */
   startRevealed: boolean;

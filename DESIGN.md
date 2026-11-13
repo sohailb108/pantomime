@@ -72,9 +72,10 @@ A final comeback chance for the teams that are not clearly leading (or are tied 
 - **Order:** each eligible team gets **one attempt** (or declines), starting from the lowest score and going upwards (ties broken randomly). Each attempt uses a different word.
 - **Words:** drawn from the language's gold word pool (`src/packs/<lang>/gold.json`), made of very difficult words.
 - **Play:** always single-word flow (Start, covered word with hold-to-peek, judge taps Guessed or Give up with a confirm tap), whichever mode the game uses. The timer is its own setting (`gold.timerSeconds`, default 90 s), separate from the difficulty timers. No reroll and no steal.
-- **Success:** the bonus is added to the team's score and the **gold round ends immediately**. Teams that have not attempted yet do not play. The final ranking is decided by the normal score order, so the highest score wins (the default bonus is meant to be large enough to usually win).
+- **Success:** the bonus is added to the team's score and the next eligible team goes, so every team except the leader gets an attempt. The final ranking is decided by the normal score order, so the highest score wins.
 - **Failure:** the penalty is deducted from the team's score (scores may go below zero; the display allows negative numbers), and the next eligible team goes.
 - **Ending:** if every eligible team fails or declines, the game ends with the scores after any penalties.
+- Each attempt (success, failure or decline) is recorded in `GameState.goldResults` and listed under the board afterwards.
 - The gold screen shows a clear "last chance" intro and a confirmation for each attempt.
 
 ### 2.4/2.5/2.6 Decisions (confirmed)
@@ -228,8 +229,8 @@ Implementation notes:
 - **Turn phases:** `handoff` (team, category, points, one big button), then the mode's play phase, then `result` (points gained), then back to the board, or on to the gold round or the final results depending on the new game status.
 - **Multi-word play:** the handoff button reveals the first word and starts the timer. Correct adds a word, Skip shows the remaining skips and applies the penalty, and is disabled at the limit. When time ends and "finish the current word" is on, the current word stays up with Correct and Done, otherwise the turn ends at once. An empty word deck ends the turn early.
 - **Single-word play:** handoff, then the word is shown with the one allowed Reroll (before Start, costs the reroll penalty), then Start covers the word and starts the timer. Hold to peek. Guessed scores the tile's points plus the fast-guess bonus. Give up needs a second tap within 3 seconds. A timeout or give up is a failure, followed by the steal phase if enabled (the other team guesses, the judge taps Correct or Wrong, a correct steal gives that team the tile's points).
-- **Gold round:** an intro naming the team, then the single-word play with the difficulty-3 timer and a word from the gold pool, then the outcome. Success ends the round at once.
-- **Results:** ranking with ties (1, 1, 3), the winner highlighted, Play again (to setup) and Home.
+- **Gold round:** an intro naming the team, then the single-word play with the difficulty-3 timer and a word from the gold pool, then the outcome. Success and failure both move on to the next eligible team.
+- **Results:** ranking with ties (1, 1, 3), the winner highlighted, a **View the board** button (the board read-only: every played tile, and the list of gold attempts), Play again (to setup) and Home.
 - **Result screen:** a title, then a **points card** (each team that scored as a colored pill with its signed points on the opposite side, or "No points this turn"; below a divider the breakdown lines that apply, each with an icon: fast-guess bonus, skip penalty (multi-word) and word-change penalty (single-word)), then a **words card** (caption, then one row per word shown with its Hide button at the end, rows separated by dividers; the single-word "The word was" line when no list is shown; the last-word and no-more-words notices). Content is top-aligned and starts-aligned (follows the page direction); the Continue button is a full-width sticky bar at the bottom.
 - **Timer:** computed from a deadline timestamp (not by counting ticks), so it stays correct when the browser throttles timers. It turns red in the last 10 seconds. Sound and vibration cues come in milestone 8.
 - **Word history:** persisted across games, see 3.3 and 6.3. Each game draws words in the language chosen at the start.

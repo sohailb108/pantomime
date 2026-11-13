@@ -32,6 +32,8 @@ export const useGameStore = defineStore('game', () => {
     state.value.startRevealed ??= true;
     // The starter of older games is unknown, so their turn order shows from team 0.
     state.value.starter ??= 0;
+    // Games saved before gold results were kept have none.
+    state.value.goldResults ??= [];
     state.value.settings.gold.timerSeconds ??= DEFAULT_GAME_SETTINGS.gold.timerSeconds;
     // Games saved when teams still had names get palette colors by team order.
     state.value.teams.forEach((team, i) => {

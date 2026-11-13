@@ -124,6 +124,7 @@ export default {
     points: '{n} pt',
     home: 'Home',
     playedBy: 'Played by {team}',
+    back: 'Back to the results',
   },
   turn: {
     passTo: 'Pass the phone to the actor on {team}',
@@ -201,12 +202,13 @@ export default {
   gold: {
     title: 'Gold round',
     intro: 'Last chance! {team} gets one very hard word.',
-    rules: 'Success: {bonus} and the game ends. Failure: {penalty}.',
+    rules: 'Success: {bonus}. Failure: {penalty}.',
     decline: 'Keep my points (skip)',
     noWords:
       'There are no gold words left to play. They were all hidden in the words list. You can keep your points.',
     attempt: '{team}: gold word',
-    successTitle: 'Gold! {team} wins {n} points',
+    successTitle: 'Gold! {team} gets {n} points',
+    result: { success: 'Guessed', failure: 'Failed', declined: 'Kept points' },
   },
   packs: {
     title: 'Categories and words',
@@ -267,6 +269,7 @@ export default {
     winner: 'Winner: {team}',
     tie: 'It is a tie!',
     rank: 'Rank {n}',
+    board: 'View the board',
     playAgain: 'Play again',
     home: 'Home',
   },
@@ -332,7 +335,7 @@ export default {
           },
           {
             t: 'Gold round',
-            b: 'If enabled, after the last tile the teams that are not leading get one attempt each at a very hard word, lowest score first. Success adds the bonus ({goldBonus} points by default) and the round ends at once. Failure costs a penalty ({goldPenalty} points by default) and the next team goes. A team that prefers to keep its points can tap "Keep my points (skip)" with no penalty. There is no reroll and no steal. If teams are tied for the lead, each of them gets an attempt too. The highest score then wins.',
+            b: 'If enabled, after the last tile the teams that are not leading get one attempt each at a very hard word, lowest score first. Success adds the bonus ({goldBonus} points by default). Failure costs a penalty ({goldPenalty} points by default) and the next team goes. A team that prefers to keep its points can tap "Keep my points (skip)" with no penalty. There is no reroll and no steal. If teams are tied for the lead, each of them gets an attempt too. The highest score then wins.',
           },
         ],
       },

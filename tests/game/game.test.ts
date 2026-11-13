@@ -187,12 +187,13 @@ describe('gold round', () => {
     expect(() => declineGoldAttempt(newGame())).toThrow();
   });
 
-  it('success adds the bonus and ends the game at once', () => {
+  it('success adds the bonus and the other eligible teams still get their attempt', () => {
     const g = toGold(['A', 'B', 'C'], (t) => [5, 2, 1][t]!);
     expect(g.goldQueue).toEqual([2, 1]);
     const after = resolveGoldAttempt(g, true);
-    expect(after.status).toBe('finished');
-    expect(after.goldQueue).toEqual([]);
+    expect(after.status).toBe('gold');
+    expect(after.goldQueue).toEqual([1]);
+    expect(resolveGoldAttempt(after, true).status).toBe('finished');
     expect(after.teams[2]!.score).toBe(g.teams[2]!.score + 20);
   });
 
@@ -226,6 +227,16 @@ describe('gold round', () => {
     const g = playAll(newGame({ settings }), (t) => (t === 0 ? 2 : 1));
     expect(resolveGoldAttempt(g, false).teams[1]!.score).toBe(g.teams[1]!.score);
     expect(resolveGoldAttempt(g, true).teams[1]!.score).toBe(g.teams[1]!.score + 7);
+  });
+
+  it('records every gold attempt, including declines', () => {
+    let g = toGold(['A', 'B', 'C'], (t) => [5, 2, 1][t]!);
+    g = resolveGoldAttempt(g, false);
+    g = declineGoldAttempt(g);
+    expect(g.goldResults).toEqual([
+      { teamId: 2, outcome: 'failure', points: -20 },
+      { teamId: 1, outcome: 'declined', points: 0 },
+    ]);
   });
 
   it('rejects resolving outside the gold round', () => {
