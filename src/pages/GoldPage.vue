@@ -30,7 +30,7 @@
       class="col column items-center justify-center q-gutter-y-md text-center"
     >
       <div class="gold-medal"><q-icon name="emoji_events" size="56px" color="white" /></div>
-      <div class="text-h5 text-weight-bold">
+      <div class="text-h5 text-weight-bold" :style="colorStyle(team?.color)">
         {{ t('gold.intro', { team: teamName(team?.color) }) }}
       </div>
       <div class="rules-card text-grey-8">
@@ -92,6 +92,8 @@
         :total-seconds="countdown.total.value"
         :seconds-left="countdown.secondsLeft.value"
         color="amber-8"
+        low-color="amber-8"
+        pulse
         :label="fmt(countdown.secondsLeft.value)"
       />
       <div class="col column justify-center">
@@ -101,7 +103,7 @@
         <div class="col">
           <q-btn
             class="full-width"
-            color="positive"
+            color="primary"
             size="lg"
             rounded
             no-caps
@@ -112,7 +114,7 @@
         <div class="col">
           <q-btn
             class="full-width"
-            :color="confirmGiveUp ? 'negative' : 'grey'"
+            :color="confirmGiveUp ? 'grey-9' : 'grey'"
             size="lg"
             rounded
             no-caps
@@ -305,10 +307,10 @@ function next() {
   outline: 4px solid rgba(255, 193, 7, 0.35);
 }
 .result-icon.ok {
-  background: var(--q-positive);
+  background: linear-gradient(135deg, #ffd54f, #f9a825);
 }
 .result-icon.fail {
-  background: var(--q-negative);
+  background: var(--q-primary);
 }
 .gold-actions {
   gap: 12px;

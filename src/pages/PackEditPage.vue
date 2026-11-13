@@ -36,12 +36,12 @@
       </div>
 
       <div v-if="customCategory && !complete" class="hint-card q-mb-md">
-        <q-icon name="info" color="warning" size="24px" />
+        <q-icon name="info" color="primary" size="24px" />
         <div>{{ t('packs.incompleteHint') }}</div>
       </div>
 
       <div v-if="builtinEmpty" class="hint-card q-mb-md">
-        <q-icon name="info" color="warning" size="24px" />
+        <q-icon name="info" color="primary" size="24px" />
         <div>{{ t('packs.emptyBuiltinHint') }}</div>
       </div>
 
@@ -129,8 +129,12 @@
 </template>
 
 <script setup lang="ts">
-// Marker color of each difficulty card: easy, medium, hard.
-const TONES: Record<number, string> = { 1: '#21ba45', 2: '#f2c037', 3: '#c10015' };
+// Marker of each difficulty card: easy, medium, hard (a stronger shade of the theme color).
+const TONES: Record<number, string> = {
+  1: 'color-mix(in srgb, var(--q-primary) 30%, transparent)',
+  2: 'color-mix(in srgb, var(--q-primary) 65%, transparent)',
+  3: 'var(--q-primary)',
+};
 import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
@@ -189,7 +193,7 @@ const inActiveGame = computed(
 /** Removing a word can empty a pool that the running game's tiles use, so it waits until the game ends. */
 function removeWord(difficulty: Difficulty, word: string) {
   if (customCategory.value && inActiveGame.value) {
-    $q.notify({ message: t('packs.editInGame'), type: 'warning', timeout: 4000 });
+    $q.notify({ message: t('packs.editInGame'), icon: 'info', timeout: 4000 });
     return;
   }
   custom.removeWord(lang.value, id.value, difficulty, word);
@@ -202,7 +206,7 @@ function openEdit() {
 function saveEdit() {
   const result = custom.updateCategory(lang.value, id.value, editName.value);
   if (result === 'ok') editOpen.value = false;
-  else if (result === 'exists') $q.notify({ message: t('packs.nameTaken'), type: 'negative' });
+  else if (result === 'exists') $q.notify({ message: t('packs.nameTaken'), icon: 'error_outline' });
 }
 function remove() {
   custom.removeCategory(lang.value, id.value);
@@ -221,7 +225,7 @@ function remove() {
   gap: 12px;
   padding: 10px 14px;
   border-radius: 16px;
-  border-inline-start: 4px solid #f2c037;
-  background: rgba(251, 192, 45, 0.15);
+  border-inline-start: 4px solid var(--q-primary);
+  background: color-mix(in srgb, var(--q-primary) 12%, transparent);
 }
 </style>

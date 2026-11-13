@@ -233,7 +233,7 @@ async function install() {
 async function share() {
   const result = await shareApp(t('appName'), t('home.shareText'));
   if (result === 'copied') $q.notify({ message: t('home.linkCopied'), timeout: 2000 });
-  else if (result === 'failed') $q.notify({ message: t('home.shareFailed'), type: 'negative' });
+  else if (result === 'failed') $q.notify({ message: t('home.shareFailed'), icon: 'error_outline' });
 }
 
 const sound = computed({

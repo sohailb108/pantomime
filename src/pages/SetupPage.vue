@@ -327,7 +327,7 @@
         icon="category"
       >
         <div class="q-mb-md">
-          <div class="q-mb-xs" :class="{ 'text-negative': !enoughCategories }">
+          <div class="q-mb-xs" :class="{ 'text-primary text-weight-bold': !enoughCategories }">
             {{
               t('setup.categoriesHint', {
                 min: fmt(setup.minCategories),

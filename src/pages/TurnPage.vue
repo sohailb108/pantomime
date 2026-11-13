@@ -147,7 +147,7 @@
           <div class="col">
             <q-btn
               class="full-width"
-              color="positive"
+              color="primary"
               size="lg"
               rounded
               no-caps
@@ -159,8 +159,8 @@
             <q-btn
               v-if="phase === 'play'"
               class="full-width"
-              color="warning"
-              text-color="black"
+              outline
+              color="primary"
               size="lg"
               rounded
               no-caps
@@ -190,7 +190,7 @@
           <div class="col">
             <q-btn
               class="full-width"
-              color="positive"
+              color="primary"
               size="lg"
               rounded
               no-caps
@@ -201,7 +201,7 @@
           <div class="col">
             <q-btn
               class="full-width"
-              :color="confirmGiveUp ? 'negative' : 'grey'"
+              :color="confirmGiveUp ? 'grey-9' : 'grey'"
               size="lg"
               rounded
               no-caps
@@ -240,7 +240,7 @@
         <div class="col">
           <q-btn
             class="full-width"
-            color="positive"
+            color="primary"
             size="lg"
             rounded
             no-caps
@@ -251,7 +251,8 @@
         <div class="col">
           <q-btn
             class="full-width"
-            color="negative"
+            outline
+            color="primary"
             size="lg"
             rounded
             no-caps
@@ -321,7 +322,7 @@
           <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1 wrap-anywhere">
             {{ t('turn.wordWas', { word }) }}
           </div>
-          <div v-if="emptiedMsg" class="q-px-md q-py-sm text-body2 text-warning">
+          <div v-if="emptiedMsg" class="q-px-md q-py-sm text-body2">
             {{ t('packs.emptiedHint') }}
           </div>
           <div v-if="noWords" class="q-pa-md text-grey-7">{{ t('turn.noMoreWords') }}</div>
@@ -698,9 +699,9 @@ const rerollCost = computed(() =>
 /** Extra lines under the points: fast-guess bonus and the penalties that applied. */
 const breakdown = computed(() =>
   [
-    { icon: 'bolt', color: 'positive', label: t('turn.fastBonus'), n: bonus.value },
-    { icon: 'skip_next', color: 'warning', label: t('turn.skipsCost'), n: -skipCost.value },
-    { icon: 'autorenew', color: 'warning', label: t('turn.rerollCost'), n: -rerollCost.value },
+    { icon: 'bolt', color: 'primary', label: t('turn.fastBonus'), n: bonus.value },
+    { icon: 'skip_next', color: 'primary', label: t('turn.skipsCost'), n: -skipCost.value },
+    { icon: 'autorenew', color: 'primary', label: t('turn.rerollCost'), n: -rerollCost.value },
   ]
     .filter((b) => b.n !== 0)
     .map((b) => ({ ...b, value: signed(b.n) })),

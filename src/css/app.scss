@@ -126,14 +126,8 @@ body.body--dark .action-bar {
   gap: 12px;
   padding: 12px 16px;
   border-radius: 16px;
-  border-inline-start: 4px solid var(--tone);
-  background: color-mix(in srgb, var(--tone) 14%, transparent);
-  &.ok {
-    --tone: #21ba45;
-  }
-  &.fail {
-    --tone: #c10015;
-  }
+  border-inline-start: 4px solid var(--q-primary);
+  background: color-mix(in srgb, var(--q-primary) 12%, transparent);
 }
 
 // Long words (see config/limits.ts): smaller text, so up to 80 characters still fit.

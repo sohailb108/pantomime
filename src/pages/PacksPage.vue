@@ -19,7 +19,7 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-weight-bold">{{ c.name }}</q-item-label>
-            <q-item-label v-if="c.custom && !complete(c.id)" caption class="text-warning">
+            <q-item-label v-if="c.custom && !complete(c.id)" caption class="text-primary">
               {{ t('packs.incomplete') }}
             </q-item-label>
             <q-item-label v-else-if="extraCount(c.id, c.custom) > 0" caption>
@@ -85,7 +85,7 @@
         <q-icon
           :name="messageOk ? 'check_circle' : 'error'"
           size="24px"
-          :color="messageOk ? 'positive' : 'negative'"
+          color="primary"
         />
         <div>{{ message }}</div>
       </div>
@@ -169,7 +169,7 @@ function openNew() {
 function create() {
   const result = custom.addCategory(lang.value, newName.value);
   if (result === null) {
-    $q.notify({ message: t('packs.createFailed'), type: 'negative', timeout: 4000 });
+    $q.notify({ message: t('packs.createFailed'), icon: 'error_outline', timeout: 4000 });
     return;
   }
   newOpen.value = false;
@@ -202,7 +202,7 @@ function doExport() {
 function openImport() {
   // Importing can merge or remove categories that a running game still uses.
   if (game.state !== null && game.state.status !== 'finished' && game.lang === lang.value) {
-    $q.notify({ message: t('packs.importInGame'), type: 'warning', timeout: 4000 });
+    $q.notify({ message: t('packs.importInGame'), icon: 'info', timeout: 4000 });
     return;
   }
   fileInput.value?.click();
