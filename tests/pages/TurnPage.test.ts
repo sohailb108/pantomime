@@ -206,5 +206,54 @@ describe('TurnPage', () => {
       expect(hasButton(wrapper, en.stealRight)).toBe(true);
       expect(hasButton(wrapper, en.undo)).toBe(false);
     });
+
+    it('undoes a right steal and then the give-up, one step at a time', async () => {
+      const { wrapper } = await openTurn('single', ['alpha']);
+      await press(wrapper, en.showWord);
+      await press(wrapper, en.start);
+      await press(wrapper, en.giveUp);
+      await press(wrapper, en.giveUpConfirm);
+      await press(wrapper, en.stealRight);
+      expect(wrapper.text()).toContain(en.resultTitle);
+      await press(wrapper, en.undo);
+      expect(hasButton(wrapper, en.stealRight)).toBe(true);
+      await press(wrapper, en.undo);
+      expect(hasButton(wrapper, en.guessed)).toBe(true);
+      expect(hasButton(wrapper, en.undo)).toBe(false);
+    });
+
+    it('can undo a steal after a timeout, but no further', async () => {
+      const { wrapper } = await openTurn('single', ['alpha']);
+      await press(wrapper, en.showWord);
+      await press(wrapper, en.start);
+      await vi.advanceTimersByTimeAsync(31_000);
+      await press(wrapper, en.stealWrong);
+      await press(wrapper, en.undo);
+      expect(hasButton(wrapper, en.stealRight)).toBe(true);
+      expect(hasButton(wrapper, en.undo)).toBe(false);
+    });
+
+    it('takes back a guess after a reroll without losing the reroll penalty', async () => {
+      /** Plays one turn with a reroll and a guess, optionally undoing the guess first. */
+      async function turn(withUndo: boolean) {
+        const { wrapper, game } = await openTurn('single', ['alpha', 'beta']);
+        const team = game.state!.currentTeam;
+        await press(wrapper, en.showWord);
+        const reroll = wrapper.findAll('button').find((b) => b.text().includes('Change word'));
+        await reroll!.trigger('click');
+        await press(wrapper, en.start);
+        await press(wrapper, en.guessed);
+        if (withUndo) {
+          await press(wrapper, en.undo);
+          await press(wrapper, en.guessed);
+        }
+        await press(wrapper, en.next);
+        await flushPromises();
+        wrapper.unmount();
+        return scoreOf(game, team);
+      }
+      const plain = await turn(false);
+      expect(await turn(true)).toBe(plain);
+    });
   });
 });

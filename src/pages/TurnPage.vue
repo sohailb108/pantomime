@@ -227,7 +227,7 @@
       <div>{{ t('turn.stealHint', { team: stealerName }) }}</div>
       <PeekWord class="full-width" :word="word ?? ''" :label="t('turn.peek')" />
       <q-btn
-        v-if="undoTo"
+        v-if="undoStack.length > 0"
         outline
         size="lg"
         rounded
@@ -339,7 +339,7 @@
           @click="finish"
         />
         <q-btn
-          v-if="isMulti ? multiEnd : undoTo"
+          v-if="isMulti ? multiEnd : undoStack.length > 0"
           outline
           size="lg"
           rounded
@@ -616,61 +616,59 @@ function startSingle() {
   countdown.start(singleTimer(tile.value!.difficulty, single.value));
 }
 // Undo (single-word mode). Scores are only saved on "Continue", so a mistaken tap is reverted by
-// going back a phase, dropping the deltas that tap added and continuing the paused clock.
-/** The phase Undo returns to, or null when there is nothing to undo (e.g. time ran out). */
-const undoTo = ref<'play' | 'steal' | null>(null);
-/** How many entries at the end of `deltas` the last tap added. */
-const undoPop = ref(0);
+// restoring the phase, deltas and bonus from before it, and continuing the paused clock.
+interface UndoSnap {
+  phase: Phase;
+  deltas: ScoreDelta[];
+  bonus: number;
+}
+/** One snapshot per tap that can be taken back, newest last. Empty when nothing can be undone. */
+const undoStack = ref<UndoSnap[]>([]);
+function rememberForUndo() {
+  undoStack.value.push({
+    phase: phase.value,
+    deltas: deltas.value.map((d) => ({ ...d })),
+    bonus: bonus.value,
+  });
+}
 function undo() {
-  const to = undoTo.value;
-  if (!to) return;
-  deltas.value.splice(deltas.value.length - undoPop.value);
-  undoPop.value = 0;
-  bonus.value = 0;
+  const snap = undoStack.value.pop();
+  if (!snap) return;
+  deltas.value = snap.deltas;
+  bonus.value = snap.bonus;
   giveUpTap.reset();
-  if (to === 'play') {
-    undoTo.value = null;
-    phase.value = 'play';
-    countdown.resume();
-  } else {
-    // After a timeout the steal screen is as far back as Undo goes.
-    undoTo.value = timedOut.value ? null : 'play';
-    phase.value = 'steal';
-  }
+  phase.value = snap.phase;
+  if (snap.phase === 'play') countdown.resume();
 }
 function guessed() {
   cue('good');
   const score = scoreSingleSuccess(tileValue.value, countdown.elapsedSeconds(), single.value);
+  rememberForUndo();
   countdown.pause();
   bonus.value = score.bonus;
   deltas.value.push({ teamId: team.value!.id, points: score.total });
-  undoTo.value = 'play';
-  undoPop.value = 1;
   phase.value = 'result';
 }
 function giveUp() {
   giveUpTap.tap(() => failSingle());
 }
-/** The clock ran out (it was stopped, not paused), so the turn can never go back to play. */
-const timedOut = ref(false);
 function failSingle(timeUp = false) {
-  // Time that ran out cannot be given back, so only a deliberate give-up can be undone.
-  timedOut.value = timeUp;
-  if (timeUp) countdown.stop();
-  else countdown.pause();
-  undoTo.value = timeUp ? null : 'play';
-  undoPop.value = 0;
+  if (timeUp) {
+    // Time that ran out cannot be given back, so only a deliberate give-up can be undone.
+    undoStack.value = [];
+    countdown.stop();
+  } else {
+    rememberForUndo();
+    countdown.pause();
+  }
   giveUpTap.reset();
   phase.value = stealer.value === null ? 'result' : 'steal';
 }
 function steal(right: boolean) {
+  rememberForUndo();
   if (right && stealer.value !== null) {
     deltas.value.push({ teamId: stealer.value, points: stealValue.value });
-    undoPop.value = 1;
-  } else {
-    undoPop.value = 0;
   }
-  undoTo.value = 'steal';
   phase.value = 'result';
 }
 
