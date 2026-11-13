@@ -40,17 +40,70 @@
               <div class="help-text">{{ i18n.rt(item.b ?? '', values) }}</div>
             </div>
           </template>
+          <div v-if="id === 'about' && updateSupported" class="q-pt-sm">
+            <q-btn
+              outline
+              rounded
+              no-caps
+              color="primary"
+              icon="system_update"
+              :loading="checking"
+              :label="t('update.check')"
+              @click="checkUpdate"
+            />
+            <q-btn
+              class="q-ml-sm"
+              outline
+              rounded
+              no-caps
+              color="primary"
+              icon="restart_alt"
+              :label="t('update.reset')"
+              @click="resetOpen = true"
+            />
+          </div>
         </div>
       </q-expansion-item>
     </div>
+
+    <q-dialog v-model="resetOpen" :persistent="resetting">
+      <q-card flat class="dialog-card">
+        <div class="dialog-head">
+          <div class="dialog-icon"><q-icon name="restart_alt" size="22px" /></div>
+          <div class="text-h6 text-weight-bold">{{ t('update.resetTitle') }}</div>
+        </div>
+        <p class="q-mb-none">{{ t('update.resetBody') }}</p>
+        <div class="dialog-actions">
+          <q-btn
+            v-close-popup
+            outline
+            rounded
+            no-caps
+            color="primary"
+            :disable="resetting"
+            :label="t('setup.close')"
+          />
+          <q-btn
+            rounded
+            no-caps
+            color="negative"
+            :loading="resetting"
+            :label="t('update.resetConfirm')"
+            @click="reset"
+          />
+        </div>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { helpValues } from '@/i18n/help';
+import { checkForUpdate, resetApp, updateSupported } from '@/services/update';
 import { useSettingsStore } from '@/stores/settings';
 
 /** A help entry: a title with a body, or (g) a group heading. */
@@ -86,6 +139,7 @@ const ICONS: Record<(typeof sectionIds)[number], string> = {
 
 const i18n = useI18n();
 const { t } = i18n;
+const $q = useQuasar();
 const router = useRouter();
 const settings = useSettingsStore();
 
@@ -98,6 +152,23 @@ const items = (id: string): HelpItem[] => {
   const raw: unknown = i18n.tm(`help.sections.${id}.items`);
   return raw as HelpItem[];
 };
+
+const checking = ref(false);
+async function checkUpdate() {
+  checking.value = true;
+  const result = await checkForUpdate();
+  checking.value = false;
+  // A downloaded update already shows the refresh prompt from App.vue.
+  if (result === 'latest') $q.notify({ message: t('update.latest'), icon: 'check_circle' });
+  else if (result === 'failed') $q.notify({ message: t('update.failed'), icon: 'error_outline' });
+}
+
+const resetOpen = ref(false);
+const resetting = ref(false);
+async function reset() {
+  resetting.value = true;
+  await resetApp();
+}
 
 function goBack() {
   if (window.history.length > 1) router.back();

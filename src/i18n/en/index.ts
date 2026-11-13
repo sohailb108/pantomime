@@ -188,6 +188,13 @@ export default {
     home: 'Home',
   },
   update: {
+    reset: 'Reset the app',
+    resetTitle: 'Reset everything?',
+    resetBody: 'This deletes all settings, custom words and the saved game, clears every cache, and reloads the app fresh. This cannot be undone.',
+    resetConfirm: 'Reset',
+    check: 'Check for updates',
+    latest: "You're on the latest version.",
+    failed: "Couldn't check for updates. Check your connection and try again.",
     available: 'A new version is available.',
     refresh: 'Refresh',
   },

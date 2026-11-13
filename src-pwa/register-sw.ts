@@ -1,5 +1,5 @@
 import { register } from 'register-service-worker';
-import { updateReady } from '@/services/update';
+import { setRegistration, updateReady } from '@/services/update';
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
@@ -16,8 +16,8 @@ register(import.meta.env.QUASAR_SERVICE_WORKER_FILE, {
     // console.log('Service worker is active.')
   },
 
-  registered(/* registration */) {
-    // console.log('Service worker has been registered.')
+  registered(registration) {
+    setRegistration(registration);
   },
 
   cached(/* registration */) {
@@ -25,7 +25,7 @@ register(import.meta.env.QUASAR_SERVICE_WORKER_FILE, {
   },
 
   updatefound(/* registration */) {
-    // console.log('New content is downloading.')
+    console.info('[sw] New version found, downloading.');
   },
 
   // The new service worker is already active. This page still runs the old code until it reloads.
@@ -37,7 +37,7 @@ register(import.meta.env.QUASAR_SERVICE_WORKER_FILE, {
     // console.log('No internet connection found. App is running in offline mode.')
   },
 
-  error(/* err */) {
-    // console.error('Error during service worker registration:', err)
+  error(err) {
+    console.error('[sw] Service worker registration or update failed:', err);
   },
 });
