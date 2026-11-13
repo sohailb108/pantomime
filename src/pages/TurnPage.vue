@@ -131,7 +131,7 @@
           </div>
         </div>
         <div class="tally text-body2 text-center text-grey-7">
-          {{ t('turn.tallyCorrect', { n: fmt(tally.correct) }) }} {{ skipsText }}
+          {{ tallyText }}
         </div>
         <q-btn
           v-if="phase === 'play' && history.length > 0"
@@ -526,10 +526,13 @@ function startMulti() {
 // Multi-word mode
 const multi = computed(() => state.value!.settings.multi);
 const canSkipNow = computed(() => canSkip(multi.value, tally.value.skips));
-const skipsText = computed(() =>
+const tallyText = computed(() =>
   multi.value.skipLimit === null
-    ? t('turn.skipsUnlimited')
-    : t('turn.skipsLeft', { n: fmt(Math.max(0, multi.value.skipLimit - tally.value.skips)) }),
+    ? t('turn.tallyUnlimited', { n: fmt(tally.value.correct) })
+    : t('turn.tallyLeft', {
+        n: fmt(tally.value.correct),
+        left: fmt(Math.max(0, multi.value.skipLimit - tally.value.skips)),
+      }),
 );
 
 // Undo (multi-word mode). Each Correct/Skip that drew a new word is remembered so it can be taken
@@ -569,8 +572,9 @@ function multiSkip() {
   cue('skip');
 }
 function undoLast() {
+  if (phase.value !== 'play') return;
   const last = history.value.pop();
-  if (!last || phase.value !== 'play') return;
+  if (!last) return;
   // The word drawn by that tap goes back to the front of the deck and off the shown list.
   deck.value.unshift(last.drawn);
   const i = shown.value.lastIndexOf(last.drawn);

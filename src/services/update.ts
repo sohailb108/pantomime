@@ -55,10 +55,15 @@ export async function checkForUpdate(): Promise<UpdateCheck> {
       // Still downloading: the refresh prompt appears by itself once it is done.
       if (result === 'timeout') return 'downloading';
       // The worker skips waiting, so it may already be active and nothing is left waiting.
+      updateReady.value = true;
       return 'ready';
     }
     // A downloaded update that is already waiting counts as ready even if the prompt has not shown.
-    return updateReady.value || registration.waiting ? 'ready' : 'latest';
+    if (updateReady.value || registration.waiting) {
+      updateReady.value = true;
+      return 'ready';
+    }
+    return 'latest';
   } catch {
     return 'failed';
   }

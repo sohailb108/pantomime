@@ -19,6 +19,9 @@ export function createGame(options: NewGameOptions): GameState {
   if (teamColors.length < MIN_TEAMS || teamColors.length > MAX_TEAMS) {
     throw new RangeError(`Team count must be between ${MIN_TEAMS} and ${MAX_TEAMS}`);
   }
+  if (options.starter !== undefined && !(Number.isInteger(options.starter) && options.starter >= 0 && options.starter < teamColors.length)) {
+    throw new RangeError('Starter must be one of the teams');
+  }
   const tiles = buildBoard(categoryIds, teamColors.length, rng);
   // After the board, so the board of a seeded game does not depend on who starts.
   const currentTeam =
