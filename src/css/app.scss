@@ -107,9 +107,6 @@ body.body--dark .action-bar {
     border-radius: 50%;
     color: #fff;
     background: var(--q-primary);
-    &.negative {
-      background: var(--q-negative);
-    }
   }
   .dialog-actions {
     display: flex;

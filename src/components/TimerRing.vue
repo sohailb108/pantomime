@@ -13,7 +13,7 @@
       track-color="grey-4"
       :color="secondsLeft <= 10 ? 'negative' : color"
     >
-      <div class="timer text-center" :class="{ low: secondsLeft <= 10, text: isText }">
+      <div class="timer text-center" :class="{ low: secondsLeft <= 10 && !isText, text: isText }">
         {{ label }}
       </div>
     </q-circular-progress>

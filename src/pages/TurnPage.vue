@@ -131,8 +131,7 @@
           </div>
         </div>
         <div class="tally text-body2 text-center text-grey-7">
-          {{ fmt(tally.correct) }} ✓ ·
-          {{ skipsText }}
+          {{ t('turn.tallyCorrect', { n: fmt(tally.correct) }) }} {{ skipsText }}
         </div>
         <q-btn
           v-if="phase === 'play' && history.length > 0"
@@ -281,10 +280,7 @@
             <div class="team-pill text-subtitle1 text-weight-bold" :style="pillStyle(line.teamId)">
               {{ nameOf(line.teamId) }}
             </div>
-            <div
-              class="line-points text-h5 text-weight-bold"
-              :class="line.points < 0 ? 'text-negative' : 'text-positive'"
-            >
+            <div class="line-points text-h5 text-weight-bold">
               {{ t('board.points', { n: signed(line.points) }) }}
             </div>
           </div>

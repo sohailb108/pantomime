@@ -30,7 +30,7 @@
       class="col column items-center justify-center q-gutter-y-md text-center"
     >
       <div class="gold-medal"><q-icon name="emoji_events" size="56px" color="white" /></div>
-      <div class="text-h5 text-weight-bold" :style="colorStyle(team?.color)">
+      <div class="text-h5 text-weight-bold">
         {{ t('gold.intro', { team: teamName(team?.color) }) }}
       </div>
       <div class="rules-card text-grey-8">
@@ -127,12 +127,8 @@
       <div class="result-icon" :class="success ? 'ok' : 'fail'">
         <q-icon :name="success ? 'check' : 'close'" size="56px" color="white" />
       </div>
-      <div class="text-h5 text-weight-bold" :style="colorStyle(attemptColor)">
-        {{
-          success
-            ? t('gold.successTitle', { team: teamName(attemptColor), n: fmt(gold.bonus) })
-            : t('gold.failTitle', { team: teamName(attemptColor) })
-        }}
+      <div v-if="success" class="text-h5 text-weight-bold" :style="colorStyle(attemptColor)">
+        {{ t('gold.successTitle', { team: teamName(attemptColor), n: fmt(gold.bonus) }) }}
       </div>
       <div class="word-card text-h6">{{ t('turn.wordWas', { word }) }}</div>
       <q-btn

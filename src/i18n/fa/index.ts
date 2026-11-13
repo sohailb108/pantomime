@@ -135,6 +135,7 @@ export default {
     startTurn: 'من داورم، شروع',
     correct: 'درست',
     skip: 'تعویض',
+    tallyCorrect: '{n} درست،',
     skipsLeft: '{n} بار تعویض باقی مانده',
     skipsUnlimited: 'تعویض نامحدود',
     timeUp: 'زمان تمام شد!',
@@ -196,7 +197,6 @@ export default {
     decline: 'استفاده نمی‌کنم',
     attempt: '{team}: کلمه طلایی',
     successTitle: 'طلایی! {team} {n} امتیاز گرفت',
-    failTitle: '{team} کلمه طلایی را نتوانست',
   },
   packs: {
     title: 'دسته‌بندی‌ها و کلمه‌ها',

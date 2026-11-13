@@ -28,7 +28,7 @@
             round
             dense
             icon="delete_outline"
-            color="negative"
+            color="primary"
             :aria-label="t('packs.deleteCategory')"
             @click="deleteOpen = true"
           />
@@ -106,7 +106,7 @@
     <q-dialog v-model="deleteOpen">
       <q-card flat class="dialog-card">
         <div class="dialog-head">
-          <div class="dialog-icon negative"><q-icon name="delete" size="22px" /></div>
+          <div class="dialog-icon"><q-icon name="delete" size="22px" /></div>
           <div>
             {{ inActiveGame ? t('packs.deleteInGame') : t('packs.deleteConfirm', { name: title }) }}
           </div>
@@ -118,7 +118,7 @@
             v-close-popup
             rounded
             no-caps
-            color="negative"
+            color="primary"
             :label="t('packs.deleteCategory')"
             @click="remove"
           />

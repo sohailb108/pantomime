@@ -111,7 +111,7 @@
                 outline
                 rounded
                 no-caps
-                color="negative"
+                color="primary"
                 icon="delete_outline"
                 :label="t('setup.removeTeam')"
                 :disable="setup.teamCount <= MIN_TEAMS"

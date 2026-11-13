@@ -138,6 +138,7 @@ export default {
     startTurn: 'I am the judge, start',
     correct: 'Correct',
     skip: 'Skip',
+    tallyCorrect: '{n} correct,',
     skipsLeft: '{n} skips left',
     skipsUnlimited: 'Unlimited skips',
     timeUp: "Time's up!",
@@ -199,7 +200,6 @@ export default {
       'There are no gold words left to play. They were all hidden in the words list. You can keep your points.',
     attempt: '{team}: gold word',
     successTitle: 'Gold! {team} wins {n} points',
-    failTitle: '{team} missed the gold word',
   },
   packs: {
     title: 'Categories and words',
