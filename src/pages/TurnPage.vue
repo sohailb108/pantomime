@@ -11,6 +11,16 @@
         :aria-label="t('leave.button')"
         @click="leave.open.value = true"
       />
+      <q-btn
+        v-if="phase === 'play' && countdown.running.value"
+        class="pause-btn"
+        flat
+        round
+        dense
+        icon="pause"
+        :aria-label="t('pause.button')"
+        @click="pauser.pause()"
+      />
       <div class="team-pill text-subtitle1 text-weight-bold" :style="{ background: teamHex(team.color) }">
         {{ teamName(team.color) }}
       </div>
@@ -343,6 +353,7 @@
         />
       </div>
     </div>
+    <PauseOverlay v-model="pauser.paused.value" @resume="pauser.resume()" @leave="leave.open.value = true" />
     <LeaveDialog v-model="leave.open.value" kind="turn" @board="exit('/board')" @home="exit('/')" />
   </q-page>
 </template>
@@ -353,10 +364,12 @@ import { useI18n } from 'vue-i18n';
 import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
+import PauseOverlay from '@/components/PauseOverlay.vue';
 import PeekWord from '@/components/PeekWord.vue';
 import TimerRing from '@/components/TimerRing.vue';
 import { useConfirmTap } from '@/composables/confirmTap';
 import { useCountdown } from '@/composables/countdown';
+import { usePause } from '@/composables/pause';
 import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
 import { cue } from '@/services/feedback';
@@ -423,6 +436,7 @@ const noWords = ref(false);
 const bonus = ref(0);
 
 const countdown = useCountdown(onTimeEnd);
+const pauser = usePause(countdown);
 /** Three-second countdown before the first word of a multi-word turn. */
 const GET_READY_SECONDS = 3;
 const getReady = useCountdown(startMulti);
@@ -441,7 +455,7 @@ watch(leave.open, (open) => {
     getReady.pause();
   } else {
     // Only a running turn continues; a clock kept paused for Undo stays paused.
-    if (phase.value === 'play') countdown.resume();
+    if (phase.value === 'play' && !pauser.paused.value) countdown.resume();
     getReady.resume();
   }
 });
@@ -747,10 +761,15 @@ function finish() {
   background: rgba(128, 128, 128, 0.1);
   border-top: 5px solid var(--team);
 }
-.leave-btn {
+.leave-btn,
+.pause-btn {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-start: 4px;
+}
+.pause-btn {
+  inset-inline-start: auto;
+  inset-inline-end: 4px;
 }
 .role-chip {
   margin-bottom: 8px;

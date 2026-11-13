@@ -11,6 +11,16 @@
         :aria-label="t('leave.button')"
         @click="leave.open.value = true"
       />
+      <q-btn
+        v-if="phase === 'play' && countdown.running.value"
+        class="pause-btn"
+        flat
+        round
+        dense
+        icon="pause"
+        :aria-label="t('pause.button')"
+        @click="pauser.pause()"
+      />
       <q-icon name="emoji_events" size="28px" class="q-mr-sm" />
       <span class="text-h5 text-weight-bold">{{ t('gold.title') }}</span>
     </div>
@@ -135,6 +145,7 @@
         @click="next"
       />
     </div>
+    <PauseOverlay v-model="pauser.paused.value" @resume="pauser.resume()" @leave="leave.open.value = true" />
     <LeaveDialog v-model="leave.open.value" kind="gold" @home="exit" />
   </q-page>
 </template>
@@ -145,10 +156,12 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
+import PauseOverlay from '@/components/PauseOverlay.vue';
 import PeekWord from '@/components/PeekWord.vue';
 import TimerRing from '@/components/TimerRing.vue';
 import { useConfirmTap } from '@/composables/confirmTap';
 import { useCountdown } from '@/composables/countdown';
+import { usePause } from '@/composables/pause';
 import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
 import { cue } from '@/services/feedback';
@@ -190,11 +203,15 @@ const countdown = useCountdown(() => {
   if (phase.value === 'play') cue('end');
   resolve(false);
 });
+const pauser = usePause(countdown);
 useWakeLock();
 
 // While a word is shown, leaving is confirmed first. The attempt is only counted once resolved.
 const leave = useLeaveGuard(() => phase.value === 'prep' || phase.value === 'play');
-watch(leave.open, (open) => (open ? countdown.pause() : countdown.resume()));
+watch(leave.open, (open) => {
+  if (open) countdown.pause();
+  else if (!pauser.paused.value) countdown.resume();
+});
 
 watch(countdown.secondsLeft, (n) => {
   if (phase.value === 'play' && countdown.running.value && n > 0 && n <= 5) cue('tick');
@@ -257,9 +274,14 @@ function next() {
 </script>
 
 <style scoped lang="scss">
-.leave-btn {
+.leave-btn,
+.pause-btn {
   position: absolute;
   inset-inline-start: 4px;
+}
+.pause-btn {
+  inset-inline-start: auto;
+  inset-inline-end: 4px;
 }
 .gold-header {
   position: relative;

@@ -168,6 +168,11 @@ export default {
     rerollCost: 'تعویض کلمه',
     next: 'ادامه',
   },
+  pause: {
+    button: 'توقف',
+    hint: 'ساعت متوقف است و کلمه پنهان شده است.',
+    resume: 'ادامه',
+  },
   leave: {
     button: 'خروج',
     turnTitle: 'از این نوبت خارج می‌شوید؟',

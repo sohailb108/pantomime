@@ -171,6 +171,11 @@ export default {
     rerollCost: 'Word change',
     next: 'Continue',
   },
+  pause: {
+    button: 'Pause',
+    hint: 'The clock is stopped and the word is hidden.',
+    resume: 'Resume',
+  },
   leave: {
     button: 'Leave',
     turnTitle: 'Leave this turn?',
