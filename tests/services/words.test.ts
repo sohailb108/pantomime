@@ -13,9 +13,12 @@ import {
   builtinWords,
   getGoldPool,
   getPool,
-  hidePoolWord,
-  restorePoolWord,
+  builtinPool,
+  changePoolWord,
+  nativeLevel,
+  revertPoolChange,
 } from '@/services/words';
+import { MAX_WORDS_PER_LIST } from '@/services/customData';
 import { stubLocalStorage } from '../helpers/storage';
 
 beforeEach(() => {
@@ -38,20 +41,123 @@ describe('word pools', () => {
     const custom = useCustomStore();
     custom.addWord('en', 'animals', 1, 'zebra-x');
     expect(getPool('en', 'animals', 1)).toContain('zebra-x');
-    const result = hidePoolWord('en', 'animals', 1, word);
-    expect(result).toEqual({ builtin: true, custom: false });
+    const change = changePoolWord('en', 'animals', 1, word, 'hidden')!;
+    expect(change).toMatchObject({ before: 'native', custom: null, now: null });
     expect(getPool('en', 'animals', 1)).not.toContain(word);
-    restorePoolWord('en', 'animals', 1, word, result);
+    revertPoolChange(change);
     expect(getPool('en', 'animals', 1)).toContain(word);
   });
 
-  it('removes a custom word when hiding it and puts it back on restore', () => {
+  it('removes a custom word when hiding it and puts it back on revert', () => {
     useCustomStore().addWord('en', 'animals', 1, 'zebra-x');
-    const result = hidePoolWord('en', 'animals', 1, 'zebra-x');
-    expect(result).toEqual({ builtin: false, custom: true });
+    const change = changePoolWord('en', 'animals', 1, 'zebra-x', 'hidden')!;
+    expect(change.before).toBeNull();
     expect(getPool('en', 'animals', 1)).not.toContain('zebra-x');
-    restorePoolWord('en', 'animals', 1, 'zebra-x', result);
+    revertPoolChange(change);
     expect(getPool('en', 'animals', 1)).toContain('zebra-x');
+  });
+
+  it('does nothing for a word that is not in the pool or already at the target', () => {
+    expect(changePoolWord('en', 'animals', 1, 'not-a-word', 'hidden')).toBeNull();
+    expect(changePoolWord('en', 'animals', 1, word, 1)).toBeNull();
+    expect(changePoolWord('en', 'animals', 1, word, 'native')).toBeNull();
+    expect(changePoolWord('en', 'animals', 2, word, 3)).toBeNull(); // not shown at level 2
+  });
+
+  it('moves a built-in word without changing the pack or listing it as custom', () => {
+    const custom = useCustomStore();
+    const change = changePoolWord('en', 'animals', 1, word, 3)!;
+    expect(change).toMatchObject({ before: 'native', custom: null, now: 3 });
+    expect(getPool('en', 'animals', 1)).not.toContain(word);
+    expect(getPool('en', 'animals', 3)).toContain(word);
+    expect(builtinWords('en', 'animals', 1)).toContain(word);
+    expect(custom.wordsOf('en', 'animals', 3)).toEqual([]);
+    expect(builtinPool('en', 'animals', 3)).toContain(word);
+    expect(nativeLevel('en', 'animals', word)).toBe(1);
+    revertPoolChange(change);
+    expect(getPool('en', 'animals', 1)).toContain(word);
+    expect(getPool('en', 'animals', 3)).not.toContain(word);
+    expect(custom.of('en').overrides).toEqual({});
+  });
+
+  it('moves a moved word on, and back to its original level', () => {
+    const custom = useCustomStore();
+    changePoolWord('en', 'animals', 1, word, 3);
+    const onward = changePoolWord('en', 'animals', 3, word, 2)!;
+    expect(onward.before).toBe(3);
+    expect(getPool('en', 'animals', 2)).toContain(word);
+    const back = changePoolWord('en', 'animals', 2, word, 'native')!;
+    expect(back.now).toBe(1);
+    expect(getPool('en', 'animals', 1)).toContain(word);
+    expect(custom.of('en').overrides).toEqual({});
+    revertPoolChange(back);
+    expect(getPool('en', 'animals', 2)).toContain(word);
+  });
+
+  it('needs no entry when a word is moved to where the pack put it', () => {
+    const custom = useCustomStore();
+    changePoolWord('en', 'animals', 1, word, 3);
+    changePoolWord('en', 'animals', 3, word, 1);
+    expect(custom.of('en').overrides).toEqual({});
+  });
+
+  it('hides a moved word at its new level, and shows it again where the pack put it', () => {
+    const custom = useCustomStore();
+    changePoolWord('en', 'animals', 1, word, 3);
+    changePoolWord('en', 'animals', 3, word, 'hidden');
+    expect(getPool('en', 'animals', 3)).not.toContain(word);
+    expect(custom.hiddenOf('en', 'animals')).toEqual([word]);
+    custom.placeWord('en', 'animals', word, 'native');
+    expect(getPool('en', 'animals', 1)).toContain(word);
+  });
+
+  it('moves a custom word by removing it and adding it at the target', () => {
+    const custom = useCustomStore();
+    custom.addWord('en', 'animals', 1, 'zebra-x');
+    const change = changePoolWord('en', 'animals', 1, 'zebra-x', 2)!;
+    expect(change).toMatchObject({ before: null, custom: { addedTo: 2 }, now: 2 });
+    expect(custom.wordsOf('en', 'animals', 1)).not.toContain('zebra-x');
+    expect(custom.wordsOf('en', 'animals', 2)).toContain('zebra-x');
+    revertPoolChange(change);
+    expect(custom.wordsOf('en', 'animals', 1)).toContain('zebra-x');
+    expect(custom.wordsOf('en', 'animals', 2)).not.toContain('zebra-x');
+  });
+
+  it('keeps a copy that was already at the target when a custom move is taken back', () => {
+    const custom = useCustomStore();
+    custom.addWord('en', 'animals', 1, 'zebra-x');
+    custom.addWord('en', 'animals', 2, 'Zebra-X');
+    const change = changePoolWord('en', 'animals', 1, 'zebra-x', 2)!;
+    expect(change.custom).toEqual({ addedTo: null });
+    expect(custom.wordsOf('en', 'animals', 1)).toEqual([]);
+    revertPoolChange(change);
+    expect(custom.wordsOf('en', 'animals', 1)).toEqual(['zebra-x']);
+    expect(custom.wordsOf('en', 'animals', 2)).toEqual(['Zebra-X']);
+  });
+
+  it('refuses a custom move into a full list and changes nothing', () => {
+    const custom = useCustomStore();
+    custom.addWord('en', 'animals', 1, 'zebra-x');
+    const list = custom.data.en!.extra.animals![2];
+    for (let i = 0; i < MAX_WORDS_PER_LIST; i++) list.push(`w${i}`);
+    expect(changePoolWord('en', 'animals', 1, 'zebra-x', 2)).toBeNull();
+    expect(custom.wordsOf('en', 'animals', 1)).toEqual(['zebra-x']);
+  });
+
+  it('moves both a custom word and its built-in twin', () => {
+    const custom = useCustomStore();
+    custom.addWord('en', 'animals', 1, word.toUpperCase());
+    const twin = changePoolWord('en', 'animals', 1, word.toUpperCase(), 'hidden')!;
+    expect(twin.before).toBe('native');
+    expect(twin.custom).toEqual({ addedTo: null });
+    expect(getPool('en', 'animals', 1).map((w) => w.toLowerCase())).not.toContain(word.toLowerCase());
+    revertPoolChange(twin);
+    expect(getPool('en', 'animals', 1).map((w) => w.toLowerCase())).toContain(word.toLowerCase());
+  });
+
+  it('draws a word once when a custom word matches a built-in one at the same level', () => {
+    useCustomStore().addWord('en', 'animals', 1, word.toUpperCase());
+    expect(getPool('en', 'animals', 1).filter((w) => w.toLowerCase() === word.toLowerCase())).toHaveLength(1);
   });
 
   it('builds the gold pool from built-in and custom words', () => {

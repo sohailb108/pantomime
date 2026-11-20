@@ -64,11 +64,14 @@
           :title="t(`packs.difficulty${d}`)"
           :tone="TONES[d]"
           :words="custom.wordsOf(lang, id, d)"
-          :builtin-count="customCategory ? undefined : builtinWords(lang, id, d).length"
-          :hidden="custom.hiddenOf(lang, id, d)"
-          @unhide="(w) => custom.unhideWord(lang, id, d, w)"
+          :builtin-count="customCategory ? undefined : builtinPool(lang, id, d).length"
           :on-add="(w) => custom.addWord(lang, id, d, w)"
           @remove="(w) => removeWord(d, w)"
+        />
+        <HiddenWords
+          v-if="!customCategory && custom.hiddenOf(lang, id).length > 0"
+          :words="custom.hiddenOf(lang, id)"
+          @unhide="(w) => custom.placeWord(lang, id, w, 'native')"
         />
       </template>
     </div>
@@ -139,11 +142,12 @@ import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
+import HiddenWords from '@/components/HiddenWords.vue';
 import WordList from '@/components/WordList.vue';
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { listAllCategories } from '@/services/packs';
-import { builtinGoldWords, builtinWords, getPool } from '@/services/words';
+import { builtinGoldWords, builtinPool, getPool } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';

@@ -9,6 +9,8 @@ import {
   absorbBuiltinDuplicates,
   findCategoryByName,
   mergeInto,
+  place,
+  placementOf,
   restoreOrphanedExtras,
   normalizeLang,
   normalizeWord,
@@ -112,15 +114,15 @@ describe('export and import', () => {
     expect(target.categories[0]!.words[1]).toEqual(['golf', 'tennis']);
   });
 
-  it('merges extra and hidden words under ids that name Object properties', () => {
+  it('merges extra words and placements under ids that name Object properties', () => {
     const target = emptyLang();
     const incoming = emptyLang();
     incoming.extra['constructor'] = { 1: ['a'], 2: [], 3: [] };
-    incoming.hidden['constructor'] = { 1: ['b'], 2: [], 3: [] };
+    incoming.overrides['constructor'] = { hidden: ['b'], 1: [], 2: [], 3: [] };
     incoming.extraNames['constructor'] = 'Constructor';
     expect(mergeInto(target, incoming)).toBe(1);
     expect(target.extra['constructor']![1]).toEqual(['a']);
-    expect(target.hidden['constructor']![1]).toEqual(['b']);
+    expect(target.overrides['constructor']!.hidden).toEqual(['b']);
     expect(target.extraNames['constructor']).toBe('Constructor');
   });
 
@@ -192,5 +194,88 @@ describe('built-in category merging', () => {
     });
     expect(findCategoryByName('sports', builtins, customs)).toEqual({ id: 'c-1', builtin: false });
     expect(findCategoryByName('sports', builtins, customs, 'c-1')).toBeUndefined();
+  });
+});
+
+describe('placing built-in words', () => {
+  it('keeps a word in one place at a time, ignoring case', () => {
+    const d = emptyLang();
+    expect(placementOf(d, 'animals', 'Cat')).toBe('native');
+    place(d, 'animals', 'Cat', 2);
+    expect(placementOf(d, 'animals', 'cat')).toBe(2);
+    place(d, 'animals', 'cat', 'hidden');
+    expect(placementOf(d, 'animals', 'Cat')).toBe('hidden');
+    expect(d.overrides.animals).toEqual({ hidden: ['cat'], 1: [], 2: [], 3: [] });
+  });
+
+  it('drops the category entry once nothing is placed', () => {
+    const d = emptyLang();
+    place(d, 'animals', 'cat', 3);
+    place(d, 'animals', 'cat', 'native');
+    expect(d.overrides).toEqual({});
+  });
+
+  it('works for category ids that name Object properties', () => {
+    const d = emptyLang();
+    place(d, 'constructor', 'cat', 1);
+    expect(placementOf(d, 'constructor', 'cat')).toBe(1);
+    expect(placementOf(d, 'toString', 'cat')).toBe('native');
+    place(d, 'constructor', 'cat', 'native');
+    expect(Object.hasOwn(d.overrides, 'constructor')).toBe(false);
+  });
+
+  it('lets the incoming placement win in a merge', () => {
+    const target = emptyLang();
+    place(target, 'animals', 'cat', 'hidden');
+    place(target, 'animals', 'dog', 1);
+    const incoming = emptyLang();
+    place(incoming, 'animals', 'cat', 3);
+    mergeInto(target, incoming);
+    expect(placementOf(target, 'animals', 'cat')).toBe(3);
+    expect(placementOf(target, 'animals', 'dog')).toBe(1);
+    expect(target.overrides.animals!.hidden).toEqual([]);
+  });
+
+  it('round-trips through export and import', () => {
+    const d = emptyLang();
+    place(d, 'animals', 'cat', 'hidden');
+    place(d, 'animals', 'dog', 3);
+    const parsed = parseImport(JSON.stringify(buildExport('en', d)));
+    expect(parsed).toEqual({ ok: true, lang: 'en', data: d });
+  });
+
+  it('keeps a word listed twice in a file in the first list only', () => {
+    const file = {
+      ...buildExport('en', emptyLang()),
+      overrides: { animals: { hidden: ['cat'], 1: ['Cat', 'dog'], 2: ['dog'], 3: [] } },
+    };
+    const parsed = parseImport(JSON.stringify(file));
+    expect(parsed.ok && parsed.data.overrides.animals).toEqual({
+      hidden: ['cat'],
+      1: ['dog'],
+      2: [],
+      3: [],
+    });
+  });
+
+  it('rejects placements under a bad category id or in a bad shape', () => {
+    const bad = (overrides: unknown) =>
+      parseImport(JSON.stringify({ ...buildExport('en', emptyLang()), overrides }));
+    expect(bad({ '../x': { hidden: [] } })).toEqual({ ok: false, error: 'invalid' });
+    expect(bad({ animals: 'cat' })).toEqual({ ok: false, error: 'invalid' });
+    expect(bad({ animals: { hidden: 'cat' } })).toEqual({ ok: false, error: 'invalid' });
+  });
+
+  it('drops placements of categories that no longer exist', () => {
+    const data = normalizeLang({});
+    place(data, 'zoo', 'lion', 2);
+    place(data, 'animals', 'cat', 'hidden');
+    restoreOrphanedExtras(data, [{ id: 'animals' }], () => 'c-new');
+    expect(Object.keys(data.overrides)).toEqual(['animals']);
+  });
+
+  it('ignores saved fields it does not know', () => {
+    const saved = { gold: ['x'], hidden: { animals: {} } } as never;
+    expect(normalizeLang(saved)).toEqual({ ...emptyLang(), gold: ['x'] });
   });
 });

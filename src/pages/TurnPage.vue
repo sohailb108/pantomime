@@ -304,7 +304,10 @@
           </div>
           <q-list v-if="shown.length > 0" class="words-list" separator>
             <q-item v-for="w in shown" :key="w">
-              <q-item-section class="text-subtitle1 wrap-anywhere">{{ w }}</q-item-section>
+              <q-item-section class="text-subtitle1 wrap-anywhere">
+                {{ w }}
+                <q-item-label v-if="statusOf(w)" caption>{{ statusOf(w) }}</q-item-label>
+              </q-item-section>
               <q-item-section side>
                 <q-btn
                   outline
@@ -312,10 +315,37 @@
                   no-caps
                   color="primary"
                   size="sm"
-                  :icon="hiddenNow[w] ? 'undo' : 'visibility_off'"
-                  :label="hiddenNow[w] ? t('turn.hiddenUndo') : t('turn.hideShort')"
-                  @click="toggleHide(w)"
-                />
+                  icon="tune"
+                  :label="t('turn.changeWord')"
+                >
+                  <q-menu auto-close>
+                    <q-list>
+                      <q-item
+                        v-for="d in moveTargets(w)"
+                        :key="d"
+                        clickable
+                        @click="choose(w, d)"
+                      >
+                        <q-item-section avatar><q-icon name="swap_vert" /></q-item-section>
+                        <q-item-section>
+                          {{ t('turn.moveTo', { level: t(`turn.level${d}`) }) }}
+                        </q-item-section>
+                      </q-item>
+                      <q-item v-if="!isHidden(w)" clickable @click="choose(w, 'hidden')">
+                        <q-item-section avatar><q-icon name="visibility_off" /></q-item-section>
+                        <q-item-section>{{ t('turn.hideWord') }}</q-item-section>
+                      </q-item>
+                      <q-item v-if="canRestore(w)" clickable @click="choose(w, 'native')">
+                        <q-item-section avatar><q-icon name="restart_alt" /></q-item-section>
+                        <q-item-section>{{ t('turn.backOriginal') }}</q-item-section>
+                      </q-item>
+                      <q-item v-if="changes[w]" clickable @click="choose(w, null)">
+                        <q-item-section avatar><q-icon name="undo" /></q-item-section>
+                        <q-item-section>{{ t('turn.undoChange') }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-btn>
               </q-item-section>
             </q-item>
           </q-list>
@@ -379,11 +409,18 @@ import {
   stealPoints,
   stealTeam,
 } from '@/game/scoring';
-import type { ScoreDelta } from '@/game/types';
+import { DIFFICULTIES, type Difficulty, type ScoreDelta } from '@/game/types';
 import { formatNumber, formatSigned } from '@/services/format';
 import { categoryOrFallback, listAllCategories } from '@/services/packs';
 import { longWordClass } from '@/config/limits';
-import { getPool, hidePoolWord, restorePoolWord, type HideResult } from '@/services/words';
+import {
+  changePoolWord,
+  getPool,
+  revertPoolChange,
+  type PoolChange,
+  type Target,
+} from '@/services/words';
+import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -420,9 +457,9 @@ const deck = ref<string[]>([]);
 const word = ref<string | null>(null);
 /** Every word shown this turn, for the hide buttons on the result screen. */
 const shown = ref<string[]>([]);
-/** Words hidden from the result screen, with what hiding changed so it can be undone. */
-const hiddenNow = ref<Record<string, HideResult | undefined>>({});
-/** Shown when hiding emptied the word list, so the category is left out of new games. */
+/** Words hidden or moved on the result screen, with what that changed so it can be undone. */
+const changes = ref<Record<string, { change: PoolChange; target: Target } | undefined>>({});
+/** Shown when a change emptied the word list, so the category is left out of new games. */
 const emptiedMsg = ref(false);
 const deltas = ref<ScoreDelta[]>([]);
 const tally = ref({ correct: 0, skips: 0 });
@@ -706,18 +743,47 @@ const breakdown = computed(() =>
     .map((b) => ({ ...b, value: signed(b.n) })),
 );
 
-function toggleHide(w: string) {
+const custom = useCustomStore();
+
+/** Where the word is now: the tile's difficulty, or the one it was moved to. */
+function levelOf(w: string): Difficulty {
+  return changes.value[w]?.change.now ?? tile.value?.difficulty ?? 1;
+}
+const isHidden = (w: string) => changes.value[w]?.change.now === null;
+const moveTargets = (w: string) => DIFFICULTIES.filter((d) => d !== levelOf(w));
+/** A word that was placed elsewhere earlier can go back to where the pack put it. */
+function canRestore(w: string): boolean {
+  if (!tile.value || custom.placementOf(game.lang, tile.value.categoryId, w) === 'native') {
+    return false;
+  }
+  return changes.value[w]?.change.before !== 'native';
+}
+function statusOf(w: string): string {
+  const c = changes.value[w];
+  if (!c) return '';
+  if (c.change.now === null) return t('turn.statusHidden');
+  if (c.target === 'native') return t('turn.statusOriginal');
+  return t('turn.statusMoved', { level: t(`turn.level${c.change.now}`) });
+}
+
+/** Applies a choice from the word's menu: hide, move, back to original, or undo (null). */
+function choose(w: string, target: Target | null) {
   const t = tile.value;
   if (!t) return;
-  const was = hiddenNow.value[w];
-  if (was) {
-    restorePoolWord(game.lang, t.categoryId, t.difficulty, w, was);
-    hiddenNow.value[w] = undefined;
-    emptiedMsg.value = false;
-    return;
+  // A new choice starts from the word as it was, so changes never pile up.
+  const previous = changes.value[w];
+  if (previous) revertPoolChange(previous.change);
+  changes.value[w] = undefined;
+  if (target !== null) {
+    const change = changePoolWord(game.lang, t.categoryId, t.difficulty, w, target);
+    if (change) {
+      changes.value[w] = { change, target };
+      // Not shown again soon at its new difficulty, as it was just played.
+      if (change.now !== null && change.now !== t.difficulty) {
+        game.markTileSeen(t.categoryId, change.now, w);
+      }
+    }
   }
-  const result = hidePoolWord(game.lang, t.categoryId, t.difficulty, w);
-  hiddenNow.value[w] = result;
   emptiedMsg.value = getPool(game.lang, t.categoryId, t.difficulty).length === 0;
 }
 

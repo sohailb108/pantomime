@@ -9,9 +9,11 @@ import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
 import messages from '@/i18n';
 import TurnPage from '@/pages/TurnPage.vue';
+import { builtinWords, getPool } from '@/services/words';
+import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
-import type { Mode } from '@/game/types';
+import type { Difficulty, Mode } from '@/game/types';
 
 const en = messages.en.turn;
 
@@ -29,7 +31,7 @@ function memoryStorage() {
 }
 
 /** Mounts the turn page for the first tile of a new game, with a fixed deck of words. */
-async function openTurn(mode: Mode, deck: string[]) {
+async function openTurn(mode: Mode, deckOf: string[] | ((game: ReturnType<typeof useGameStore>) => string[])) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useSettingsStore().language = 'en';
@@ -42,6 +44,7 @@ async function openTurn(mode: Mode, deck: string[]) {
     lang: 'en',
   });
   game.pick(0);
+  const deck = typeof deckOf === 'function' ? deckOf(game) : deckOf;
   vi.spyOn(game, 'tileDeck').mockReturnValue([...deck]);
 
   const stub = (name: string) => defineComponent({ name, render: () => h('div', name) });
@@ -254,6 +257,135 @@ describe('TurnPage', () => {
       }
       const plain = await turn(false);
       expect(await turn(true)).toBe(plain);
+    });
+  });
+
+  describe('changing a word on the result screen', () => {
+    const other = (level: Difficulty): Difficulty => (level === 1 ? 2 : 1);
+
+    /**
+     * Plays a single-word turn up to the result. The word shown is the first one of the tile's real
+     * pool, or with `movedIn` a word of another difficulty that was moved here earlier. `keepOnly`
+     * hides every other word of the pool.
+     */
+    async function toResult(options: { movedIn?: boolean; keepOnly?: boolean } = {}) {
+      let word = '';
+      let cat = '';
+      let level: Difficulty = 1;
+      let native: Difficulty = 1;
+      const t = await openTurn('single', (game) => {
+        const tile = game.state!.tiles[0]!;
+        cat = tile.categoryId;
+        level = tile.difficulty;
+        native = other(level);
+        const custom = useCustomStore();
+        if (options.movedIn) {
+          word = builtinWords('en', cat, native)[0]!;
+          custom.placeWord('en', cat, word, level);
+        } else {
+          word = getPool('en', cat, level)[0]!;
+        }
+        if (options.keepOnly) {
+          for (const w of getPool('en', cat, level)) {
+            if (w !== word) custom.placeWord('en', cat, w, 'hidden');
+          }
+        }
+        return [word];
+      });
+      await press(t.wrapper, en.showWord);
+      await press(t.wrapper, en.start);
+      await press(t.wrapper, en.guessed);
+      expect(t.wrapper.text()).toContain(en.resultTitle);
+      return { ...t, word, cat, level, native };
+    }
+    const row = (wrapper: VueWrapper, word: string) =>
+      wrapper.findAll('.words-list .q-item').find((r) => r.text().includes(word))!;
+    /** Opens the row's Change menu and taps the entry whose text contains `label`. */
+    async function choose(wrapper: VueWrapper, word: string, label: string) {
+      await row(wrapper, word).find('button').trigger('click');
+      await vi.advanceTimersByTimeAsync(500);
+      const item = [...document.body.querySelectorAll<HTMLElement>('.q-menu .q-item')].find((i) =>
+        i.textContent?.includes(label),
+      );
+      if (!item) throw new Error(`No menu entry "${label}"`);
+      item.click();
+      await vi.advanceTimersByTimeAsync(500);
+    }
+    const menuLabels = async (wrapper: VueWrapper, word: string) => {
+      await row(wrapper, word).find('button').trigger('click');
+      await vi.advanceTimersByTimeAsync(500);
+      return [...document.body.querySelectorAll('.q-menu .q-item__section--main')].map((i) =>
+        i.textContent?.trim(),
+      );
+    };
+    it('hides a word, and undo brings it back', async () => {
+      const { wrapper, word, cat, level } = await toResult();
+      await choose(wrapper, word, en.hideWord);
+      expect(getPool('en', cat, level)).not.toContain(word);
+      expect(row(wrapper, word).text()).toContain(en.statusHidden);
+      await choose(wrapper, word, en.undoChange);
+      expect(getPool('en', cat, level)).toContain(word);
+      expect(row(wrapper, word).text()).not.toContain(en.statusHidden);
+    });
+
+    it('moves a word to another difficulty and marks it as seen there', async () => {
+      const { wrapper, word, cat, level, game } = await toResult();
+      const spy = vi.spyOn(game, 'markTileSeen');
+      const to = other(level);
+      await choose(wrapper, word, en.moveTo.replace('{level}', en[`level${to}`]));
+      expect(getPool('en', cat, level)).not.toContain(word);
+      expect(getPool('en', cat, to)).toContain(word);
+      expect(spy).toHaveBeenCalledWith(cat, to, word);
+      expect(row(wrapper, word).text()).toContain(en.statusMoved.replace('{level}', en[`level${to}`]));
+      expect(useCustomStore().wordsOf('en', cat, to)).toEqual([]);
+    });
+
+    it('does not offer the word\'s own difficulty as a target', async () => {
+      const { wrapper, word, level } = await toResult();
+      const labels = await menuLabels(wrapper, word);
+      expect(labels.some((l) => l?.includes(en.moveTo.replace('{level}', en[`level${level}`])))).toBe(false);
+      expect(labels).toContain(en.hideWord);
+      expect(labels).not.toContain(en.undoChange);
+      expect(labels).not.toContain(en.backOriginal);
+    });
+
+    it('starts from the original word when the choice changes', async () => {
+      const { wrapper, word, cat, level } = await toResult();
+      const to = other(level);
+      await choose(wrapper, word, en.moveTo.replace('{level}', en[`level${to}`]));
+      await choose(wrapper, word, en.hideWord);
+      expect(getPool('en', cat, to)).not.toContain(word);
+      expect(getPool('en', cat, level)).not.toContain(word);
+      await choose(wrapper, word, en.undoChange);
+      expect(getPool('en', cat, level)).toContain(word);
+      expect(getPool('en', cat, to)).not.toContain(word);
+      expect(useCustomStore().of('en').overrides).toEqual({});
+    });
+
+    it('lets a word moved earlier go back to its original level', async () => {
+      const { wrapper, word, cat, native } = await toResult({ movedIn: true });
+      const labels = await menuLabels(wrapper, word);
+      expect(labels).toContain(en.backOriginal);
+      expect(labels).not.toContain(en.undoChange);
+      // The menu is still open from reading its entries: tap the entry in it.
+      [...document.body.querySelectorAll<HTMLElement>('.q-menu .q-item')]
+        .find((i) => i.textContent?.includes(en.backOriginal))!
+        .click();
+      await vi.advanceTimersByTimeAsync(500);
+      expect(useCustomStore().placementOf('en', cat, word)).toBe('native');
+      expect(getPool('en', cat, native)).toContain(word);
+      expect(row(wrapper, word).text()).toContain(en.statusOriginal);
+      await choose(wrapper, word, en.undoChange);
+      expect(getPool('en', cat, native)).not.toContain(word);
+    });
+
+    it('warns when the change leaves the list without words', async () => {
+      const { wrapper, word, cat, level } = await toResult({ keepOnly: true });
+      await choose(wrapper, word, en.hideWord);
+      expect(getPool('en', cat, level)).toEqual([]);
+      expect(wrapper.text()).toContain(messages.en.packs.emptiedHint);
+      await choose(wrapper, word, en.undoChange);
+      expect(wrapper.text()).not.toContain(messages.en.packs.emptiedHint);
     });
   });
 });

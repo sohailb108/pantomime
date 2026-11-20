@@ -4,7 +4,13 @@ import { nextTick } from 'vue';
 import { useCustomStore } from '@/stores/custom';
 import { saveJson } from '@/services/storage';
 import { listCategories } from '@/services/packs';
-import { builtinWords, getGoldPool, getPool, hidePoolWord, restorePoolWord } from '@/services/words';
+import {
+  builtinWords,
+  changePoolWord,
+  getGoldPool,
+  getPool,
+  revertPoolChange,
+} from '@/services/words';
 
 function memoryStorage() {
   const data = new Map<string, string>();
@@ -60,7 +66,7 @@ describe('custom store', () => {
     const s = fresh();
     expect(listCategories('en').some((c) => c.id === 'animals')).toBe(true);
     // A crafted import can hide every word of a pool, which the UI itself refuses to do.
-    for (const w of builtinWords('en', 'animals', 1)) s.hideWord('en', 'animals', 1, w);
+    for (const w of builtinWords('en', 'animals', 1)) s.placeWord('en', 'animals', w, 'hidden');
     expect(getPool('en', 'animals', 1)).toEqual([]);
     expect(listCategories('en').some((c) => c.id === 'animals')).toBe(false);
   });
@@ -85,17 +91,17 @@ describe('hiding built-in words', () => {
     const all = getPool('en', 'food', 1);
     expect(all.length).toBeGreaterThan(1);
     const word = all[0]!;
-    s.hideWord('en', 'food', 1, word);
+    s.placeWord('en', 'food', word, 'hidden');
     expect(getPool('en', 'food', 1)).not.toContain(word);
     await nextTick();
-    expect(fresh().hiddenOf('en', 'food', 1)).toEqual([word]);
-    s.unhideWord('en', 'food', 1, word);
+    expect(fresh().hiddenOf('en', 'food')).toEqual([word]);
+    s.placeWord('en', 'food', word, 'native');
     expect(getPool('en', 'food', 1)).toContain(word);
   });
 
   it('can hide the last word, which takes the category out of new games', () => {
     fresh();
-    for (const w of getPool('en', 'food', 1)) hidePoolWord('en', 'food', 1, w);
+    for (const w of getPool('en', 'food', 1)) changePoolWord('en', 'food', 1, w, 'hidden');
     expect(getPool('en', 'food', 1)).toHaveLength(0);
     expect(listCategories('en').some((c) => c.id === 'food')).toBe(false);
   });
@@ -103,10 +109,10 @@ describe('hiding built-in words', () => {
   it('removes a custom word when hiding it, and restores it', () => {
     const s = fresh();
     s.addWord('en', 'food', 1, 'zzcustom');
-    const was = hidePoolWord('en', 'food', 1, 'zzcustom');
-    expect(was).toEqual({ builtin: false, custom: true });
+    const change = changePoolWord('en', 'food', 1, 'zzcustom', 'hidden')!;
+    expect(change.before).toBeNull();
     expect(getPool('en', 'food', 1)).not.toContain('zzcustom');
-    restorePoolWord('en', 'food', 1, 'zzcustom', was);
+    revertPoolChange(change);
     expect(getPool('en', 'food', 1)).toContain('zzcustom');
   });
 
@@ -116,20 +122,20 @@ describe('hiding built-in words', () => {
       JSON.stringify({ version: 1, data: { en: { categories: [], extra: {}, gold: ['x'] } } }),
     );
     const s = fresh();
-    expect(s.hiddenOf('en', 'food', 1)).toEqual([]);
+    expect(s.hiddenOf('en', 'food')).toEqual([]);
     expect(s.hiddenGold('en')).toEqual([]);
     expect(s.goldWords('en')).toEqual(['x']);
   });
 
   it('exports, imports and merges hidden words', () => {
     const a = fresh();
-    a.hideWord('en', 'food', 1, 'pizza');
+    a.placeWord('en', 'food', 'pizza', 'hidden');
     a.hideGold('en', 'g');
     const text = a.exportJson('en');
     setActivePinia(createPinia());
     const b = useCustomStore();
     expect(b.importJson('en', text).ok).toBe(true);
-    expect(b.hiddenOf('en', 'food', 1)).toEqual(['pizza']);
+    expect(b.hiddenOf('en', 'food')).toEqual(['pizza']);
     expect(b.hiddenGold('en')).toEqual(['g']);
   });
 

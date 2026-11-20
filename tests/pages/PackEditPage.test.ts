@@ -84,21 +84,38 @@ describe('PackEditPage', () => {
       const word = builtinWords('en', 'animals', 1)[0]!;
       const { wrapper, custom } = await openEdit('animals', () => {
         setActivePinia(createPinia());
-        useCustomStore().hideWord('en', 'animals', 1, word);
+        useCustomStore().placeWord('en', 'animals', word, 'hidden');
       });
-      expect(custom.hiddenOf('en', 'animals', 1)).toEqual([word]);
+      expect(custom.hiddenOf('en', 'animals')).toEqual([word]);
       await wrapper.find('.hidden-word').trigger('click');
       await flushPromises();
       dialogButton(en.show)!.click();
       await flushPromises();
-      expect(custom.hiddenOf('en', 'animals', 1)).toEqual([]);
+      expect(custom.hiddenOf('en', 'animals')).toEqual([]);
+    });
+
+    it('does not list a moved word, but counts it at its new level', async () => {
+      const word = builtinWords('en', 'animals', 1)[0]!;
+      const { wrapper, custom } = await openEdit('animals', () => {
+        setActivePinia(createPinia());
+        useCustomStore().placeWord('en', 'animals', word, 3);
+      });
+      expect(wrapper.text()).not.toContain(word);
+      expect(wrapper.find('.hidden-word').exists()).toBe(false);
+      expect(custom.wordsOf('en', 'animals', 3)).toEqual([]);
+      const chips = wrapper.findAll('.builtin-chip').map((c) => c.text());
+      expect(chips).toEqual([
+        `${builtinWords('en', 'animals', 1).length - 1} built-in`,
+        `${builtinWords('en', 'animals', 2).length} built-in`,
+        `${builtinWords('en', 'animals', 3).length + 1} built-in`,
+      ]);
     });
 
     it('explains when a whole difficulty is hidden', async () => {
       const { wrapper } = await openEdit('animals', () => {
         setActivePinia(createPinia());
         const custom = useCustomStore();
-        for (const w of builtinWords('en', 'animals', 3)) custom.hideWord('en', 'animals', 3, w);
+        for (const w of builtinWords('en', 'animals', 3)) custom.placeWord('en', 'animals', w, 'hidden');
       });
       expect(wrapper.text()).toContain(en.emptyBuiltinHint);
     });

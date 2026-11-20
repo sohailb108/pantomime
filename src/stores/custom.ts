@@ -14,12 +14,15 @@ import {
   normalizeLang,
   normalizeName,
   hasWord,
+  place,
+  placementOf as placementOfWord,
   removeFromList,
   parseImport,
   restoreOrphanedExtras,
   type AddResult,
   type CustomCategory,
   type CustomLang,
+  type Placement,
   type ImportError,
 } from '@/services/customData';
 import { loadJson, saveJson } from '@/services/storage';
@@ -135,16 +138,17 @@ export const useCustomStore = defineStore('custom', () => {
     removeFromList(ensure(lang).gold, word);
   }
 
-  /** Built-in words hidden in a category at one difficulty. */
-  function hiddenOf(lang: string, categoryId: string, difficulty: Difficulty): string[] {
-    return of(lang).hidden[categoryId]?.[difficulty] ?? [];
+  /** Where a built-in word of a category is: hidden, moved to a difficulty, or `native`. */
+  function placementOf(lang: string, categoryId: string, word: string): Placement {
+    return placementOfWord(of(lang), categoryId, word);
   }
-  function hideWord(lang: string, categoryId: string, difficulty: Difficulty, word: string) {
-    const list = ((ensure(lang).hidden[categoryId] ??= emptyWords())[difficulty] ??= []);
-    if (!hasWord(list, word)) list.push(word);
+  /** Hides a built-in word, moves it to a difficulty, or puts it back (`native`). */
+  function placeWord(lang: string, categoryId: string, word: string, target: Placement) {
+    place(ensure(lang), categoryId, word, target);
   }
-  function unhideWord(lang: string, categoryId: string, difficulty: Difficulty, word: string) {
-    removeFromList(ensure(lang).hidden[categoryId]?.[difficulty] ?? [], word);
+  /** Built-in words of a category the user hid. */
+  function hiddenOf(lang: string, categoryId: string): string[] {
+    return of(lang).overrides[categoryId]?.hidden ?? [];
   }
   function hiddenGold(lang: string): string[] {
     return of(lang).hiddenGold;
@@ -186,9 +190,9 @@ export const useCustomStore = defineStore('custom', () => {
     goldWords,
     addGold,
     removeGold,
+    placementOf,
+    placeWord,
     hiddenOf,
-    hideWord,
-    unhideWord,
     hiddenGold,
     hideGold,
     unhideGold,

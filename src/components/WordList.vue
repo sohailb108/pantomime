@@ -44,43 +44,19 @@
       </q-chip>
     </div>
 
-    <div v-if="hidden && hidden.length > 0" class="q-mt-sm">
-      <div class="text-caption text-grey-7">
-        {{ t('packs.hiddenWords', { n: fmt(hidden.length) }) }}
-      </div>
-      <div class="row q-gutter-xs">
-        <q-chip
-          v-for="w in hidden"
-          :key="w"
-          clickable
-          icon-right="visibility"
-          class="word-chip hidden-word"
-          :aria-label="t('packs.showWord', { word: w })"
-          @click="pending = w"
-        >
-          {{ w }}
-        </q-chip>
-      </div>
-    </div>
-
-    <q-dialog :model-value="pending !== null" @update:model-value="pending = null">
-      <q-card flat class="dialog-card">
-        <div class="dialog-head">
-          <div class="dialog-icon"><q-icon name="visibility" size="22px" /></div>
-          <div>{{ t('packs.showConfirm', { word: pending }) }}</div>
-        </div>
-        <div class="dialog-actions">
-          <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
-          <q-btn rounded no-caps color="primary" :label="t('packs.show')" @click="confirmShow" />
-        </div>
-      </q-card>
-    </q-dialog>
+    <HiddenWords
+      v-if="hidden && hidden.length > 0"
+      class="q-mt-sm"
+      :words="hidden"
+      @unhide="(w) => emit('unhide', w)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import HiddenWords from '@/components/HiddenWords.vue';
 import { MAX_WORD_LENGTH, type AddResult } from '@/services/customData';
 import { formatNumber } from '@/services/format';
 import { useSettingsStore } from '@/stores/settings';
@@ -101,12 +77,6 @@ const emit = defineEmits<{ remove: [word: string]; unhide: [word: string] }>();
 const { t } = useI18n();
 const settings = useSettingsStore();
 const fmt = (n: number) => formatNumber(n, settings.language);
-
-const pending = ref<string | null>(null);
-function confirmShow() {
-  if (pending.value !== null) emit('unhide', pending.value);
-  pending.value = null;
-}
 
 const draft = ref('');
 const error = ref('');
@@ -147,9 +117,5 @@ function add() {
   }
   background: rgba(128, 128, 128, 0.2);
   color: inherit;
-}
-.hidden-word {
-  text-decoration: line-through;
-  opacity: 0.7;
 }
 </style>

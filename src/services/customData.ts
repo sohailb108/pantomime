@@ -9,6 +9,15 @@ export interface CustomCategory {
   words: WordsByDifficulty;
 }
 
+/**
+ * Where the user put the built-in words of one category. A word is in at most one list, and in none
+ * while it is where the pack put it. `hidden` words are out of the game; the lists 1 to 3 hold the
+ * words moved into that difficulty.
+ */
+export type Overrides = WordsByDifficulty & { hidden: string[] };
+/** Where a built-in word is: `native` is the difficulty the pack gave it. */
+export type Placement = 'native' | 'hidden' | Difficulty;
+
 /** Custom content of one language. */
 export interface CustomLang {
   categories: CustomCategory[];
@@ -18,8 +27,8 @@ export interface CustomLang {
   extraNames: Record<string, string>;
   /** Extra gold-round words. */
   gold: string[];
-  /** Built-in words the user hid, by category id. */
-  hidden: Record<string, WordsByDifficulty>;
+  /** Built-in words the user hid or moved to another difficulty, by category id. */
+  overrides: Record<string, Overrides>;
   /** Built-in gold words the user hid. */
   hiddenGold: string[];
 }
@@ -28,22 +37,34 @@ export const MAX_WORD_LENGTH = 80;
 export const MAX_CATEGORIES = 100;
 export const MAX_WORDS_PER_LIST = 2000;
 export const MAX_NAME_LENGTH = 30;
-/** Keys of `extra` and `hidden`: built-in or custom category ids. Rules out keys like __proto__. */
+/** Keys of `extra` and `overrides`: built-in or custom category ids. Rules out keys like __proto__. */
 const CATEGORY_KEY = /^[a-z0-9][a-z0-9-]{0,40}$/;
 export const EXPORT_SCHEMA = 1;
 
 export function emptyWords(): WordsByDifficulty {
   return { 1: [], 2: [], 3: [] };
 }
-export function emptyLang(): CustomLang {
-  return { categories: [], extra: {}, extraNames: {}, gold: [], hidden: {}, hiddenGold: [] };
+export function emptyOverrides(): Overrides {
+  return { hidden: [], 1: [], 2: [], 3: [] };
 }
-/** Fills fields that older saved data does not have. */
+export function emptyLang(): CustomLang {
+  return { categories: [], extra: {}, extraNames: {}, gold: [], overrides: {}, hiddenGold: [] };
+}
+/** Keeps the known fields of saved data and fills the missing ones. */
 export function normalizeLang(data: Partial<CustomLang>): CustomLang {
-  const lang = { ...emptyLang(), ...data };
-  // Saves from before categories lost their color may still carry the field.
-  lang.categories = lang.categories.map(({ id, name, words }) => ({ id, name, words }));
-  return lang;
+  const base = emptyLang();
+  return {
+    categories: (data.categories ?? base.categories).map(({ id, name, words }) => ({
+      id,
+      name,
+      words,
+    })),
+    extra: data.extra ?? base.extra,
+    extraNames: data.extraNames ?? base.extraNames,
+    gold: data.gold ?? base.gold,
+    overrides: data.overrides ?? base.overrides,
+    hiddenGold: data.hiddenGold ?? base.hiddenGold,
+  };
 }
 
 /**
@@ -95,7 +116,10 @@ export function restoreOrphanedExtras(
     }
     delete data.extra[id];
     delete data.extraNames[id];
-    delete data.hidden[id];
+  }
+  // Placements only make sense for built-in categories.
+  for (const id of Object.keys(data.overrides)) {
+    if (!builtins.some((b) => b.id === id)) delete data.overrides[id];
   }
   return restored;
 }
@@ -116,6 +140,30 @@ export function findCategoryByName(
 /** Case-insensitive membership test. */
 export function hasWord(list: readonly string[], word: string): boolean {
   return list.some((w) => same(w, word));
+}
+
+const LISTS = ['hidden', 1, 2, 3] as const;
+
+/** Where a built-in word of a category is now. */
+export function placementOf(data: CustomLang, categoryId: string, word: string): Placement {
+  if (!Object.hasOwn(data.overrides, categoryId)) return 'native';
+  const o = data.overrides[categoryId]!;
+  return LISTS.find((l) => hasWord(o[l], word)) ?? 'native';
+}
+
+/**
+ * Puts a built-in word of a category in a new place, taking it out of wherever it was. Placing it
+ * `native` removes every trace of it. Empty categories are dropped so the data stays tidy.
+ */
+export function place(data: CustomLang, categoryId: string, word: string, target: Placement) {
+  if (Object.hasOwn(data.overrides, categoryId)) {
+    for (const l of LISTS) removeFromList(data.overrides[categoryId]![l], word);
+  }
+  if (target !== 'native') {
+    ownOrCreate(data.overrides, categoryId, emptyOverrides)[target].push(word);
+  }
+  const o = Object.hasOwn(data.overrides, categoryId) ? data.overrides[categoryId] : undefined;
+  if (o && LISTS.every((l) => o[l].length === 0)) delete data.overrides[categoryId];
 }
 
 /** Trims and collapses whitespace. Returns null when the word is empty or too long. */
@@ -201,7 +249,7 @@ export interface ExportFile {
   extra: Record<string, WordsByDifficulty>;
   extraNames: Record<string, string>;
   gold: string[];
-  hidden: Record<string, WordsByDifficulty>;
+  overrides: Record<string, Overrides>;
   hiddenGold: string[];
 }
 
@@ -236,6 +284,25 @@ function cleanWords(value: unknown): WordsByDifficulty | null {
     const list = value[String(d)] === undefined ? [] : cleanList(value[String(d)]);
     if (list === null) return null;
     out[d] = list;
+  }
+  return out;
+}
+
+/** Cleans the placements of one category. A word listed twice stays in the first list only. */
+function cleanOverrides(value: unknown): Overrides | null {
+  const levels = cleanWords(value);
+  if (levels === null || !isObject(value)) return null;
+  const hidden = value.hidden === undefined ? [] : cleanList(value.hidden);
+  if (hidden === null) return null;
+  const out = { hidden, ...levels };
+  const seen = new Set<string>();
+  for (const l of LISTS) {
+    out[l] = out[l].filter((w) => {
+      const key = compareKey(w);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
   return out;
 }
@@ -291,14 +358,14 @@ export function parseImport(text: string): ParsedImport {
   if (gold === null) return { ok: false, error: 'invalid' };
   data.gold = gold;
 
-  const hidden = raw.hidden ?? {};
-  if (!isObject(hidden)) return { ok: false, error: 'invalid' };
-  if (Object.keys(hidden).length > MAX_CATEGORIES) return { ok: false, error: 'tooLarge' };
-  for (const [id, value] of Object.entries(hidden)) {
+  const overrides = raw.overrides ?? {};
+  if (!isObject(overrides)) return { ok: false, error: 'invalid' };
+  if (Object.keys(overrides).length > MAX_CATEGORIES) return { ok: false, error: 'tooLarge' };
+  for (const [id, value] of Object.entries(overrides)) {
     if (!CATEGORY_KEY.test(id)) return { ok: false, error: 'invalid' };
-    const words = cleanWords(value);
-    if (words === null) return { ok: false, error: 'invalid' };
-    data.hidden[id] = words;
+    const cleaned = cleanOverrides(value);
+    if (cleaned === null) return { ok: false, error: 'invalid' };
+    if (LISTS.some((l) => cleaned[l].length > 0)) data.overrides[id] = cleaned;
   }
   const hiddenGold = raw.hiddenGold === undefined ? [] : cleanList(raw.hiddenGold);
   if (hiddenGold === null) return { ok: false, error: 'invalid' };
@@ -339,9 +406,9 @@ export function mergeInto(target: CustomLang, incoming: CustomLang): number {
     if (!Object.hasOwn(target.extraNames, id)) target.extraNames[id] = name;
   }
   added += addAll(target.gold, incoming.gold);
-  // Hidden lists only grow with an import. They do not count as added words.
-  for (const [id, words] of Object.entries(incoming.hidden)) {
-    addWords(ownOrCreate(target.hidden, id, emptyWords), words);
+  // Placements do not count as added words. For a word placed on both sides, the file wins.
+  for (const [id, o] of Object.entries(incoming.overrides)) {
+    for (const l of LISTS) for (const w of o[l]) place(target, id, w, l);
   }
   addAll(target.hiddenGold, incoming.hiddenGold);
   return added;
