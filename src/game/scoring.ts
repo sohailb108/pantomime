@@ -45,9 +45,15 @@ export function rerollDelta(teamId: number, settings: SingleSettings): ScoreDelt
   return settings.rerollPenalty > 0 ? [{ teamId, points: -settings.rerollPenalty }] : [];
 }
 
+/** Points a hint costs: the fixed penalty, or half of the tile points (rounded up) when set. */
+export function hintCost(tilePoints: number, settings: SingleSettings): number {
+  return settings.hintHalf ? Math.ceil(tilePoints / 2) : settings.hintPenalty;
+}
+
 /** The hint penalty as a delta for the team that took the hint (nothing when it is free). */
-export function hintDelta(teamId: number, settings: SingleSettings): ScoreDelta[] {
-  return settings.hintPenalty > 0 ? [{ teamId, points: -settings.hintPenalty }] : [];
+export function hintDelta(teamId: number, tilePoints: number, settings: SingleSettings): ScoreDelta[] {
+  const cost = hintCost(tilePoints, settings);
+  return cost > 0 ? [{ teamId, points: -cost }] : [];
 }
 
 /** Steal is only fair with two teams: with more, just one of the others would get the chance. */

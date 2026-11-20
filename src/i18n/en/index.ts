@@ -84,11 +84,13 @@ export default {
     timer2: 'Timer, medium (seconds)',
     timer3: 'Timer, hard (seconds)',
     steal: 'Steal chance for the other team',
-    stealValue: 'Points for a correct steal',
     stealFull: 'All of the tile points',
     stealHalfOption: 'Half of the tile points (rounded up)',
     stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
     rerollPenalty: 'Reroll penalty',
+    hintValue: 'Hint cost',
+    hintFixed: 'Fixed',
+    hintHalfOption: 'Half of the tile points (rounded up)',
     hintPenalty: 'Hint penalty',
     fastSeconds: 'Fast guess within (seconds)',
     fastBonus: 'Fast guess bonus',
@@ -340,7 +342,7 @@ export default {
           },
           {
             t: 'Acting hint',
-            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of {hintPenalty} point by default. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after swapping the word the tip is gone and no second hint is allowed.',
+            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of half the tile points (rounded up) by default. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after swapping the word the tip is gone and no second hint is allowed.',
           },
           {
             t: 'Reroll',
@@ -396,7 +398,7 @@ export default {
           },
           {
             t: 'Hint penalty',
-            b: 'Points lost when the actor asks for an acting hint before starting (once per turn). Default: {hintPenalty}. Set 0 for a free hint.',
+            b: 'Points lost when the actor asks for an acting hint before starting (once per turn). Default: half of the tile points, rounded up. Choose a fixed number instead if you prefer; set it to 0 for a free hint.',
           },
           {
             t: 'Fast guess within (seconds) / Fast guess bonus',

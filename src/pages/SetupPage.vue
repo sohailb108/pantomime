@@ -136,7 +136,7 @@
                   {{ t('setup.sectionScoring') }}
                 </div>
                 <q-list class="settings-list">
-                  <q-item v-for="d in DIFFICULTIES" :key="d">
+                  <q-item v-for="(d, i) in DIFFICULTIES" :key="d" :class="{ 'no-divider': i > 0 }">
                     <q-item-section>{{ t(`setup.points${d}`) }}</q-item-section>
                     <q-item-section side>
                       <NumberStepper v-model="setup.settings.points[d]" :min="1" :max="20" />
@@ -164,13 +164,13 @@
                       <q-toggle v-model="skipUnlimited" />
                     </q-item-section>
                   </q-item>
-                  <q-item v-if="setup.settings.multi.skipLimit !== null">
+                  <q-item v-if="setup.settings.multi.skipLimit !== null" class="no-divider">
                     <q-item-section>{{ t('setup.skipLimit') }}</q-item-section>
                     <q-item-section side>
                       <NumberStepper v-model="skipLimitValue" :min="0" :max="20" />
                     </q-item-section>
                   </q-item>
-                  <q-item>
+                  <q-item class="no-divider">
                     <q-item-section>{{ t('setup.skipPenalty') }}</q-item-section>
                     <q-item-section side>
                       <NumberStepper v-model="setup.settings.multi.skipPenalty" :max="10" />
@@ -185,7 +185,7 @@
                 </q-list>
 
                 <q-list v-else class="settings-list">
-                  <q-item v-for="d in DIFFICULTIES" :key="d">
+                  <q-item v-for="(d, i) in DIFFICULTIES" :key="d" :class="{ 'no-divider': i > 0 }">
                     <q-item-section>{{ t(`setup.timer${d}`) }}</q-item-section>
                     <q-item-section side>
                       <NumberStepper
@@ -196,7 +196,10 @@
                       />
                     </q-item-section>
                   </q-item>
-                  <q-item tag="label">
+                  <q-item
+                    tag="label"
+                    :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }"
+                  >
                     <q-item-section>
                       <q-item-label>{{ t('setup.steal') }}</q-item-label>
                       <q-item-label v-if="!stealAllowed" caption>{{
@@ -210,9 +213,8 @@
                         @update:model-value="setup.settings.single.steal = $event"
                     /></q-item-section>
                   </q-item>
-                  <q-item v-if="stealAllowed && setup.settings.single.steal">
+                  <q-item v-if="stealAllowed && setup.settings.single.steal" class="no-divider tight">
                     <q-item-section>
-                      <q-item-label>{{ t('setup.stealValue') }}</q-item-label>
                       <q-option-group
                         v-model="stealValueMode"
                         type="radio"
@@ -227,10 +229,36 @@
                       <NumberStepper v-model="setup.settings.single.rerollPenalty" :max="10" />
                     </q-item-section>
                   </q-item>
-                  <q-item>
-                    <q-item-section>{{ t('setup.hintPenalty') }}</q-item-section>
+                  <q-item class="pb-0">
+                    <q-item-section>
+                      <q-item-label>{{ t('setup.hintValue') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item class="no-divider pb-0">
+                    <q-item-section>
+                      <q-radio
+                        v-model="hintValueMode"
+                        val="fixed"
+                        color="primary"
+                        :label="t('setup.hintFixed')"
+                      />
+                    </q-item-section>
                     <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.hintPenalty" :max="10" />
+                      <NumberStepper
+                        v-model="setup.settings.single.hintPenalty"
+                        :max="10"
+                        :class="{ 'hint-stepper-off': hintValueMode !== 'fixed' }"
+                      />
+                    </q-item-section>
+                  </q-item>
+                  <q-item class="no-divider tight">
+                    <q-item-section>
+                      <q-radio
+                        v-model="hintValueMode"
+                        val="half"
+                        color="primary"
+                        :label="t('setup.hintHalfOption')"
+                      />
                     </q-item-section>
                   </q-item>
                   <q-item>
@@ -243,7 +271,7 @@
                       />
                     </q-item-section>
                   </q-item>
-                  <q-item>
+                  <q-item class="no-divider">
                     <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
                     <q-item-section side>
                       <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
@@ -268,13 +296,13 @@
                         <NumberStepper v-model="setup.settings.gold.bonus" :max="100" :step="5" />
                       </q-item-section>
                     </q-item>
-                    <q-item>
+                    <q-item class="no-divider">
                       <q-item-section>{{ t('setup.goldPenalty') }}</q-item-section>
                       <q-item-section side>
                         <NumberStepper v-model="setup.settings.gold.penalty" :max="100" :step="5" />
                       </q-item-section>
                     </q-item>
-                    <q-item>
+                    <q-item class="no-divider">
                       <q-item-section>{{ t('setup.goldTimer') }}</q-item-section>
                       <q-item-section side>
                         <NumberStepper
@@ -480,6 +508,10 @@ const stealValueMode = computed({
   get: () => (setup.settings.single.stealHalf ? 'half' : 'full'),
   set: (v: string) => (setup.settings.single.stealHalf = v === 'half'),
 });
+const hintValueMode = computed({
+  get: () => (setup.settings.single.hintHalf ? 'half' : 'fixed'),
+  set: (v: string) => (setup.settings.single.hintHalf = v === 'half'),
+});
 const stepIndex = computed(() => steps.indexOf(step.value));
 const categories = computed(() =>
   listCategories(settings.language).map((c) => ({
@@ -562,6 +594,10 @@ function start() {
 </script>
 
 <style scoped lang="scss">
+.hint-stepper-off {
+  opacity: 0.4;
+  pointer-events: none;
+}
 .setup-page {
   display: flex;
   flex-direction: column;
@@ -757,6 +793,16 @@ function start() {
 
   .q-item + .q-item {
     border-top: 1px solid rgba(128, 128, 128, 0.2);
+  }
+  .q-item.pb-0 {
+    padding-bottom: 0;
+    min-height: 0;
+  }
+  .q-item + .q-item.no-divider {
+    border-top: none;
+  }
+  .q-item.tight {
+    padding-top: 0;
   }
 }
 .select-all-btn {

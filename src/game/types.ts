@@ -25,6 +25,8 @@ export interface SingleSettings {
   rerollPenalty: number;
   /** Points lost for the one acting hint of a turn, 0 means free. */
   hintPenalty: number;
+  /** The hint costs half of the tile points (rounded up) instead of `hintPenalty`. */
+  hintHalf: boolean;
   /** A correct guess within this many seconds earns fastGuessBonus. */
   fastGuessSeconds: number;
   fastGuessBonus: number;

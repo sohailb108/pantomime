@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_GAME_SETTINGS as d } from '@/config/defaults';
 import {
   canSkip,
+  hintCost,
   hintDelta,
   rerollDelta,
   scoreMultiTurn,
@@ -49,8 +50,18 @@ describe('single-word scoring', () => {
   });
 
   it('hint is a penalty delta, or nothing when free', () => {
-    expect(hintDelta(1, d.single)).toEqual([{ teamId: 1, points: -1 }]);
-    expect(hintDelta(1, { ...d.single, hintPenalty: 0 })).toEqual([]);
+    expect(hintDelta(1, 4, { ...d.single, hintHalf: false })).toEqual([{ teamId: 1, points: -1 }]);
+    expect(hintDelta(1, 4, { ...d.single, hintHalf: false, hintPenalty: 0 })).toEqual([]);
+  });
+
+  it('hint can cost half of the tile points, rounded up', () => {
+    expect(d.single.hintHalf).toBe(true);
+    const half = { ...d.single, hintPenalty: 9 };
+    expect(hintCost(4, half)).toBe(2);
+    expect(hintCost(5, half)).toBe(3);
+    expect(hintCost(1, half)).toBe(1);
+    expect(hintCost(5, { ...d.single, hintHalf: false, hintPenalty: 2 })).toBe(2);
+    expect(hintDelta(1, 5, half)).toEqual([{ teamId: 1, points: -3 }]);
   });
 
   it('gives the steal to the other team, and never in games with more than two teams', () => {

@@ -413,6 +413,7 @@ import { useWakeLock } from '@/composables/wakelock';
 import { cue, timerCue } from '@/services/feedback';
 import {
   canSkip,
+  hintCost as hintCostFor,
   hintDelta,
   rerollDelta,
   scoreMultiTurn,
@@ -657,10 +658,10 @@ const stealer = computed(() => stealTeam(team.value!.id, state.value!.teams.leng
 const stealValue = computed(() => stealPoints(tileValue.value, single.value));
 const stealerName = computed(() => (stealer.value === null ? '' : nameOf(stealer.value)));
 
+/** What a hint costs on this tile under the game's hint setting. */
+const hintPrice = computed(() => hintCostFor(tileValue.value, single.value));
 const hintLabel = computed(() =>
-  single.value.hintPenalty > 0
-    ? t('turn.hint', { n: signed(-single.value.hintPenalty) })
-    : t('turn.hintFree'),
+  hintPrice.value > 0 ? t('turn.hint', { n: signed(-hintPrice.value) }) : t('turn.hintFree'),
 );
 /** The shown word's acting tip, if it has one (custom words never do). */
 const hintText = computed(() =>
@@ -669,7 +670,7 @@ const hintText = computed(() =>
 function takeHint() {
   if (hintWord.value !== null || !hintText.value) return;
   hintWord.value = word.value;
-  deltas.value.push(...hintDelta(team.value!.id, single.value));
+  deltas.value.push(...hintDelta(team.value!.id, tileValue.value, single.value));
 }
 
 function reroll() {
@@ -761,7 +762,7 @@ const rerollCost = computed(() =>
   rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0,
 );
 const hintCost = computed(() =>
-  hintWord.value !== null && !isMulti.value ? single.value.hintPenalty : 0,
+  hintWord.value !== null && !isMulti.value ? hintPrice.value : 0,
 );
 
 /** Extra lines under the points: fast-guess bonus and the penalties that applied. */

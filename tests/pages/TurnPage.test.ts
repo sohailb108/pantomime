@@ -286,7 +286,7 @@ describe('TurnPage', () => {
       const tileValue = game.state!.settings.points[game.state!.tiles[0]!.difficulty];
       // Guessed straight away, so the fast-guess bonus applies as well.
       const fast = DEFAULT_GAME_SETTINGS.single.fastGuessBonus;
-      expect(scoreOf(game, team)).toBe(tileValue + fast - DEFAULT_GAME_SETTINGS.single.hintPenalty);
+      expect(scoreOf(game, team)).toBe(tileValue + fast - Math.ceil(tileValue / 2));
     });
 
     it('has no hint button for a word without a tip', async () => {
@@ -297,6 +297,7 @@ describe('TurnPage', () => {
 
     it('is free when the penalty is 0', async () => {
       const { wrapper, game } = await openTurn('single', ['octopus']);
+      game.state!.settings.single.hintHalf = false;
       game.state!.settings.single.hintPenalty = 0;
       await press(wrapper, en.showWord);
       await pressHint(wrapper, 'Acting hint');
