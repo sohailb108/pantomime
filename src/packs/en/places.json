@@ -48,5 +48,19 @@
       "Hagia Sophia",
       "Chichen Itza"
     ]
+  },
+  "hints": {
+    "Stonehenge": "Show huge standing stones in a circle with a flat stone across the tops, and walk around them in awe.",
+    "Petra": "Walk through a narrow canyon between towering walls, then show a huge carved temple front appearing and gape at its columns.",
+    "Angkor Wat": "Show many tall towers with pointed tops in a row, trees with giant roots growing over old stone, and walk around like a tourist.",
+    "Acropolis": "Climb up a steep hill, then shape tall, evenly spaced columns holding up a flat roof on top, and point at the city below.",
+    "Kremlin": "Show a high red wall with towers around a large square, then onion domes on top of a tall church, shivering in the cold.",
+    "Alhambra": "Show a hilltop palace with a courtyard of slender arches, trace lacy patterns on the walls and a pool of lions in the middle.",
+    "Neuschwanstein Castle": "Show a fairy tale castle with many thin pointed towers on a mountaintop, then dance like a princess in front of it.",
+    "Easter Island": "Make a huge stone head with a long nose and heavy brow, stand stiff and silent in a line staring out to sea.",
+    "Santorini": "Show white cube houses with blue round domes stacked on a cliff, a sunset and the sea far below, and take a selfie.",
+    "Forbidden City": "Pass through huge gates and walk through many courtyards, with a bow, as if you were an emperor with a long robe.",
+    "Hagia Sophia": "Look up at a vast dome far overhead, show it and a tall minaret next to it, and whisper in respect inside.",
+    "Chichen Itza": "Climb a steep pyramid with stairs on every side, clap at the bottom and show an echo that sounds like a bird."
   }
 }

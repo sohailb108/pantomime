@@ -14,6 +14,7 @@ export const DEFAULT_GAME_SETTINGS: Settings = {
     steal: true,
     stealHalf: false,
     rerollPenalty: 1,
+    hintPenalty: 1,
     fastGuessSeconds: 10,
     fastGuessBonus: 1,
   },

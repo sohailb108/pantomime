@@ -36,5 +36,15 @@
       "Gladiator",
       "Mission Impossible"
     ]
+  },
+  "hints": {
+    "The Matrix": "Lean far back to dodge bullets in slow motion, put on dark glasses, and reach out to take one of two pills.",
+    "Inception": "Spin a top and watch it, then bend space by folding the world over you and show falling asleep inside a dream inside a dream.",
+    "Forrest Gump": "Sit on a bench with a box of chocolates, run and run in a long straight line, and say what mama says, slowly and simply.",
+    "Pirates of the Caribbean": "Wobble drunk on a ship deck with a wide swagger, swing a sword, wear a hat and look for treasure with an eye patch.",
+    "Back to the Future": "Check your watch, sit in a fast car, speed up until sparks fly, and show time going backwards, then look at a clock.",
+    "The Godfather": "Stroke a cat in your lap, mumble in a low raspy voice, hold your cheek with a stern face, and offer something nobody can refuse.",
+    "Gladiator": "Fight with a sword and shield in an arena as a crowd roars, then turn to the emperor with a thumb pointing down or up.",
+    "Mission Impossible": "Hang from a rope above a floor, descend very slowly without touching it, hold your breath, and show a fuse burning."
   }
 }

@@ -27,5 +27,15 @@
       "puppeteer",
       "beekeeper"
     ]
+  },
+  "hints": {
+    "astronaut": "Float in slow motion with heavy, clumsy steps, tap an imaginary helmet, then bounce on the moon and plant a flag.",
+    "magician": "Pull something out of a hat or from behind an ear, wave a wand with a flourish, then take a bow.",
+    "archaeologist": "Kneel and brush dirt away very gently with a small brush, dig carefully, then lift up a find and examine it closely.",
+    "lifeguard": "Sit up high scanning the water with a hand over your eyes, blow a whistle, then run, swim out and pull someone to shore.",
+    "translator": "Listen carefully with a hand at your ear, then turn and speak for the other person, going back and forth between two people.",
+    "conductor": "Stand in front of a big orchestra, raise a baton, wave it in time with the music, and cue different sections with your other hand.",
+    "puppeteer": "Hold your hands up high with fingers moving strings, and make an invisible puppet below walk, dance and bow.",
+    "beekeeper": "Pull on a bulky veil and gloves, puff smoke from a smoker, lift a frame out of a hive and slowly scrape off honey, ignoring the buzzing."
   }
 }

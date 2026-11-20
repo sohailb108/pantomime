@@ -228,6 +228,12 @@
                     </q-item-section>
                   </q-item>
                   <q-item>
+                    <q-item-section>{{ t('setup.hintPenalty') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="setup.settings.single.hintPenalty" :max="10" />
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
                     <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
                     <q-item-section side>
                       <NumberStepper

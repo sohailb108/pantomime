@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_GAME_SETTINGS as d } from '@/config/defaults';
 import {
   canSkip,
+  hintDelta,
   rerollDelta,
   scoreMultiTurn,
   scoreSingleSuccess,
@@ -45,6 +46,11 @@ describe('single-word scoring', () => {
   it('reroll is a penalty delta, or nothing when free', () => {
     expect(rerollDelta(1, d.single)).toEqual([{ teamId: 1, points: -1 }]);
     expect(rerollDelta(1, { ...d.single, rerollPenalty: 0 })).toEqual([]);
+  });
+
+  it('hint is a penalty delta, or nothing when free', () => {
+    expect(hintDelta(1, d.single)).toEqual([{ teamId: 1, points: -1 }]);
+    expect(hintDelta(1, { ...d.single, hintPenalty: 0 })).toEqual([]);
   });
 
   it('gives the steal to the other team, and never in games with more than two teams', () => {

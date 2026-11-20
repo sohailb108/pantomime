@@ -89,6 +89,7 @@ export default {
     stealHalfOption: 'Half of the tile points (rounded up)',
     stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
     rerollPenalty: 'Reroll penalty',
+    hintPenalty: 'Hint penalty',
     fastSeconds: 'Fast guess within (seconds)',
     fastBonus: 'Fast guess bonus',
     goldEnabled: 'Gold round (last chance)',
@@ -142,6 +143,9 @@ export default {
     done: 'Done',
     reroll: 'Change word ({n})',
     rerollFree: 'Change word',
+    hint: 'Acting hint ({n})',
+    hintFree: 'Acting hint',
+    hintTitle: 'How to act it',
     start: 'Start',
     peek: 'Hold to see the word',
     guessed: 'Guessed',
@@ -174,6 +178,7 @@ export default {
     fastBonus: 'Fast guess bonus',
     skipsCost: 'Skips',
     rerollCost: 'Word change',
+    hintCost: 'Acting hint',
     next: 'Continue',
   },
   pause: {
@@ -334,6 +339,10 @@ export default {
             b: 'After a failed single-word turn, the other team may get one guess for the points (all of them, or half if that setting is on), if steal is enabled. Steal only works in games with 2 teams, because with more teams only one of the others would get the chance. The stealing team guesses out loud. The actor, who still holds the phone with the word covered, marks it Correct or Wrong.',
           },
           {
+            t: 'Acting hint',
+            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of {hintPenalty} point by default. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after swapping the word the tip is gone and no second hint is allowed.',
+          },
+          {
             t: 'Reroll',
             b: 'Before pressing Start, the actor may swap the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so.',
           },
@@ -384,6 +393,10 @@ export default {
           {
             t: 'Reroll penalty',
             b: 'Points lost when the actor swaps the word before starting (once per turn). Default: {rerollPenalty}. Set 0 for a free swap.',
+          },
+          {
+            t: 'Hint penalty',
+            b: 'Points lost when the actor asks for an acting hint before starting (once per turn). Default: {hintPenalty}. Set 0 for a free hint.',
           },
           {
             t: 'Fast guess within (seconds) / Fast guess bonus',

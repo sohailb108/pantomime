@@ -15,6 +15,7 @@ interface Pack {
   id: string;
   lang: string;
   words: Record<string, string[]>;
+  hints?: Record<string, string>;
 }
 
 const read = <T>(lang: string, file: string): T =>
@@ -63,6 +64,16 @@ describe('built-in packs', () => {
           // A word at two difficulties would be drawn twice in one game.
           const all = ['1', '2', '3'].flatMap((d) => pack.words[d]!.map(compareKey));
           expect(new Set(all).size).toBe(all.length);
+        });
+
+        it(`category ${id} has acting tips only for its own words`, () => {
+          const pack = read<Pack>(lang, id);
+          const keys = new Set(['1', '2', '3'].flatMap((d) => pack.words[d]!.map(compareKey)));
+          for (const [word, tip] of Object.entries(pack.hints ?? {})) {
+            expect(keys.has(compareKey(word)), `tip for unknown word "${word}"`).toBe(true);
+            expect(tip.trim(), `empty tip for "${word}"`).toBe(tip);
+            expect(tip.length, `empty tip for "${word}"`).toBeGreaterThan(0);
+          }
         });
       }
 

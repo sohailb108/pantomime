@@ -18,6 +18,7 @@ export function helpValues(code: string): Record<string, string> {
     t2: f(d.single.timerSeconds[2]),
     t3: f(d.single.timerSeconds[3]),
     rerollPenalty: f(d.single.rerollPenalty),
+    hintPenalty: f(d.single.hintPenalty),
     fastSeconds: f(d.single.fastGuessSeconds),
     fastBonus: f(d.single.fastGuessBonus),
     goldBonus: f(d.gold.bonus),

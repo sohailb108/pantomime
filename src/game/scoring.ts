@@ -45,6 +45,11 @@ export function rerollDelta(teamId: number, settings: SingleSettings): ScoreDelt
   return settings.rerollPenalty > 0 ? [{ teamId, points: -settings.rerollPenalty }] : [];
 }
 
+/** The hint penalty as a delta for the team that took the hint (nothing when it is free). */
+export function hintDelta(teamId: number, settings: SingleSettings): ScoreDelta[] {
+  return settings.hintPenalty > 0 ? [{ teamId, points: -settings.hintPenalty }] : [];
+}
+
 /** Steal is only fair with two teams: with more, just one of the others would get the chance. */
 export const canSteal = (teamCount: number): boolean => teamCount === 2;
 

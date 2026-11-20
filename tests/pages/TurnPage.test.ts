@@ -260,6 +260,61 @@ describe('TurnPage', () => {
     });
   });
 
+  describe('acting hint', () => {
+    const hintButton = 'Acting hint (-1)';
+    const findHint = (wrapper: VueWrapper, label = hintButton) =>
+      wrapper.findAll('button').find((b) => b.text().includes(label));
+    const pressHint = async (wrapper: VueWrapper, label = hintButton) => {
+      await findHint(wrapper, label)!.trigger('click');
+    };
+    const tip = 'Wave both arms and wiggle all your fingers like eight tentacles.';
+
+    it('shows the tip before Start and charges the penalty once', async () => {
+      const { wrapper, game } = await openTurn('single', ['octopus']);
+      const team = game.state!.currentTeam;
+      await press(wrapper, en.showWord);
+      expect(wrapper.text()).not.toContain(tip);
+      await pressHint(wrapper);
+      expect(wrapper.text()).toContain(tip);
+      expect(findHint(wrapper)).toBeUndefined();
+      await press(wrapper, en.start);
+      expect(findHint(wrapper)).toBeUndefined();
+      await press(wrapper, en.guessed);
+      expect(wrapper.text()).toContain(en.hintCost);
+      await press(wrapper, en.next);
+      await flushPromises();
+      const tileValue = game.state!.settings.points[game.state!.tiles[0]!.difficulty];
+      // Guessed straight away, so the fast-guess bonus applies as well.
+      const fast = DEFAULT_GAME_SETTINGS.single.fastGuessBonus;
+      expect(scoreOf(game, team)).toBe(tileValue + fast - DEFAULT_GAME_SETTINGS.single.hintPenalty);
+    });
+
+    it('has no hint button for a word without a tip', async () => {
+      const { wrapper } = await openTurn('single', ['a made-up word']);
+      await press(wrapper, en.showWord);
+      expect(findHint(wrapper)).toBeUndefined();
+    });
+
+    it('is free when the penalty is 0', async () => {
+      const { wrapper, game } = await openTurn('single', ['octopus']);
+      game.state!.settings.single.hintPenalty = 0;
+      await press(wrapper, en.showWord);
+      await pressHint(wrapper, 'Acting hint');
+      expect(wrapper.text()).toContain(tip);
+      expect(game.state!.teams.every((t) => t.score === 0)).toBe(true);
+    });
+
+    it('is used up by a word change: the tip goes and no second hint is offered', async () => {
+      const { wrapper } = await openTurn('single', ['octopus', 'cat']);
+      await press(wrapper, en.showWord);
+      await pressHint(wrapper);
+      const reroll = wrapper.findAll('button').find((b) => b.text().includes('Change word'));
+      await reroll!.trigger('click');
+      expect(wrapper.text()).not.toContain(tip);
+      expect(findHint(wrapper)).toBeUndefined();
+    });
+  });
+
   describe('changing a word on the result screen', () => {
     const other = (level: Difficulty): Difficulty => (level === 1 ? 2 : 1);
 

@@ -28,6 +28,8 @@ export const useGameStore = defineStore('game', () => {
   if (state.value) {
     state.value.settings.points ??= { ...DEFAULT_GAME_SETTINGS.points };
     state.value.settings.single.stealHalf ??= false;
+    // Games saved before acting hints existed use the default penalty.
+    state.value.settings.single.hintPenalty ??= DEFAULT_GAME_SETTINGS.single.hintPenalty;
     // Games saved before the reveal existed are already under way.
     state.value.startRevealed ??= true;
     // The starter of older games is unknown, so their turn order shows from team 0.

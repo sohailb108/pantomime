@@ -84,6 +84,10 @@
       <div class="word-card text-h3 text-weight-bold text-center" :class="longWordClass(word)">
         {{ word }}
       </div>
+      <div v-if="hintWord === word && hintText" class="acting-hint text-body1 text-center">
+        <div class="text-caption text-grey-7">{{ t('turn.hintTitle') }}</div>
+        {{ hintText }}
+      </div>
       <div class="text-center text-grey-7 hint-text">{{ t('turn.prepHint') }}</div>
       <div class="column full-width turn-actions">
         <q-btn
@@ -93,6 +97,17 @@
           no-caps
           :label="t('turn.start')"
           @click="startSingle"
+        />
+        <q-btn
+          v-if="hintWord === null && hintText"
+          outline
+          size="lg"
+          rounded
+          no-caps
+          color="primary"
+          icon="lightbulb"
+          :label="hintLabel"
+          @click="takeHint"
         />
         <q-btn
           v-if="!rerolled && deck.length > 0"
@@ -398,6 +413,7 @@ import { useWakeLock } from '@/composables/wakelock';
 import { cue, timerCue } from '@/services/feedback';
 import {
   canSkip,
+  hintDelta,
   rerollDelta,
   scoreMultiTurn,
   scoreSingleSuccess,
@@ -411,6 +427,7 @@ import { categoryOrFallback, listAllCategories } from '@/services/packs';
 import { longWordClass } from '@/config/limits';
 import {
   changePoolWord,
+  hintFor,
   getPool,
   revertPoolChange,
   type PoolChange,
@@ -460,6 +477,8 @@ const emptiedMsg = ref(false);
 const deltas = ref<ScoreDelta[]>([]);
 const tally = ref({ correct: 0, skips: 0 });
 const rerolled = ref(false);
+/** The word the actor asked an acting hint for, or null while the turn's one hint is unused. */
+const hintWord = ref<string | null>(null);
 const giveUpTap = useConfirmTap();
 const confirmGiveUp = giveUpTap.armed;
 const noWords = ref(false);
@@ -638,6 +657,21 @@ const stealer = computed(() => stealTeam(team.value!.id, state.value!.teams.leng
 const stealValue = computed(() => stealPoints(tileValue.value, single.value));
 const stealerName = computed(() => (stealer.value === null ? '' : nameOf(stealer.value)));
 
+const hintLabel = computed(() =>
+  single.value.hintPenalty > 0
+    ? t('turn.hint', { n: signed(-single.value.hintPenalty) })
+    : t('turn.hintFree'),
+);
+/** The shown word's acting tip, if it has one (custom words never do). */
+const hintText = computed(() =>
+  word.value && tile.value ? hintFor(game.lang, tile.value.categoryId, word.value) : null,
+);
+function takeHint() {
+  if (hintWord.value !== null || !hintText.value) return;
+  hintWord.value = word.value;
+  deltas.value.push(...hintDelta(team.value!.id, single.value));
+}
+
 function reroll() {
   // Check first: `draw()` clears the current word when the deck is empty.
   if (rerolled.value || deck.value.length === 0 || !draw()) return;
@@ -726,6 +760,9 @@ const skipCost = computed(() => tally.value.skips * (isMulti.value ? multi.value
 const rerollCost = computed(() =>
   rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0,
 );
+const hintCost = computed(() =>
+  hintWord.value !== null && !isMulti.value ? single.value.hintPenalty : 0,
+);
 
 /** Extra lines under the points: fast-guess bonus and the penalties that applied. */
 const breakdown = computed(() =>
@@ -733,6 +770,7 @@ const breakdown = computed(() =>
     { icon: 'bolt', color: 'primary', label: t('turn.fastBonus'), n: bonus.value },
     { icon: 'skip_next', color: 'primary', label: t('turn.skipsCost'), n: -skipCost.value },
     { icon: 'autorenew', color: 'primary', label: t('turn.rerollCost'), n: -rerollCost.value },
+    { icon: 'lightbulb', color: 'primary', label: t('turn.hintCost'), n: -hintCost.value },
   ]
     .filter((b) => b.n !== 0)
     .map((b) => ({ ...b, value: signed(b.n) })),
@@ -828,6 +866,13 @@ function finish() {
 .soft-card {
   flex-shrink: 0;
 }
+.acting-hint {
+  max-width: 24rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(128, 128, 128, 0.12);
+}
+
 .hint-text {
   max-width: 320px;
 }

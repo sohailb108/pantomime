@@ -58,6 +58,7 @@ Before every turn a **"Pass to actor"** screen shows the team, the chosen tile a
 - Settings:
   - Timer per difficulty (for example 30/60/90 s).
   - Steal chance: after a failure, the opposing team gets one guess for the points. The judge resolves it with Correct or Wrong. Steal is only available in games with exactly 2 teams (with more teams only one of the others would get the chance, which is unfair). In setup the switch is locked off for 3 or more teams.
+  - Acting hint: once per turn, only while the word is shown before Start (so reading it costs no timer time), the actor may tap a button to see a short written tip on how to act the word. Costs a configurable penalty (`single.hintPenalty`, default 1 point, 0 means free) deducted from the team's score and listed in the result breakdown. Only built-in words with a tip in their pack (`hints`, see section 3.1) have the button; custom words never do and there is no generic fallback tip. A hint belongs to its word: after a reroll the tip is gone and no second hint is offered. Not available in multi-word mode or the gold round.
   - Reroll word: one swap per turn, allowed only before Start. Costs a configurable penalty (default 1 point, 0 means free) deducted from the team's score. If no other word is left in the category, the button is replaced by a short hint saying so.
   - Fast-guess bonus: configurable threshold (seconds) and bonus points. A correct guess within the threshold adds the bonus points.
 
@@ -105,6 +106,7 @@ A final comeback chance for the teams that are not clearly leading (or are tied 
 }
 ```
 
+- Optional acting tips: a category file may have `"hints": { "<word>": "<tip>" }` next to `words`. Keys must be words of the same file (matched like the word lists do, checked by the pack tests). A word with no entry simply has no hint button. Tips are short, say how to show the word without words or pointing, and are written per language (not translated word for word).
 - Target size: about 40 to 60 words per difficulty (so 120 to 180 per category).
 - An index file `src/packs/<lang>/index.json` lists the categories.
 - Gold pool: `src/packs/<lang>/gold.json` (`{ "schema": 1, "id": "gold", "lang": "fa", "words": { "1": [...] } }`), the same shape as a category with every word at difficulty 1. It is a category that is not in the language's index, so it never becomes a tile. About 50 words is a good start. Custom gold words can be added by users like other custom words.

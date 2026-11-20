@@ -48,5 +48,19 @@
       "The Alchemist",
       "Brave New World"
     ]
+  },
+  "hints": {
+    "Crime and Punishment": "Show a student with an axe hiding it, then hunched with guilt, sweating, and handing himself in as a prisoner.",
+    "One Hundred Years of Solitude": "Show a family tree growing generation after generation, with a man alone, aging, in a village, and a yellow butterfly.",
+    "The Old Man and the Sea": "Row alone in a small boat, pull a heavy fishing line with a big struggle, then drag a huge skeleton fish back.",
+    "Gulliver's Travels": "Lie down tied by tiny people crawling over you, then stand huge and step over little houses, and look at giants.",
+    "The Count of Monte Cristo": "Show a prisoner in a dark cell scratching at the wall, then escape in a sack, discover treasure, and come back for revenge.",
+    "War and Peace": "Show soldiers marching, firing a cannon, in the snow in a big battle, and then dance in a ballroom in a fancy gown.",
+    "The Divine Comedy": "Walk down through circles of fire and suffering, then climb a mountain, and finally rise up toward heaven with a guide.",
+    "Pride and Prejudice": "Turn your nose up and look away stiffly, then curtsey, dance in a ball gown, and slowly soften and fall in love.",
+    "The Great Gatsby": "Raise a champagne glass at a wild party, then reach toward a green light across the water, longing, and dance.",
+    "Animal Farm": "Act as farm animals taking over, walking on two legs, with a pig in charge, and pointing at a wall of rules.",
+    "The Alchemist": "Walk across a desert as a shepherd boy, look for treasure by the pyramids, and turn metal into gold.",
+    "Brave New World": "Show people marching in rows, taking a pill and smiling blankly, and a lone person who refuses and is ashamed."
   }
 }

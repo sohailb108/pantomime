@@ -18,5 +18,17 @@
       "jellyfish",
       "woodpecker"
     ]
+  },
+  "hints": {
+    "cat": "Lick a paw and wipe your face, then stretch and arch your back.",
+    "dog": "Pant with your tongue out, then wag an invisible tail and beg.",
+    "octopus": "Wave both arms and wiggle all your fingers like eight tentacles.",
+    "sloth": "Do everything in extreme slow motion, hanging from an imaginary branch.",
+    "chameleon": "Stand still, roll your eyes in different directions, then shoot out your tongue.",
+    "praying mantis": "Fold your hands in front of you, stay frozen, then strike suddenly.",
+    "flamingo": "Stand on one leg with a long curved neck and tuck your head under an arm.",
+    "hedgehog": "Curl into a tight ball with your arms around your knees, then peek out and shuffle along on tiptoe, flinching at any touch.",
+    "jellyfish": "Float with soft, floppy arms drifting above your head, pulse your body slowly like a bell, and wiggle your fingers as stinging tentacles.",
+    "woodpecker": "Cling to an imaginary tree trunk, then bob your head forward again and again very fast, pecking, and cock your head to listen."
   }
 }

@@ -23,6 +23,8 @@ export interface SingleSettings {
   stealHalf: boolean;
   /** Points lost for the one allowed reroll, 0 means free. */
   rerollPenalty: number;
+  /** Points lost for the one acting hint of a turn, 0 means free. */
+  hintPenalty: number;
   /** A correct guess within this many seconds earns fastGuessBonus. */
   fastGuessSeconds: number;
   fastGuessBonus: number;

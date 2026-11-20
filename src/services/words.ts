@@ -6,6 +6,8 @@ interface CategoryPack {
   id: string;
   lang: string;
   words: Record<string, string[]>;
+  /** Optional acting tips, keyed by a word of the pack. */
+  hints?: Record<string, string>;
 }
 const files = import.meta.glob<CategoryPack>('@/packs/*/*.json', {
   eager: true,
@@ -29,6 +31,18 @@ export const GOLD_LEVEL: Difficulty = 1;
 /** Number of built-in words of one category and difficulty. */
 export function builtinWords(lang: string, categoryId: string, difficulty: Difficulty): string[] {
   return find(lang, categoryId)?.words[String(difficulty)] ?? [];
+}
+
+/**
+ * The acting tip a built-in word has, or null when it has none (custom words never do). Words are
+ * matched the way the word lists compare them, so spelling variants still find their tip.
+ */
+export function hintFor(lang: string, categoryId: string, word: string): string | null {
+  const hints = find(lang, categoryId)?.hints;
+  if (!hints) return null;
+  const key = compareKey(word);
+  const entry = Object.entries(hints).find(([w]) => compareKey(w) === key);
+  return entry ? entry[1] : null;
 }
 
 /** The difficulty the pack gave a built-in word, or null when the category has no such word. */
