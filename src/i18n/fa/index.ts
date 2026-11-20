@@ -88,7 +88,6 @@ export default {
     hintValue: 'هزینهٔ راهنمایی',
     hintFixed: 'ثابت',
     hintHalfOption: 'نصف امتیاز کاشی (رو به بالا گرد می‌شود)',
-    hintPenalty: 'جریمه راهنمایی',
     fastSeconds: 'زمان حدس سریع (ثانیه)',
     fastBonus: 'امتیاز حدس سریع',
     goldEnabled: 'دور طلایی (فرصت آخر)',

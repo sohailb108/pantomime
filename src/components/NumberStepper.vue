@@ -7,7 +7,7 @@
       color="primary"
       icon="remove"
       :aria-label="t('setup.decrease')"
-      :disable="modelValue <= min"
+      :disable="disabled || modelValue <= min"
       @pointerdown="hold(-step, $event)"
       @pointerup="release"
       @pointercancel="release"
@@ -23,7 +23,7 @@
       color="primary"
       icon="add"
       :aria-label="t('setup.increase')"
-      :disable="modelValue >= max"
+      :disable="disabled || modelValue >= max"
       @pointerdown="hold(step, $event)"
       @pointerup="release"
       @pointercancel="release"
@@ -41,7 +41,13 @@ import { useSettingsStore } from '@/stores/settings';
 import { formatNumber } from '@/services/format';
 
 const props = withDefaults(
-  defineProps<{ modelValue: number; min?: number; max?: number; step?: number }>(),
+  defineProps<{
+    modelValue: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    disabled?: boolean;
+  }>(),
   {
     min: 0,
     max: 999,

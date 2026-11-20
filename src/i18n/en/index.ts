@@ -91,7 +91,6 @@ export default {
     hintValue: 'Hint cost',
     hintFixed: 'Fixed',
     hintHalfOption: 'Half of the tile points (rounded up)',
-    hintPenalty: 'Hint penalty',
     fastSeconds: 'Fast guess within (seconds)',
     fastBonus: 'Fast guess bonus',
     goldEnabled: 'Gold round (last chance)',

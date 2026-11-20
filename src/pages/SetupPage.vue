@@ -247,6 +247,7 @@
                       <NumberStepper
                         v-model="setup.settings.single.hintPenalty"
                         :max="10"
+                        :disabled="hintValueMode !== 'fixed'"
                         :class="{ 'hint-stepper-off': hintValueMode !== 'fixed' }"
                       />
                     </q-item-section>
@@ -596,7 +597,6 @@ function start() {
 <style scoped lang="scss">
 .hint-stepper-off {
   opacity: 0.4;
-  pointer-events: none;
 }
 .setup-page {
   display: flex;
