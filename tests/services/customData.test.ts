@@ -290,3 +290,16 @@ describe('placing built-in words', () => {
     expect(normalizeLang(saved)).toEqual(emptyLang());
   });
 });
+
+describe('gold in an import', () => {
+  it('keeps only the level gold has', () => {
+    const file = {
+      ...buildExport('en', emptyLang()),
+      extra: { gold: { 1: ['a'], 2: ['b'], 3: ['c'] } },
+      overrides: { gold: { hidden: ['h'], 1: [], 2: ['x'], 3: [] } },
+    };
+    const parsed = parseImport(JSON.stringify(file));
+    expect(parsed.ok && parsed.data.extra[GOLD_ID]).toEqual({ 1: ['a'], 2: [], 3: [] });
+    expect(parsed.ok && parsed.data.overrides[GOLD_ID]).toEqual({ hidden: ['h'], 1: [], 2: [], 3: [] });
+  });
+});

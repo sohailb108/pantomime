@@ -287,6 +287,12 @@ function cleanWords(value: unknown): WordsByDifficulty | null {
   return out;
 }
 
+/** Gold has one difficulty, so words listed at another one would never be drawn or shown. */
+function keepGoldLevel(lists: { 2: string[]; 3: string[] }): void {
+  lists[2] = [];
+  lists[3] = [];
+}
+
 /** Cleans the placements of one category. A word listed twice stays in the first list only. */
 function cleanOverrides(value: unknown): Overrides | null {
   const levels = cleanWords(value);
@@ -341,6 +347,7 @@ export function parseImport(text: string): ParsedImport {
     if (!CATEGORY_KEY.test(id)) return { ok: false, error: 'invalid' };
     const words = cleanWords(value);
     if (words === null) return { ok: false, error: 'invalid' };
+    if (id === GOLD_ID) keepGoldLevel(words);
     data.extra[id] = words;
   }
 
@@ -360,6 +367,7 @@ export function parseImport(text: string): ParsedImport {
     if (!CATEGORY_KEY.test(id)) return { ok: false, error: 'invalid' };
     const cleaned = cleanOverrides(value);
     if (cleaned === null) return { ok: false, error: 'invalid' };
+    if (id === GOLD_ID) keepGoldLevel(cleaned);
     if (LISTS.some((l) => cleaned[l].length > 0)) data.overrides[id] = cleaned;
   }
 
