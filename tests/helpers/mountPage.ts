@@ -8,6 +8,15 @@ import messages from '@/i18n';
 
 const qComponents = Object.fromEntries(Object.entries(Quasar).filter(([k]) => /^Q[A-Z]/.test(k)));
 
+// Expansion items slide open with the Web Animations API. A test can end mid-slide, and happy-dom
+// then rejects the cancelled animation as an unhandled error, which fails the run on a slow
+// machine. A zero duration skips the animation.
+qComponents.QExpansionItem = defineComponent({
+  name: 'QExpansionItem',
+  inheritAttrs: false,
+  setup: (_, { attrs, slots }) => () => h(Quasar.QExpansionItem, { duration: 0, ...attrs }, slots),
+});
+
 const stub = (name: string) => defineComponent({ name, render: () => h('div', name) });
 
 /**
