@@ -44,6 +44,14 @@
     "photographer": "Hold a camera to your eye, crouch and lean for the best angle, wave people into a pose, and click.",
     "judge": "Bang a gavel, sit up straight in a long robe, listen to both sides sternly, and announce a verdict.",
     "tailor": "Measure a person with a tape around the shoulders and waist, hold up pins in your mouth, and sew with a needle and thread.",
-    "referee": "Blow a whistle, run along with the players, wave a card in the air, and point firmly to one side."
+    "referee": "Blow a whistle, run along with the players, wave a card in the air, and point firmly to one side.",
+    "teacher": "Write on a board, point at students, and tap a ruler on the desk.",
+    "doctor": "Listen to a heartbeat with a stethoscope, check a throat, and write a prescription.",
+    "cook": "Chop with a knife, stir a pot, taste, and add a pinch of salt.",
+    "driver": "Hold a big steering wheel, shift gears, glance in the mirror, and press the brakes.",
+    "farmer": "Dig with a hoe, scatter seeds, wipe your sweaty forehead, and harvest the crops.",
+    "singer": "Hold a microphone to your mouth, sway to the beat, and bow to a cheering crowd.",
+    "painter": "Hold a brush and a palette, dab at a canvas, step back, and tilt your head.",
+    "barber": "Snip scissors around someone's head, brush off their neck, and shave a beard with a razor."
   }
 }
