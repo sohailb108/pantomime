@@ -6,17 +6,35 @@
   "name": "Objects",
   "color": "#AB47BC",
   "words": {
-    "1": ["chair", "phone", "key", "umbrella", "spoon", "clock", "book", "shoe"],
-    "2": ["scissors", "toothbrush", "camera", "ladder", "guitar", "backpack", "hammer", "mirror"],
-    "3": [
-      "telescope",
-      "hourglass",
+    "1": [
+      "chair",
+      "phone",
+      "key",
+      "umbrella",
+      "spoon",
+      "clock",
+      "book",
+      "shoe",
+      "toothbrush",
+      "scissors",
+      "hammer"
+    ],
+    "2": [
+      "camera",
+      "ladder",
+      "guitar",
+      "backpack",
+      "mirror",
       "vacuum cleaner",
+      "parachute",
+      "telescope"
+    ],
+    "3": [
+      "hourglass",
       "compass",
       "typewriter",
       "stapler",
-      "kaleidoscope",
-      "parachute"
+      "kaleidoscope"
     ]
   },
   "hints": {

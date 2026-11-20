@@ -14,25 +14,26 @@
       "Great Wall of China",
       "Disneyland",
       "Niagara Falls",
-      "Times Square",
-      "Hollywood Sign",
       "Mount Everest",
-      "Sahara Desert",
-      "Amazon Rainforest"
+      "Leaning Tower of Pisa",
+      "Christ the Redeemer"
     ],
     "2": [
       "Taj Mahal",
       "Colosseum",
-      "Leaning Tower of Pisa",
       "Sydney Opera House",
       "Grand Canyon",
       "Machu Picchu",
       "Golden Gate Bridge",
       "Buckingham Palace",
       "Burj Khalifa",
-      "Christ the Redeemer",
       "Mount Fuji",
-      "Venice canals"
+      "Venice canals",
+      "Easter Island",
+      "Sahara Desert",
+      "Amazon Rainforest",
+      "Hollywood Sign",
+      "Times Square"
     ],
     "3": [
       "Stonehenge",
@@ -42,7 +43,6 @@
       "Kremlin",
       "Alhambra",
       "Neuschwanstein Castle",
-      "Easter Island",
       "Santorini",
       "Forbidden City",
       "Hagia Sophia",

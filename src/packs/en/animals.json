@@ -6,10 +6,28 @@
   "name": "Animals",
   "color": "#FF7043",
   "words": {
-    "1": ["cat", "dog", "fish", "bird", "cow", "duck", "pig", "frog"],
-    "2": ["elephant", "monkey", "snake", "penguin", "kangaroo", "giraffe", "bat", "crab"],
+    "1": [
+      "cat",
+      "dog",
+      "fish",
+      "bird",
+      "cow",
+      "duck",
+      "pig",
+      "frog",
+      "snake",
+      "monkey"
+    ],
+    "2": [
+      "elephant",
+      "penguin",
+      "kangaroo",
+      "giraffe",
+      "bat",
+      "crab",
+      "octopus"
+    ],
     "3": [
-      "octopus",
       "chameleon",
       "flamingo",
       "sloth",

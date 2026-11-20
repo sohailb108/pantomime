@@ -6,24 +6,33 @@
   "name": "Jobs",
   "color": "#26A69A",
   "words": {
-    "1": ["teacher", "doctor", "cook", "driver", "farmer", "singer", "painter", "barber"],
-    "2": [
+    "1": [
+      "teacher",
+      "doctor",
+      "cook",
+      "driver",
+      "farmer",
+      "singer",
+      "painter",
+      "barber",
       "firefighter",
+      "pilot"
+    ],
+    "2": [
       "dentist",
-      "pilot",
       "plumber",
       "photographer",
       "judge",
       "tailor",
-      "referee"
-    ],
-    "3": [
+      "referee",
       "astronaut",
       "magician",
-      "archaeologist",
       "lifeguard",
+      "conductor"
+    ],
+    "3": [
+      "archaeologist",
       "translator",
-      "conductor",
       "puppeteer",
       "beekeeper"
     ]
