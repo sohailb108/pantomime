@@ -33,6 +33,7 @@ export async function mountPage(
       { path: '/results', component: stub('results') },
       { path: '/packs', component: stub('packs') },
       { path: '/help', component: stub('help') },
+      { path: '/packs/:id', component: stub('pack') },
       { path: pattern, component: page },
     ].reverse(),
   });
@@ -48,7 +49,7 @@ export async function mountPage(
         plugins: [
           pinia,
           router,
-          [Quasar.Quasar, { components: qComponents, directives: { ClosePopup: Quasar.ClosePopup }, plugins: { Notify: Quasar.Notify } }],
+          [Quasar.Quasar, { components: qComponents, directives: { ClosePopup: Quasar.ClosePopup, Ripple: Quasar.Ripple }, plugins: { Notify: Quasar.Notify } }],
           createI18n({ legacy: false, locale: 'en', messages }),
         ],
       },
