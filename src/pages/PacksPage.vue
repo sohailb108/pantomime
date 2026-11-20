@@ -34,8 +34,8 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-weight-bold">{{ t('packs.gold') }}</q-item-label>
-            <q-item-label v-if="custom.goldWords(lang).length > 0" caption>
-              {{ t('packs.customCount', { n: fmt(custom.goldWords(lang).length) }) }}
+            <q-item-label v-if="goldCount > 0" caption>
+              {{ t('packs.customCount', { n: fmt(goldCount) }) }}
             </q-item-label>
           </q-item-section>
           <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
@@ -130,9 +130,10 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { DIFFICULTIES } from '@/game/types';
-import { isComplete, MAX_NAME_LENGTH } from '@/services/customData';
+import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { formatNumber } from '@/services/format';
 import { listAllCategories } from '@/services/packs';
+import { GOLD_LEVEL } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
@@ -158,6 +159,8 @@ function extraCount(id: string, isCustom: boolean): number {
   const total = DIFFICULTIES.reduce((sum, d) => sum + custom.wordsOf(lang.value, id, d).length, 0);
   return isCustom ? 0 : total;
 }
+
+const goldCount = computed(() => custom.wordsOf(lang.value, GOLD_ID, GOLD_LEVEL).length);
 
 // New category dialog
 const newOpen = ref(false);

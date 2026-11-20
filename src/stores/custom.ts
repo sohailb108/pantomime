@@ -13,7 +13,6 @@ import {
   MAX_CATEGORIES,
   normalizeLang,
   normalizeName,
-  hasWord,
   place,
   placementOf as placementOfWord,
   removeFromList,
@@ -128,16 +127,6 @@ export const useCustomStore = defineStore('custom', () => {
     removeFromList(listFor(lang, categoryId, difficulty), word);
   }
 
-  function goldWords(lang: string): string[] {
-    return of(lang).gold;
-  }
-  function addGold(lang: string, word: string): AddResult {
-    return addToList(ensure(lang).gold, word);
-  }
-  function removeGold(lang: string, word: string) {
-    removeFromList(ensure(lang).gold, word);
-  }
-
   /** Where a built-in word of a category is: hidden, moved to a difficulty, or `native`. */
   function placementOf(lang: string, categoryId: string, word: string): Placement {
     return placementOfWord(of(lang), categoryId, word);
@@ -149,16 +138,6 @@ export const useCustomStore = defineStore('custom', () => {
   /** Built-in words of a category the user hid. */
   function hiddenOf(lang: string, categoryId: string): string[] {
     return of(lang).overrides[categoryId]?.hidden ?? [];
-  }
-  function hiddenGold(lang: string): string[] {
-    return of(lang).hiddenGold;
-  }
-  function hideGold(lang: string, word: string) {
-    const list = ensure(lang).hiddenGold;
-    if (!hasWord(list, word)) list.push(word);
-  }
-  function unhideGold(lang: string, word: string) {
-    removeFromList(ensure(lang).hiddenGold, word);
   }
 
   function exportJson(lang: string): string {
@@ -187,15 +166,9 @@ export const useCustomStore = defineStore('custom', () => {
     wordsOf,
     addWord,
     removeWord,
-    goldWords,
-    addGold,
-    removeGold,
     placementOf,
     placeWord,
     hiddenOf,
-    hiddenGold,
-    hideGold,
-    unhideGold,
     exportJson,
     importJson,
   };

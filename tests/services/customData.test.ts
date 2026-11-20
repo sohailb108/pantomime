@@ -15,6 +15,7 @@ import {
   normalizeLang,
   normalizeWord,
   parseImport,
+  GOLD_ID,
 } from '@/services/customData';
 
 describe('words', () => {
@@ -52,7 +53,7 @@ describe('export and import', () => {
       words: { 1: ['golf'], 2: ['polo'], 3: ['curling'] },
     });
     d.extra.animals = { 1: ['ant'], 2: [], 3: [] };
-    d.gold.push('quokka');
+    d.extra[GOLD_ID] = { 1: ['quokka'], 2: [], 3: [] };
     return d;
   };
 
@@ -78,16 +79,16 @@ describe('export and import', () => {
   it('drops invalid words and duplicates but keeps the rest', () => {
     const file = {
       ...buildExport('en', emptyLang()),
-      gold: ['ok', 'OK', 5, '', 'x'.repeat(MAX_WORD_LENGTH + 10)],
+      extra: { gold: { 1: ['ok', 'OK', 5, '', 'x'.repeat(MAX_WORD_LENGTH + 10)], 2: [], 3: [] } },
     };
     const parsed = parseImport(JSON.stringify(file));
-    expect(parsed.ok && parsed.data.gold).toEqual(['ok']);
+    expect(parsed.ok && parsed.data.extra[GOLD_ID]![1]).toEqual(['ok']);
   });
 
   it('rejects oversized lists', () => {
     const file = {
       ...buildExport('en', emptyLang()),
-      gold: Array.from({ length: 2001 }, (_, i) => `w${i}`),
+      extra: { gold: { 1: Array.from({ length: 2001 }, (_, i) => `w${i}`), 2: [], 3: [] } },
     };
     expect(parseImport(JSON.stringify(file))).toEqual({ ok: false, error: 'invalid' });
   });
@@ -95,10 +96,10 @@ describe('export and import', () => {
   it('merges by adding only', () => {
     const target = sample();
     const incoming = sample();
-    incoming.gold.push('numbat');
+    incoming.extra[GOLD_ID]![1].push('numbat');
     incoming.categories[0]!.words[1].push('tennis');
     expect(mergeInto(target, incoming)).toBe(2);
-    expect(target.gold).toEqual(['quokka', 'numbat']);
+    expect(target.extra[GOLD_ID]![1]).toEqual(['quokka', 'numbat']);
     expect(target.categories).toHaveLength(1);
     expect(target.categories[0]!.words[1]).toEqual(['golf', 'tennis']);
   });
@@ -169,6 +170,16 @@ describe('built-in category merging', () => {
     ]);
     expect(data.extra).toEqual({});
     expect(data.extraNames).toEqual({});
+  });
+
+  it('keeps the gold pool, which is a built-in category without a tile', () => {
+    const data = normalizeLang({});
+    data.extra[GOLD_ID] = { 1: ['quokka'], 2: [], 3: [] };
+    place(data, GOLD_ID, 'nostalgia', 'hidden');
+    expect(restoreOrphanedExtras(data, builtins, () => 'c-new')).toBe(0);
+    expect(data.categories).toEqual([]);
+    expect(data.extra[GOLD_ID][1]).toEqual(['quokka']);
+    expect(placementOf(data, GOLD_ID, 'nostalgia')).toBe('hidden');
   });
 
   it('falls back to the old id as the name when none was saved', () => {
@@ -275,7 +286,7 @@ describe('placing built-in words', () => {
   });
 
   it('ignores saved fields it does not know', () => {
-    const saved = { gold: ['x'], hidden: { animals: {} } } as never;
-    expect(normalizeLang(saved)).toEqual({ ...emptyLang(), gold: ['x'] });
+    const saved = { gold: ['x'], hiddenGold: ['y'], hidden: { animals: {} } } as never;
+    expect(normalizeLang(saved)).toEqual(emptyLang());
   });
 });

@@ -4,7 +4,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import messages from '@/i18n';
 import GoldPage from '@/pages/GoldPage.vue';
-import { builtinGoldWords } from '@/services/words';
+import { GOLD_ID } from '@/services/customData';
+import { builtinWords, GOLD_LEVEL } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useSettingsStore } from '@/stores/settings';
 import { playAllTiles, startGame } from '../helpers/game';
@@ -82,26 +83,26 @@ describe('GoldPage', () => {
   }
 
   it('hides a built-in word from the gold result screen, and can undo it', async () => {
-    const word = builtinGoldWords('en')[0]!;
+    const word = builtinWords('en', GOLD_ID, GOLD_LEVEL)[0]!;
     const { wrapper } = await openGold({ deck: [word] });
     const custom = useCustomStore();
     await reachResult(wrapper);
     await tap(wrapper, en.turn.hideWord);
-    expect(custom.hiddenGold('en')).toEqual([word]);
+    expect(custom.hiddenOf('en', GOLD_ID)).toEqual([word]);
     expect(wrapper.text()).toContain(en.turn.statusHidden);
     await tap(wrapper, en.turn.undoChange);
-    expect(custom.hiddenGold('en')).toEqual([]);
+    expect(custom.hiddenOf('en', GOLD_ID)).toEqual([]);
   });
 
   it('hiding a custom gold word removes it, and undo adds it back', async () => {
     const { wrapper } = await openGold({ deck: ['zzcustom'] });
     const custom = useCustomStore();
-    custom.addGold('en', 'zzcustom');
+    custom.addWord('en', GOLD_ID, GOLD_LEVEL, 'zzcustom');
     await reachResult(wrapper);
     await tap(wrapper, en.turn.hideWord);
-    expect(custom.goldWords('en')).toEqual([]);
+    expect(custom.wordsOf('en', GOLD_ID, GOLD_LEVEL)).toEqual([]);
     await tap(wrapper, en.turn.undoChange);
-    expect(custom.goldWords('en')).toEqual(['zzcustom']);
+    expect(custom.wordsOf('en', GOLD_ID, GOLD_LEVEL)).toEqual(['zzcustom']);
   });
 
   it('charges the penalty when the team gives up, after a second tap', async () => {

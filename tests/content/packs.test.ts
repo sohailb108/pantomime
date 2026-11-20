@@ -67,9 +67,11 @@ describe('built-in packs', () => {
       }
 
       it('has gold words', () => {
-        const gold = read<{ lang: string; words: string[] }>(lang, 'gold');
+        const gold = read<Pack>(lang, 'gold');
+        expect(gold.id).toBe('gold');
         expect(gold.lang).toBe(lang);
-        checkWords(gold.words);
+        expect(Object.keys(gold.words)).toEqual(['1']);
+        checkWords(gold.words['1']!);
       });
     });
   }

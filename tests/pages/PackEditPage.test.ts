@@ -5,7 +5,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import messages from '@/i18n';
 import PackEditPage from '@/pages/PackEditPage.vue';
-import { builtinGoldWords, builtinWords } from '@/services/words';
+import { GOLD_ID } from '@/services/customData';
+import { builtinWords, GOLD_LEVEL } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useSettingsStore } from '@/stores/settings';
 import { startGame } from '../helpers/game';
@@ -125,9 +126,9 @@ describe('PackEditPage', () => {
     it('shows a single list and adds gold words', async () => {
       const { wrapper, custom } = await openEdit('gold');
       expect(wrapper.findAll('.word-card')).toHaveLength(1);
-      expect(wrapper.text()).toContain(`${builtinGoldWords('en').length} built-in`);
+      expect(wrapper.text()).toContain(`${builtinWords('en', GOLD_ID, GOLD_LEVEL).length} built-in`);
       await addWord(wrapper, 0, 'time machine');
-      expect(custom.goldWords('en')).toEqual(['time machine']);
+      expect(custom.wordsOf('en', GOLD_ID, GOLD_LEVEL)).toEqual(['time machine']);
     });
   });
 

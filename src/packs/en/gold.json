@@ -1,21 +1,24 @@
 {
   "schema": 1,
+  "id": "gold",
   "lang": "en",
-  "words": [
-    "quarantine",
-    "procrastination",
-    "nostalgia",
-    "jealousy",
-    "philosophy",
-    "democracy",
-    "hibernation",
-    "gravity",
-    "inflation",
-    "claustrophobia",
-    "telepathy",
-    "superstition",
-    "evolution",
-    "bureaucracy",
-    "déjà vu"
-  ]
+  "words": {
+    "1": [
+      "quarantine",
+      "procrastination",
+      "nostalgia",
+      "jealousy",
+      "philosophy",
+      "democracy",
+      "hibernation",
+      "gravity",
+      "inflation",
+      "claustrophobia",
+      "telepathy",
+      "superstition",
+      "evolution",
+      "bureaucracy",
+      "déjà vu"
+    ]
+  }
 }

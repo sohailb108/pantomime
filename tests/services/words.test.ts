@@ -9,16 +9,16 @@ import {
   listCategories,
 } from '@/services/packs';
 import {
-  builtinGoldWords,
   builtinWords,
   getGoldPool,
   getPool,
   builtinPool,
   changePoolWord,
+  GOLD_LEVEL,
   nativeLevel,
   revertPoolChange,
 } from '@/services/words';
-import { MAX_WORDS_PER_LIST } from '@/services/customData';
+import { GOLD_ID, MAX_WORDS_PER_LIST } from '@/services/customData';
 import { stubLocalStorage } from '../helpers/storage';
 
 beforeEach(() => {
@@ -33,8 +33,8 @@ describe('word pools', () => {
     expect(word).toBeTruthy();
     expect(builtinWords('en', 'no-such', 1)).toEqual([]);
     expect(builtinWords('xx', 'animals', 1)).toEqual([]);
-    expect(builtinGoldWords('en').length).toBeGreaterThan(0);
-    expect(builtinGoldWords('xx')).toEqual([]);
+    expect(builtinWords('en', GOLD_ID, GOLD_LEVEL).length).toBeGreaterThan(0);
+    expect(builtinWords('xx', GOLD_ID, GOLD_LEVEL)).toEqual([]);
   });
 
   it('adds custom words and leaves out hidden built-in ones', () => {
@@ -162,7 +162,7 @@ describe('word pools', () => {
 
   it('builds the gold pool from built-in and custom words', () => {
     const base = getGoldPool('en').length;
-    useCustomStore().addGold('en', 'extra gold');
+    useCustomStore().addWord('en', GOLD_ID, GOLD_LEVEL, 'extra gold');
     expect(getGoldPool('en')).toHaveLength(base + 1);
   });
 });

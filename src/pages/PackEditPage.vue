@@ -45,35 +45,21 @@
         <div>{{ t('packs.emptyBuiltinHint') }}</div>
       </div>
 
-      <template v-if="isGold">
-        <WordList
-          :title="t('packs.gold')"
-          tone="#ffc107"
-          :words="custom.goldWords(lang)"
-          :builtin-count="builtinGoldCount"
-          :hidden="custom.hiddenGold(lang)"
-          @unhide="(w) => custom.unhideGold(lang, w)"
-          :on-add="(w) => custom.addGold(lang, w)"
-          @remove="(w) => custom.removeGold(lang, w)"
-        />
-      </template>
-      <template v-else>
-        <WordList
-          v-for="d in DIFFICULTIES"
-          :key="d"
-          :title="t(`packs.difficulty${d}`)"
-          :tone="TONES[d]"
-          :words="custom.wordsOf(lang, id, d)"
-          :builtin-count="customCategory ? undefined : builtinPool(lang, id, d).length"
-          :on-add="(w) => custom.addWord(lang, id, d, w)"
-          @remove="(w) => removeWord(d, w)"
-        />
-        <HiddenWords
-          v-if="!customCategory && custom.hiddenOf(lang, id).length > 0"
-          :words="custom.hiddenOf(lang, id)"
-          @unhide="(w) => custom.placeWord(lang, id, w, 'native')"
-        />
-      </template>
+      <WordList
+        v-for="d in levels"
+        :key="d"
+        :title="isGold ? t('packs.gold') : t(`packs.difficulty${d}`)"
+        :tone="isGold ? GOLD_TONE : TONES[d]"
+        :words="custom.wordsOf(lang, id, d)"
+        :builtin-count="customCategory ? undefined : builtinPool(lang, id, d).length"
+        :on-add="(w) => custom.addWord(lang, id, d, w)"
+        @remove="(w) => removeWord(d, w)"
+      />
+      <HiddenWords
+        v-if="!customCategory && custom.hiddenOf(lang, id).length > 0"
+        :words="custom.hiddenOf(lang, id)"
+        @unhide="(w) => custom.placeWord(lang, id, w, 'native')"
+      />
     </div>
 
     <q-dialog v-model="editOpen">
@@ -133,6 +119,7 @@
 
 <script setup lang="ts">
 // Marker of each difficulty card: easy, medium, hard (a stronger shade of the theme color).
+const GOLD_TONE = '#ffc107';
 const TONES: Record<number, string> = {
   1: 'color-mix(in srgb, var(--q-primary) 30%, transparent)',
   2: 'color-mix(in srgb, var(--q-primary) 65%, transparent)',
@@ -145,9 +132,9 @@ import { useRoute, useRouter } from 'vue-router';
 import HiddenWords from '@/components/HiddenWords.vue';
 import WordList from '@/components/WordList.vue';
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
-import { isComplete, MAX_NAME_LENGTH } from '@/services/customData';
+import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { listAllCategories } from '@/services/packs';
-import { builtinGoldWords, builtinPool, getPool } from '@/services/words';
+import { builtinPool, GOLD_LEVEL, getPool } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
@@ -162,7 +149,9 @@ const game = useGameStore();
 
 const lang = computed(() => settings.language);
 const id = computed(() => String(route.params.id));
-const isGold = computed(() => id.value === 'gold');
+const isGold = computed(() => id.value === GOLD_ID);
+/** Gold has one list; the other categories have a list per difficulty. */
+const levels = computed<readonly Difficulty[]>(() => (isGold.value ? [GOLD_LEVEL] : DIFFICULTIES));
 const info = computed(() => listAllCategories(lang.value).find((c) => c.id === id.value));
 const ready = computed(() => isGold.value || !!info.value);
 const customCategory = computed(() => custom.findCategory(lang.value, id.value));
@@ -175,7 +164,6 @@ const builtinEmpty = computed(
     DIFFICULTIES.some((d) => getPool(lang.value, id.value, d).length === 0),
 );
 const title = computed(() => (isGold.value ? t('packs.gold') : (info.value?.name ?? '')));
-const builtinGoldCount = computed(() => builtinGoldWords(lang.value).length);
 
 onMounted(() => {
   if (!ready.value) void router.replace('/packs');

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { useCustomStore } from '@/stores/custom';
+import { GOLD_ID } from '@/services/customData';
 import { saveJson } from '@/services/storage';
 import { listCategories } from '@/services/packs';
 import {
@@ -46,7 +47,7 @@ describe('custom store', () => {
     expect(getPool('en', 'animals', 1)).toContain('quokka');
     s.removeWord('en', 'animals', 1, 'quokka');
     expect(getPool('en', 'animals', 1)).not.toContain('quokka');
-    s.addGold('en', 'numbat');
+    s.addWord('en', GOLD_ID, 1, 'numbat');
     expect(getGoldPool('en')).toContain('numbat');
   });
 
@@ -73,7 +74,7 @@ describe('custom store', () => {
 
   it('imports into the right language only', () => {
     const a = fresh();
-    a.addGold('en', 'numbat');
+    a.addWord('en', GOLD_ID, 1, 'numbat');
     const file = a.exportJson('en');
     const b = fresh();
     expect(b.importJson('fa', file)).toEqual({ ok: false, error: 'language' });
@@ -119,24 +120,24 @@ describe('hiding built-in words', () => {
   it('fills the new fields for data saved before hiding existed', () => {
     localStorage.setItem(
       'pantomime:custom',
-      JSON.stringify({ version: 1, data: { en: { categories: [], extra: {}, gold: ['x'] } } }),
+      JSON.stringify({ version: 1, data: { en: { categories: [], extra: {} } } }),
     );
     const s = fresh();
     expect(s.hiddenOf('en', 'food')).toEqual([]);
-    expect(s.hiddenGold('en')).toEqual([]);
-    expect(s.goldWords('en')).toEqual(['x']);
+    expect(s.hiddenOf('en', GOLD_ID)).toEqual([]);
+    expect(s.wordsOf('en', GOLD_ID, 1)).toEqual([]);
   });
 
   it('exports, imports and merges hidden words', () => {
     const a = fresh();
     a.placeWord('en', 'food', 'pizza', 'hidden');
-    a.hideGold('en', 'g');
+    a.placeWord('en', GOLD_ID, 'g', 'hidden');
     const text = a.exportJson('en');
     setActivePinia(createPinia());
     const b = useCustomStore();
     expect(b.importJson('en', text).ok).toBe(true);
     expect(b.hiddenOf('en', 'food')).toEqual(['pizza']);
-    expect(b.hiddenGold('en')).toEqual(['g']);
+    expect(b.hiddenOf('en', GOLD_ID)).toEqual(['g']);
   });
 
   it('does not create a category named like a built-in or existing one', () => {

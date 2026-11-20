@@ -1,5 +1,5 @@
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
-import { compareKey, hasWord, type Placement } from '@/services/customData';
+import { compareKey, GOLD_ID, hasWord, type Placement } from '@/services/customData';
 import { useCustomStore } from '@/stores/custom';
 
 interface CategoryPack {
@@ -7,31 +7,28 @@ interface CategoryPack {
   lang: string;
   words: Record<string, string[]>;
 }
-interface GoldPack {
-  lang: string;
-  words: string[];
-}
-
-const files = import.meta.glob<CategoryPack | GoldPack>('@/packs/*/*.json', {
+const files = import.meta.glob<CategoryPack>('@/packs/*/*.json', {
   eager: true,
   import: 'default',
 });
 
 /** Pack files by "lang/file", built once at load. */
-const packsByKey = new Map<string, CategoryPack | GoldPack>();
+const packsByKey = new Map<string, CategoryPack>();
 for (const [path, pack] of Object.entries(files)) {
   const match = /\/packs\/([^/]+)\/([^/]+)\.json$/.exec(path);
   if (match) packsByKey.set(`${match[1]}/${match[2]}`, pack);
 }
 
-function find(lang: string, file: string): CategoryPack | GoldPack | undefined {
+function find(lang: string, file: string): CategoryPack | undefined {
   return packsByKey.get(`${lang}/${file}`);
 }
 
+/** The difficulty all gold words are at. */
+export const GOLD_LEVEL: Difficulty = 1;
+
 /** Number of built-in words of one category and difficulty. */
 export function builtinWords(lang: string, categoryId: string, difficulty: Difficulty): string[] {
-  const pack = find(lang, categoryId) as CategoryPack | undefined;
-  return pack?.words[String(difficulty)] ?? [];
+  return find(lang, categoryId)?.words[String(difficulty)] ?? [];
 }
 
 /** The difficulty the pack gave a built-in word, or null when the category has no such word. */
@@ -148,14 +145,7 @@ export function revertPoolChange(change: PoolChange) {
   }
 }
 
-/** Built-in gold words. */
-export function builtinGoldWords(lang: string): string[] {
-  return (find(lang, 'gold') as GoldPack | undefined)?.words ?? [];
-}
-
-/** The very hard words used in the gold round: built-in (minus the hidden ones) plus custom. */
+/** The words of the gold round: the gold category's pool at its one difficulty. */
 export function getGoldPool(lang: string): string[] {
-  const custom = useCustomStore();
-  const hidden = custom.hiddenGold(lang);
-  return [...builtinGoldWords(lang).filter((w) => !hasWord(hidden, w)), ...custom.goldWords(lang)];
+  return getPool(lang, GOLD_ID, GOLD_LEVEL);
 }

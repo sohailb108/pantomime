@@ -6,7 +6,8 @@ import messages from '@/i18n';
 import BoardPage from '@/pages/BoardPage.vue';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
-import { builtinGoldWords } from '@/services/words';
+import { GOLD_ID } from '@/services/customData';
+import { builtinWords, GOLD_LEVEL } from '@/services/words';
 import { useSettingsStore } from '@/stores/settings';
 import { playAllTiles, playTiles, startGame } from '../helpers/game';
 import { hasButton, mountPage, press } from '../helpers/mountPage';
@@ -119,7 +120,7 @@ describe('BoardPage', () => {
     it('only lets the team keep its points when every gold word is hidden', async () => {
       const { wrapper } = await openBoard(() => {
         const custom = useCustomStore();
-        for (const w of builtinGoldWords('en')) custom.hideGold('en', w);
+        for (const w of builtinWords('en', GOLD_ID, GOLD_LEVEL)) custom.placeWord('en', GOLD_ID, w, 'hidden');
         playAllTiles(useGameStore());
       });
       const start = wrapper.findAll('button').find((b) => b.text() === en.turn.start)!;

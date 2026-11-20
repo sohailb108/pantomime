@@ -167,9 +167,8 @@ import { cue, timerCue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
 import { longWordClass } from '@/config/limits';
 import { formatNumber } from '@/services/format';
-import { hasWord } from '@/services/customData';
-import { builtinGoldWords } from '@/services/words';
-import { useCustomStore } from '@/stores/custom';
+import { GOLD_ID } from '@/services/customData';
+import { changePoolWord, GOLD_LEVEL, revertPoolChange, type PoolChange } from '@/services/words';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -179,7 +178,6 @@ const { t } = useI18n();
 const router = useRouter();
 const settings = useSettingsStore();
 const game = useGameStore();
-const custom = useCustomStore();
 
 const state = computed(() => game.state);
 const gold = computed(() => state.value!.settings.gold);
@@ -195,6 +193,7 @@ const word = ref<string | null>(null);
 const success = ref(false);
 /** The word was taken out of the gold pool from the result screen. */
 const wordHidden = ref(false);
+let hideChange: PoolChange | null = null;
 const giveUpTap = useConfirmTap();
 const confirmGiveUp = giveUpTap.armed;
 /** Color of the team that just attempted, kept because the queue moves on after resolving. */
@@ -241,6 +240,7 @@ function showWord() {
   word.value = next;
   game.markGoldSeen(next);
   wordHidden.value = false;
+  hideChange = null;
   phase.value = 'prep';
 }
 /** Leaves the unfinished attempt; the game stays at the gold round and is saved. */
@@ -269,13 +269,13 @@ function resolve(ok: boolean) {
 function toggleHide() {
   const w = word.value;
   if (w === null) return;
-  const builtin = hasWord(builtinGoldWords(game.lang), w);
-  if (wordHidden.value) {
-    if (builtin) custom.unhideGold(game.lang, w);
-    else custom.addGold(game.lang, w);
-  } else if (builtin) custom.hideGold(game.lang, w);
-  else custom.removeGold(game.lang, w);
-  wordHidden.value = !wordHidden.value;
+  if (hideChange) {
+    revertPoolChange(hideChange);
+    hideChange = null;
+  } else {
+    hideChange = changePoolWord(game.lang, GOLD_ID, GOLD_LEVEL, w, 'hidden');
+  }
+  wordHidden.value = hideChange !== null;
 }
 function next() {
   // The board shows the next team's offer, or the game is over.

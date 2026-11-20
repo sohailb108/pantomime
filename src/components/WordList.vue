@@ -43,20 +43,12 @@
         {{ w }}
       </q-chip>
     </div>
-
-    <HiddenWords
-      v-if="hidden && hidden.length > 0"
-      class="q-mt-sm"
-      :words="hidden"
-      @unhide="(w) => emit('unhide', w)"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import HiddenWords from '@/components/HiddenWords.vue';
 import { MAX_WORD_LENGTH, type AddResult } from '@/services/customData';
 import { formatNumber } from '@/services/format';
 import { useSettingsStore } from '@/stores/settings';
@@ -67,12 +59,10 @@ const props = defineProps<{
   builtinCount?: number | undefined;
   /** Adds the word and reports what happened. */
   onAdd: (word: string) => AddResult;
-  /** Built-in words the user hid. Only these are listed, the rest of the built-in words stay unseen. */
-  hidden?: readonly string[] | undefined;
   /** Accent color (any CSS color) for the card's marker. */
   tone?: string | undefined;
 }>();
-const emit = defineEmits<{ remove: [word: string]; unhide: [word: string] }>();
+const emit = defineEmits<{ remove: [word: string] }>();
 
 const { t } = useI18n();
 const settings = useSettingsStore();
