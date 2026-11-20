@@ -29,6 +29,12 @@ label,
   transform: scaleX(-1);
 }
 
+// Grey card used for the sections of a result screen.
+.soft-card {
+  border-radius: 16px;
+  background: rgba(128, 128, 128, 0.1);
+}
+
 // Primary actions stay reachable when content is taller than the screen
 // (e.g. a phone in landscape): they stick to the bottom edge of the page.
 .action-bar {

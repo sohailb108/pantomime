@@ -272,19 +272,14 @@
         </div>
 
         <q-card flat class="soft-card q-pa-md">
-          <div
+          <TeamPointsRow
             v-for="line in resultLines"
             :key="line.teamId"
-            class="line-row q--avoid-card-border row items-center no-wrap justify-between q-mb-sm"
-            :style="{ '--team': teamHex(state?.teams[line.teamId]?.color ?? '') }"
-          >
-            <div class="team-pill text-subtitle1 text-weight-bold" :style="pillStyle(line.teamId)">
-              {{ nameOf(line.teamId) }}
-            </div>
-            <div class="line-points text-h5 text-weight-bold">
-              {{ t('board.points', { n: signed(line.points) }) }}
-            </div>
-          </div>
+            class="q-mb-sm"
+            :name="nameOf(line.teamId)"
+            :color="teamHex(state?.teams[line.teamId]?.color ?? '')"
+            :points="t('board.points', { n: signed(line.points) })"
+          />
           <div v-if="resultLines.length === 0" class="text-grey-7">{{ t('turn.noPoints') }}</div>
           <template v-if="breakdown.length > 0">
             <q-separator class="q-my-md" />
@@ -389,6 +384,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { onBeforeRouteLeave, useRouter } from 'vue-router';
+import TeamPointsRow from '@/components/TeamPointsRow.vue';
 import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
 import PauseOverlay from '@/components/PauseOverlay.vue';
@@ -726,7 +722,6 @@ const resultLines = computed(() => {
   for (const d of deltas.value) totals.set(d.teamId, (totals.get(d.teamId) ?? 0) + d.points);
   return [...totals].map(([teamId, points]) => ({ teamId, points }));
 });
-const pillStyle = (id: number) => ({ background: teamHex(state.value?.teams[id]?.color ?? '') });
 const skipCost = computed(() => tally.value.skips * (isMulti.value ? multi.value.skipPenalty : 0));
 const rerollCost = computed(() =>
   rerolled.value && !isMulti.value ? single.value.rerollPenalty : 0,
@@ -803,19 +798,6 @@ function finish() {
   border-radius: 16px;
 }
 // Top of every phase: the playing team's pill and the tile (category and points) it plays.
-.soft-card {
-  border-radius: 16px;
-  background: rgba(128, 128, 128, 0.1);
-}
-.line-row {
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(128, 128, 128, 0.08);
-  border-inline-start: 6px solid var(--team);
-}
-.line-points {
-  line-height: 1.2;
-}
 .header {
   position: relative;
   padding: 12px 8px 10px;

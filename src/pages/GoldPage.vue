@@ -115,34 +115,47 @@
       </div>
     </div>
 
-    <div v-else-if="phase === 'result'" class="col column items-center justify-center q-gutter-y-md text-center">
-      <div class="result-icon" :class="success ? 'ok' : 'fail'">
-        <q-icon :name="success ? 'check' : 'close'" size="56px" color="white" />
+    <div v-else-if="phase === 'result'" class="col column no-wrap">
+      <div class="col column q-gutter-y-md q-pt-md">
+        <div class="text-h5 text-weight-bold text-center">
+          <q-icon
+            :name="success ? 'check_circle' : 'cancel'"
+            :color="success ? 'amber-8' : 'primary'"
+            size="28px"
+            class="q-mr-xs"
+          />
+          {{ success ? t('gold.result.success') : t('gold.result.failure') }}
+        </div>
+
+        <q-card flat class="soft-card q-pa-md">
+          <TeamPointsRow
+            :name="teamName(attemptColor)"
+            :color="teamHex(attemptColor)"
+            :points="t('board.points', { n: signed(success ? gold.bonus : -gold.penalty) })"
+          />
+        </q-card>
+
+        <q-card flat class="soft-card q-pa-md column items-center text-center">
+          <div class="text-subtitle1 wrap-anywhere">
+            {{ t('turn.wordWas', { word }) }}
+            <div v-if="wordHidden" class="text-caption text-grey-7">{{ t('turn.statusHidden') }}</div>
+          </div>
+          <q-btn
+            class="q-mt-sm"
+            outline
+            rounded
+            no-caps
+            color="primary"
+            :icon="wordHidden ? 'undo' : 'visibility_off'"
+            :label="wordHidden ? t('turn.undoChange') : t('turn.hideWord')"
+            @click="toggleHide"
+          />
+        </q-card>
       </div>
-      <div v-if="success" class="text-h5 text-weight-bold" :style="colorStyle(attemptColor)">
-        {{ t('gold.successTitle', { team: teamName(attemptColor), n: fmt(gold.bonus) }) }}
+
+      <div class="column action-bar">
+        <q-btn color="primary" size="lg" rounded no-caps :label="t('turn.next')" @click="next" />
       </div>
-      <div class="word-card text-h6">{{ t('turn.wordWas', { word }) }}</div>
-      <q-btn
-        flat
-        rounded
-        no-caps
-        size="sm"
-        color="primary"
-        :icon="wordHidden ? 'undo' : 'visibility_off'"
-        :label="wordHidden ? t('turn.undoChange') : t('turn.hideWord')"
-        @click="toggleHide"
-      />
-      <div v-if="wordHidden" class="text-caption text-grey-7">{{ t('turn.statusHidden') }}</div>
-      <q-btn
-        class="action-bar"
-        color="primary"
-        size="lg"
-        rounded
-        no-caps
-        :label="t('turn.next')"
-        @click="next"
-      />
     </div>
     <PauseOverlay v-model="pauser.paused.value" @resume="pauser.resume()" @leave="leave.open.value = true" />
     <LeaveDialog v-model="leave.open.value" kind="gold" @home="exit" />
@@ -157,6 +170,7 @@ import { useTeamDisplay } from '@/composables/teams';
 import LeaveDialog from '@/components/LeaveDialog.vue';
 import PauseOverlay from '@/components/PauseOverlay.vue';
 import PeekWord from '@/components/PeekWord.vue';
+import TeamPointsRow from '@/components/TeamPointsRow.vue';
 import TimerRing from '@/components/TimerRing.vue';
 import { useConfirmTap } from '@/composables/confirmTap';
 import { useCountdown } from '@/composables/countdown';
@@ -166,7 +180,7 @@ import { useWakeLock } from '@/composables/wakelock';
 import { cue, timerCue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
 import { longWordClass } from '@/config/limits';
-import { formatNumber } from '@/services/format';
+import { formatNumber, formatSigned } from '@/services/format';
 import { GOLD_ID } from '@/services/customData';
 import { changePoolWord, GOLD_LEVEL, revertPoolChange, type PoolChange } from '@/services/words';
 import { useGameStore } from '@/stores/game';
@@ -186,6 +200,7 @@ const team = computed(() =>
   teamId.value === undefined ? undefined : state.value?.teams[teamId.value],
 );
 const fmt = (n: number) => formatNumber(n, settings.language);
+const signed = (n: number) => formatSigned(n, settings.language);
 
 const phase = ref<Phase>('loading');
 const deck = ref<string[]>([]);
@@ -319,21 +334,6 @@ function next() {
   background: rgba(255, 193, 7, 0.14);
   border-top: 5px solid #ffc107;
   color: #f9a825;
-}
-.result-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-}
-.result-icon.ok {
-  background: linear-gradient(135deg, #ffd54f, #f9a825);
-}
-.result-icon.fail {
-  background: var(--q-primary);
 }
 .word-card {
   width: 100%;

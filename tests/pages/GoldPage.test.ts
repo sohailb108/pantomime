@@ -105,6 +105,25 @@ describe('GoldPage', () => {
     expect(custom.wordsOf('en', GOLD_ID, GOLD_LEVEL)).toEqual(['zzcustom']);
   });
 
+  it('shows the bonus on the result screen after a success', async () => {
+    const { wrapper, game } = await openGold();
+    await reachResult(wrapper);
+    const bonus = game.state!.settings.gold.bonus;
+    expect(wrapper.find('.line-row').text()).toContain(`+${bonus}`);
+    expect(wrapper.text()).toContain(en.gold.result.success);
+  });
+
+  it('shows the penalty on the result screen after a failure', async () => {
+    const { wrapper, game } = await openGold();
+    await press(wrapper, en.turn.showWord);
+    await press(wrapper, en.turn.start);
+    await press(wrapper, en.turn.giveUp);
+    await press(wrapper, en.turn.giveUpConfirm);
+    const penalty = game.state!.settings.gold.penalty;
+    expect(wrapper.find('.line-row').text()).toMatch(new RegExp(`[-−]${penalty}`));
+    expect(wrapper.text()).toContain(en.gold.result.failure);
+  });
+
   it('charges the penalty when the team gives up, after a second tap', async () => {
     const { wrapper, game } = await openGold();
     const team = game.state!.goldQueue[0]!;
