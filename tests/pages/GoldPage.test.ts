@@ -4,6 +4,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import messages from '@/i18n';
 import GoldPage from '@/pages/GoldPage.vue';
+import { builtinGoldWords } from '@/services/words';
+import { useCustomStore } from '@/stores/custom';
 import { useSettingsStore } from '@/stores/settings';
 import { playAllTiles, startGame } from '../helpers/game';
 import { hasButton, mountPage, press } from '../helpers/mountPage';
@@ -65,6 +67,41 @@ describe('GoldPage', () => {
     await press(wrapper, en.turn.next);
     await flushPromises();
     expect(router.currentRoute.value.path).toBe('/board');
+  });
+
+  /** Taps a button whose label is `text`; the icon name is part of the button's text. */
+  async function tap(wrapper: Awaited<ReturnType<typeof openGold>>['wrapper'], text: string) {
+    const button = wrapper.findAll('button').find((b) => b.text().endsWith(text));
+    if (!button) throw new Error(`No button "${text}". Page shows: ${wrapper.text()}`);
+    await button.trigger('click');
+  }
+  async function reachResult(wrapper: Awaited<ReturnType<typeof openGold>>['wrapper']) {
+    await press(wrapper, en.turn.showWord);
+    await press(wrapper, en.turn.start);
+    await press(wrapper, en.turn.guessed);
+  }
+
+  it('hides a built-in word from the gold result screen, and can undo it', async () => {
+    const word = builtinGoldWords('en')[0]!;
+    const { wrapper } = await openGold({ deck: [word] });
+    const custom = useCustomStore();
+    await reachResult(wrapper);
+    await tap(wrapper, en.turn.hideWord);
+    expect(custom.hiddenGold('en')).toEqual([word]);
+    expect(wrapper.text()).toContain(en.turn.statusHidden);
+    await tap(wrapper, en.turn.undoChange);
+    expect(custom.hiddenGold('en')).toEqual([]);
+  });
+
+  it('hiding a custom gold word removes it, and undo adds it back', async () => {
+    const { wrapper } = await openGold({ deck: ['zzcustom'] });
+    const custom = useCustomStore();
+    custom.addGold('en', 'zzcustom');
+    await reachResult(wrapper);
+    await tap(wrapper, en.turn.hideWord);
+    expect(custom.goldWords('en')).toEqual([]);
+    await tap(wrapper, en.turn.undoChange);
+    expect(custom.goldWords('en')).toEqual(['zzcustom']);
   });
 
   it('charges the penalty when the team gives up, after a second tap', async () => {

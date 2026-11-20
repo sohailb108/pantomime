@@ -124,6 +124,17 @@
       </div>
       <div class="word-card text-h6">{{ t('turn.wordWas', { word }) }}</div>
       <q-btn
+        flat
+        rounded
+        no-caps
+        size="sm"
+        color="primary"
+        :icon="wordHidden ? 'undo' : 'visibility_off'"
+        :label="wordHidden ? t('turn.undoChange') : t('turn.hideWord')"
+        @click="toggleHide"
+      />
+      <div v-if="wordHidden" class="text-caption text-grey-7">{{ t('turn.statusHidden') }}</div>
+      <q-btn
         class="action-bar"
         color="primary"
         size="lg"
@@ -156,6 +167,9 @@ import { cue, timerCue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
 import { longWordClass } from '@/config/limits';
 import { formatNumber } from '@/services/format';
+import { hasWord } from '@/services/customData';
+import { builtinGoldWords } from '@/services/words';
+import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -165,6 +179,7 @@ const { t } = useI18n();
 const router = useRouter();
 const settings = useSettingsStore();
 const game = useGameStore();
+const custom = useCustomStore();
 
 const state = computed(() => game.state);
 const gold = computed(() => state.value!.settings.gold);
@@ -178,6 +193,8 @@ const phase = ref<Phase>('loading');
 const deck = ref<string[]>([]);
 const word = ref<string | null>(null);
 const success = ref(false);
+/** The word was taken out of the gold pool from the result screen. */
+const wordHidden = ref(false);
 const giveUpTap = useConfirmTap();
 const confirmGiveUp = giveUpTap.armed;
 /** Color of the team that just attempted, kept because the queue moves on after resolving. */
@@ -223,6 +240,7 @@ function showWord() {
   if (next === undefined) return;
   word.value = next;
   game.markGoldSeen(next);
+  wordHidden.value = false;
   phase.value = 'prep';
 }
 /** Leaves the unfinished attempt; the game stays at the gold round and is saved. */
@@ -246,6 +264,18 @@ function resolve(ok: boolean) {
   attemptColor.value = team.value?.color ?? '';
   game.finishGold(ok);
   phase.value = 'result';
+}
+/** Hides the word from future gold rounds (a custom word is removed), or undoes that. */
+function toggleHide() {
+  const w = word.value;
+  if (w === null) return;
+  const builtin = hasWord(builtinGoldWords(game.lang), w);
+  if (wordHidden.value) {
+    if (builtin) custom.unhideGold(game.lang, w);
+    else custom.addGold(game.lang, w);
+  } else if (builtin) custom.hideGold(game.lang, w);
+  else custom.removeGold(game.lang, w);
+  wordHidden.value = !wordHidden.value;
 }
 function next() {
   // The board shows the next team's offer, or the game is over.
