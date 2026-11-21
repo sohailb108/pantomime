@@ -37,6 +37,26 @@
     {
       "id": "proverbs",
       "name": "ضرب‌المثل"
+    },
+    {
+      "id": "history",
+      "name": "تاریخ"
+    },
+    {
+      "id": "technology",
+      "name": "تکنولوژی"
+    },
+    {
+      "id": "general",
+      "name": "عمومی"
+    },
+    {
+      "id": "celebrities",
+      "name": "مشاهیر"
+    },
+    {
+      "id": "abstract",
+      "name": "انتزاعی"
     }
   ]
 }

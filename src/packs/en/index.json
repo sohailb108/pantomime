@@ -37,6 +37,26 @@
     {
       "id": "proverbs",
       "name": "Proverbs"
+    },
+    {
+      "id": "history",
+      "name": "History"
+    },
+    {
+      "id": "technology",
+      "name": "Technology"
+    },
+    {
+      "id": "general",
+      "name": "General"
+    },
+    {
+      "id": "celebrities",
+      "name": "Celebrities"
+    },
+    {
+      "id": "abstract",
+      "name": "Abstract"
     }
   ]
 }
