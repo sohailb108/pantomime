@@ -121,7 +121,7 @@
           @click="reroll"
         />
         <q-btn
-          v-if="rerolled && originalWord !== null && single.allowRevert"
+          v-if="canRevert"
           outline
           size="lg"
           rounded
@@ -698,9 +698,17 @@ function reroll() {
   swappedWord.value = word.value;
   deltas.value.push(...rerollDelta(team.value!.id, single.value));
 }
+/** Changing back is offered after a swap, unless a hint was taken on the word shown (it would be lost). */
+const canRevert = computed(
+  () =>
+    rerolled.value &&
+    originalWord.value !== null &&
+    single.value.allowRevert &&
+    hintWord.value !== word.value,
+);
 /** Toggles between the original word and the one the swap brought in; the penalty is not refunded. */
 function revertWord() {
-  if (!rerolled.value || originalWord.value === null || swappedWord.value === null) return;
+  if (!canRevert.value || swappedWord.value === null) return;
   word.value = word.value === originalWord.value ? swappedWord.value : originalWord.value;
 }
 function startSingle() {

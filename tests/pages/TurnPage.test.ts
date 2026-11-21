@@ -260,6 +260,56 @@ describe('TurnPage', () => {
     });
   });
 
+  describe('changing back after a word change', () => {
+    const swapBtn = (wrapper: VueWrapper) =>
+      wrapper.findAll('button').find((b) => b.text().includes('Change word'));
+    // Icon buttons carry the icon name in their text, so match on the label.
+    const pressLabel = async (wrapper: VueWrapper, label: string) => {
+      await wrapper.findAll('button').find((b) => b.text().includes(label))!.trigger('click');
+    };
+    const hasLabel = (wrapper: VueWrapper, label: string) =>
+      wrapper.findAll('button').some((b) => b.text().includes(label));
+    const hasWord = (wrapper: VueWrapper, w: string) => wrapper.find('.word-card').text() === w;
+
+    it('toggles between the original and the new word, keeping the penalty', async () => {
+      const { wrapper } = await openTurn('single', ['alpha', 'beta']);
+      await press(wrapper, en.showWord);
+      await swapBtn(wrapper)!.trigger('click');
+      expect(hasWord(wrapper, 'beta')).toBe(true);
+      await pressLabel(wrapper, en.revert);
+      expect(hasWord(wrapper, 'alpha')).toBe(true);
+      await pressLabel(wrapper, en.useSwapped);
+      expect(hasWord(wrapper, 'beta')).toBe(true);
+      await pressLabel(wrapper, en.revert);
+      await press(wrapper, en.start);
+      await press(wrapper, en.guessed);
+      expect(wrapper.text()).toContain(en.rerollCost);
+    });
+
+    it('is not offered when the setting is off', async () => {
+      const { wrapper, game } = await openTurn('single', ['alpha', 'beta']);
+      game.state!.settings.single.allowRevert = false;
+      await press(wrapper, en.showWord);
+      await swapBtn(wrapper)!.trigger('click');
+      expect(hasLabel(wrapper, en.revert)).toBe(false);
+    });
+
+    it('is not offered before a swap', async () => {
+      const { wrapper } = await openTurn('single', ['alpha', 'beta']);
+      await press(wrapper, en.showWord);
+      expect(hasLabel(wrapper, en.revert)).toBe(false);
+    });
+
+    it('is not offered once a hint was taken on the word shown', async () => {
+      const { wrapper } = await openTurn('single', ['octopus', 'cat']);
+      await press(wrapper, en.showWord);
+      await swapBtn(wrapper)!.trigger('click');
+      const hint = wrapper.findAll('button').find((b) => b.text().includes('Acting hint'));
+      await hint!.trigger('click');
+      expect(hasLabel(wrapper, en.revert)).toBe(false);
+    });
+  });
+
   describe('acting hint', () => {
     const hintButton = 'Acting hint (-1)';
     const findHint = (wrapper: VueWrapper, label = hintButton) =>

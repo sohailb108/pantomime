@@ -344,11 +344,11 @@ export default {
           },
           {
             t: 'Acting hint',
-            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of half the tile points (rounded up) by default. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after swapping the word the tip is gone and no second hint is allowed.',
+            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of half the tile points (rounded up) by default. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after swapping the word the tip is gone and no second hint is allowed. If the tip was taken for the word on screen, changing back to the other word is no longer offered.',
           },
           {
             t: 'Reroll',
-            b: 'Before pressing Start, the actor may swap the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so.',
+            b: 'Before pressing Start, the actor may swap the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so. After a swap, a second button changes back to the original word (and again to the new one) for free, so the penalty stays; the setting below can turn it off.',
           },
           {
             t: 'Gold round',
@@ -397,6 +397,10 @@ export default {
           {
             t: 'Reroll penalty',
             b: 'Points lost when the actor swaps the word before starting (once per turn). Default: {rerollPenalty}. Set 0 for a free swap.',
+          },
+          {
+            t: 'Allow changing back',
+            b: 'Shows a button after a word swap that goes back to the original word. The swap penalty is not refunded. On by default.',
           },
           {
             t: 'Hint penalty',

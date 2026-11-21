@@ -71,6 +71,16 @@ describe('game store persistence', () => {
     expect(freshStore().state?.settings.gold.timerSeconds).toBe(90);
   });
 
+  it('allows changing back to the original word in a game saved before the setting existed', async () => {
+    const a = freshStore();
+    a.start(options);
+    await nextTick();
+    const saved = JSON.parse(localStorage.getItem('pantomime:game')!);
+    delete saved.data.state.settings.single.allowRevert;
+    localStorage.setItem('pantomime:game', JSON.stringify(saved));
+    expect(freshStore().state?.settings.single.allowRevert).toBe(true);
+  });
+
   it('gives colors to teams of a game saved with names', async () => {
     const a = freshStore();
     a.start(options);
