@@ -21,25 +21,25 @@
       "dentist",
       "plumber",
       "photographer",
-      "judge",
-      "tailor",
       "referee",
       "astronaut",
       "magician",
       "lifeguard",
-      "conductor"
+      "detective",
+      "juggler",
+      "blacksmith"
     ],
     "3": [
       "archaeologist",
       "translator",
       "puppeteer",
       "beekeeper",
-      "detective",
-      "blacksmith",
       "sculptor",
-      "juggler",
       "stuntman",
-      "lumberjack"
+      "lumberjack",
+      "judge",
+      "conductor",
+      "tailor"
     ]
   },
   "hints": {

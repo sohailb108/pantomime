@@ -17,12 +17,7 @@
       "Pikachu",
       "The Simpsons",
       "Scooby-Doo",
-      "Mr. Bean",
-      "Shrek",
-      "Frozen",
-      "Toy Story",
-      "Finding Nemo",
-      "Aladdin"
+      "Mr. Bean"
     ],
     "2": [
       "The Lion King",
@@ -33,12 +28,15 @@
       "Ice Age",
       "Madagascar",
       "Popeye",
-      "Zootopia",
-      "Coco"
+      "Shrek",
+      "Frozen",
+      "Toy Story",
+      "Finding Nemo",
+      "Aladdin",
+      "Pink Panther",
+      "Road Runner"
     ],
     "3": [
-      "Pink Panther",
-      "Road Runner",
       "Johnny Bravo",
       "Ben 10",
       "Doraemon",
@@ -47,7 +45,9 @@
       "Courage the Cowardly Dog",
       "Tweety and Sylvester",
       "Inside Out",
-      "Up"
+      "Up",
+      "Coco",
+      "Zootopia"
     ]
   },
   "hints": {

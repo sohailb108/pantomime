@@ -24,22 +24,22 @@
       "mirror",
       "vacuum cleaner",
       "parachute",
-      "telescope",
       "broom",
-      "binoculars",
-      "candle"
+      "candle",
+      "stapler",
+      "magnifying glass"
     ],
     "3": [
       "hourglass",
       "compass",
       "typewriter",
-      "stapler",
       "kaleidoscope",
       "sewing machine",
-      "magnifying glass",
       "metronome",
       "corkscrew",
-      "pocket watch"
+      "pocket watch",
+      "telescope",
+      "binoculars"
     ]
   },
   "hints": {

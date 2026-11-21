@@ -24,10 +24,10 @@
       "pancake",
       "sushi",
       "corn on the cob",
-      "pomegranate",
       "cotton candy",
-      "lasagna",
-      "taco"
+      "kebab",
+      "croissant",
+      "lobster"
     ],
     "3": [
       "fondue",
@@ -35,11 +35,11 @@
       "artichoke",
       "oyster",
       "stir-fry",
-      "kebab",
       "fortune cookie",
-      "lobster",
       "ramen",
-      "croissant"
+      "taco",
+      "lasagna",
+      "pomegranate"
     ]
   },
   "hints": {

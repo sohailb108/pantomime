@@ -10,21 +10,19 @@
       "sleep",
       "happiness",
       "fear",
-      "time",
       "anger",
       "dream",
       "silence",
       "hunger",
-      "luck"
+      "surprise",
+      "boredom"
     ],
     "2": [
       "freedom",
-      "surprise",
       "jealousy",
       "patience",
       "laziness",
       "hope",
-      "boredom",
       "shyness",
       "pride",
       "curiosity",
@@ -32,12 +30,14 @@
       "secret",
       "memory",
       "friendship",
-      "peace"
+      "peace",
+      "luck",
+      "time",
+      "gravity"
     ],
     "3": [
       "nostalgia",
       "justice",
-      "gravity",
       "infinity",
       "democracy",
       "sarcasm",

@@ -24,15 +24,14 @@
       "printer",
       "smartwatch",
       "charger",
-      "Wi-Fi",
       "satellite",
       "webcam",
       "microphone",
       "video game",
-      "GPS",
-      "hacker",
       "remote control",
-      "electric car"
+      "electric car",
+      "touch screen",
+      "robot vacuum"
     ],
     "3": [
       "virtual reality",
@@ -44,8 +43,9 @@
       "password",
       "bluetooth",
       "search engine",
-      "robot vacuum",
-      "touch screen"
+      "hacker",
+      "GPS",
+      "Wi-Fi"
     ]
   },
   "hints": {
