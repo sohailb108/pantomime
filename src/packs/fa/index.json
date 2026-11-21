@@ -3,40 +3,12 @@
   "lang": "fa",
   "categories": [
     {
-      "id": "animals",
-      "name": "حیوانات"
-    },
-    {
-      "id": "movies",
-      "name": "فیلم و سریال"
-    },
-    {
-      "id": "jobs",
-      "name": "مشاغل"
-    },
-    {
-      "id": "food",
-      "name": "غذا و خوراکی"
-    },
-    {
-      "id": "places",
-      "name": "مکان‌ها"
-    },
-    {
       "id": "objects",
       "name": "اشیا"
     },
     {
-      "id": "books",
-      "name": "کتاب"
-    },
-    {
-      "id": "cartoons",
-      "name": "کارتون"
-    },
-    {
-      "id": "proverbs",
-      "name": "ضرب‌المثل"
+      "id": "abstract",
+      "name": "انتزاعی"
     },
     {
       "id": "history",
@@ -47,16 +19,44 @@
       "name": "تکنولوژی"
     },
     {
+      "id": "animals",
+      "name": "حیوانات"
+    },
+    {
+      "id": "proverbs",
+      "name": "ضرب‌المثل"
+    },
+    {
       "id": "general",
       "name": "عمومی"
+    },
+    {
+      "id": "food",
+      "name": "غذا و خوراکی"
+    },
+    {
+      "id": "movies",
+      "name": "فیلم و سریال"
+    },
+    {
+      "id": "cartoons",
+      "name": "کارتون"
+    },
+    {
+      "id": "books",
+      "name": "کتاب"
+    },
+    {
+      "id": "jobs",
+      "name": "مشاغل"
     },
     {
       "id": "celebrities",
       "name": "مشاهیر"
     },
     {
-      "id": "abstract",
-      "name": "انتزاعی"
+      "id": "places",
+      "name": "مکان‌ها"
     }
   ]
 }

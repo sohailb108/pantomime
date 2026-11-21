@@ -59,7 +59,7 @@ describe('PacksPage', () => {
     const cards = wrapper.findAll('.pack-card');
     expect(cards).toHaveLength(listBuiltinCategories('en').length + 1);
     expect(cards.at(-1)!.text()).toContain(en.gold);
-    expect(cards[0]!.attributes('href')).toBe('/packs/animals');
+    expect(cards[0]!.attributes('href')).toBe('/packs/abstract');
   });
 
   it('marks incomplete custom categories and counts extra words in built-in ones', async () => {
