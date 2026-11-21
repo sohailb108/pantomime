@@ -235,11 +235,13 @@
                       <q-toggle v-model="setup.settings.single.allowRevert" />
                     </q-item-section>
                   </q-item>
-                  <q-item class="pb-0">
-                    <q-item-section>
-                      <q-item-label>{{ t('setup.hintValue') }}</q-item-label>
+                  <q-item tag="label" :class="{ 'pb-0': setup.settings.single.hint }">
+                    <q-item-section>{{ t('setup.hint') }}</q-item-section>
+                    <q-item-section side>
+                      <q-toggle v-model="setup.settings.single.hint" />
                     </q-item-section>
                   </q-item>
+                  <template v-if="setup.settings.single.hint">
                   <q-item class="no-divider pb-0">
                     <q-item-section>
                       <q-radio
@@ -268,6 +270,7 @@
                       />
                     </q-item-section>
                   </q-item>
+                  </template>
                   <q-item>
                     <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
                     <q-item-section side>

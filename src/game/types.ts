@@ -25,6 +25,8 @@ export interface SingleSettings {
   rerollPenalty: number;
   /** After swapping the word, the actor may change back to the original (the penalty stays). */
   allowRevert: boolean;
+  /** The actor may ask for one acting hint per turn. */
+  hint: boolean;
   /** Points lost for the one acting hint of a turn, 0 means free. */
   hintPenalty: number;
   /** The hint costs half of the tile points (rounded up) instead of `hintPenalty`. */

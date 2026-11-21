@@ -100,8 +100,11 @@ onBeforeUnmount(release);
   gap: 4px;
 }
 .stepper-btn {
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 12px;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;

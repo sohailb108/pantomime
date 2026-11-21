@@ -29,6 +29,7 @@ export const useGameStore = defineStore('game', () => {
     state.value.settings.points ??= { ...DEFAULT_GAME_SETTINGS.points };
     state.value.settings.single.stealHalf ??= false;
     // Games saved before acting hints existed use the default penalty.
+    state.value.settings.single.hint ??= true;
     state.value.settings.single.hintPenalty ??= DEFAULT_GAME_SETTINGS.single.hintPenalty;
     state.value.settings.single.hintHalf ??= false;
     state.value.settings.single.allowRevert ??= DEFAULT_GAME_SETTINGS.single.allowRevert;

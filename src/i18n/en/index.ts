@@ -89,6 +89,7 @@ export default {
     stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
     rerollPenalty: 'Reroll penalty',
     allowRevert: 'Allow changing back to the original word',
+    hint: 'Acting hint',
     hintValue: 'Hint cost',
     hintFixed: 'Fixed',
     hintHalfOption: 'Half of the tile points (rounded up)',

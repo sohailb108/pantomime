@@ -99,7 +99,7 @@
           @click="startSingle"
         />
         <q-btn
-          v-if="hintWord === null && hintText"
+          v-if="single.hint && hintWord === null && hintText"
           outline
           size="lg"
           rounded
