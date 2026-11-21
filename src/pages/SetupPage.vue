@@ -71,109 +71,129 @@
                     </q-item-section>
                   </q-item>
                 </q-list>
+                <template v-if="setup.mode === 'multi'">
                 <div class="settings-heading text-primary text-weight-bold q-mt-md">
-                  {{ t('setup.sectionRules') }}
+                  {{ t('setup.sectionTiming') }}
                 </div>
-                <q-list v-if="setup.mode === 'multi'" class="settings-list">
-                  <q-item>
-                    <q-item-section>{{ t('setup.turnSeconds') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.multi.turnSeconds" :min="15" :max="300" :step="15" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>{{ t('setup.unlimitedSkips') }}</q-item-section>
-                    <q-item-section side>
-                      <q-toggle v-model="skipUnlimited" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item v-if="setup.settings.multi.skipLimit !== null" class="no-divider">
-                    <q-item-section>{{ t('setup.skipLimit') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="skipLimitValue" :min="0" :max="20" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item class="no-divider">
-                    <q-item-section>{{ t('setup.skipPenalty') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.multi.skipPenalty" :max="10" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item tag="label">
-                    <q-item-section>{{ t('setup.lastSecondBonus') }}</q-item-section>
-                    <q-item-section side>
-                      <q-toggle v-model="setup.settings.multi.lastSecondBonus" />
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-
-                <q-list v-else class="settings-list">
-                  <q-item v-for="(d, i) in DIFFICULTIES" :key="d" :class="{ 'no-divider': i > 0 }">
-                    <q-item-section>{{ t(`setup.timer${d}`) }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.timerSeconds[d]" :min="10" :max="300" :step="5" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.fastGuessSeconds" :min="1" :max="60" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item class="no-divider">
-                    <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>{{ t('setup.rerollPenalty') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.rerollPenalty" :max="10" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item tag="label" class="no-divider">
-                    <q-item-section>{{ t('setup.allowRevert') }}</q-item-section>
-                    <q-item-section side>
-                      <q-toggle v-model="setup.settings.single.allowRevert" />
-                    </q-item-section>
-                  </q-item>
-                  <q-item tag="label" :class="{ 'pb-0': setup.settings.single.hint }">
-                    <q-item-section>{{ t('setup.hint') }}</q-item-section>
-                    <q-item-section side>
-                      <q-toggle v-model="setup.settings.single.hint" />
-                    </q-item-section>
-                  </q-item>
-                  <template v-if="setup.settings.single.hint">
-                    <q-item class="no-divider pb-0">
-                      <q-item-section>
-                        <q-radio v-model="hintValueMode" val="fixed" color="primary" :label="t('setup.hintFixed')" />
-                      </q-item-section>
+                  <q-list class="settings-list">
+                    <q-item>
+                      <q-item-section>{{ t('setup.turnSeconds') }}</q-item-section>
                       <q-item-section side>
-                        <NumberStepper v-model="setup.settings.single.hintPenalty" :max="10" :disabled="hintValueMode !== 'fixed'" :class="{ 'hint-stepper-off': hintValueMode !== 'fixed' }" />
+                        <NumberStepper v-model="setup.settings.multi.turnSeconds" :min="15" :max="300" :step="15" />
                       </q-item-section>
                     </q-item>
-                    <q-item class="no-divider tight">
+                    <q-item tag="label">
+                      <q-item-section>{{ t('setup.lastSecondBonus') }}</q-item-section>
+                      <q-item-section side>
+                        <q-toggle v-model="setup.settings.multi.lastSecondBonus" />
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                <div class="settings-heading text-primary text-weight-bold q-mt-md">
+                  {{ t('setup.sectionSkips') }}
+                </div>
+                  <q-list class="settings-list">
+                    <q-item>
+                      <q-item-section>{{ t('setup.unlimitedSkips') }}</q-item-section>
+                      <q-item-section side>
+                        <q-toggle v-model="skipUnlimited" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item v-if="setup.settings.multi.skipLimit !== null" class="no-divider">
+                      <q-item-section>{{ t('setup.skipLimit') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="skipLimitValue" :min="0" :max="20" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="no-divider">
+                      <q-item-section>{{ t('setup.skipPenalty') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.multi.skipPenalty" :max="10" />
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </template>
+
+                <template v-else>
+                <div class="settings-heading text-primary text-weight-bold q-mt-md">
+                  {{ t('setup.sectionTimers') }}
+                </div>
+                  <q-list class="settings-list">
+                    <q-item v-for="(d, i) in DIFFICULTIES" :key="d" :class="{ 'no-divider': i > 0 }">
+                      <q-item-section>{{ t(`setup.timer${d}`) }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.single.timerSeconds[d]" :min="10" :max="300" :step="5" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.single.fastGuessSeconds" :min="1" :max="60" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="no-divider">
+                      <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                <div class="settings-heading text-primary text-weight-bold q-mt-md">
+                  {{ t('setup.sectionHelps') }}
+                </div>
+                  <q-list class="settings-list">
+                    <q-item>
+                      <q-item-section>{{ t('setup.rerollPenalty') }}</q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.single.rerollPenalty" :max="10" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item tag="label" class="no-divider">
+                      <q-item-section>{{ t('setup.allowRevert') }}</q-item-section>
+                      <q-item-section side>
+                        <q-toggle v-model="setup.settings.single.allowRevert" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item tag="label" :class="{ 'pb-0': setup.settings.single.hint }">
+                      <q-item-section>{{ t('setup.hint') }}</q-item-section>
+                      <q-item-section side>
+                        <q-toggle v-model="setup.settings.single.hint" />
+                      </q-item-section>
+                    </q-item>
+                    <template v-if="setup.settings.single.hint">
+                      <q-item class="no-divider pb-0 sub-option">
+                        <q-item-section>
+                          <q-radio v-model="hintValueMode" val="fixed" color="primary" :label="t('setup.hintFixed')" />
+                        </q-item-section>
+                        <q-item-section side>
+                          <NumberStepper v-model="setup.settings.single.hintPenalty" :max="10" :disabled="hintValueMode !== 'fixed'" :class="{ 'hint-stepper-off': hintValueMode !== 'fixed' }" />
+                        </q-item-section>
+                      </q-item>
+                      <q-item class="no-divider tight sub-option">
+                        <q-item-section>
+                          <q-radio v-model="hintValueMode" val="half" color="primary" :label="t('setup.hintHalfOption')" />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-list>
+                <div class="settings-heading text-primary text-weight-bold q-mt-md">
+                  {{ t('setup.sectionSteal') }}
+                </div>
+                  <q-list class="settings-list">
+                    <q-item tag="label" :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }">
                       <q-item-section>
-                        <q-radio v-model="hintValueMode" val="half" color="primary" :label="t('setup.hintHalfOption')" />
+                        <q-item-label>{{ t('setup.steal') }}</q-item-label>
+                        <q-item-label v-if="!stealAllowed" caption>{{ t('setup.stealTwoOnly') }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side><q-toggle :model-value="stealAllowed && setup.settings.single.steal" :disable="!stealAllowed" @update:model-value="setup.settings.single.steal = $event" /></q-item-section>
+                    </q-item>
+                    <q-item v-if="stealAllowed && setup.settings.single.steal" class="no-divider tight sub-option">
+                      <q-item-section>
+                        <q-option-group v-model="stealValueMode" type="radio" color="primary" :options="stealValueOptions" />
                       </q-item-section>
                     </q-item>
-                  </template>
-                  <q-item tag="label" :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }">
-                    <q-item-section>
-                      <q-item-label>{{ t('setup.steal') }}</q-item-label>
-                      <q-item-label v-if="!stealAllowed" caption>{{
-                        t('setup.stealTwoOnly')
-                        }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side><q-toggle :model-value="stealAllowed && setup.settings.single.steal" :disable="!stealAllowed" @update:model-value="setup.settings.single.steal = $event" /></q-item-section>
-                  </q-item>
-                  <q-item v-if="stealAllowed && setup.settings.single.steal" class="no-divider tight">
-                    <q-item-section>
-                      <q-option-group v-model="stealValueMode" type="radio" color="primary" :options="stealValueOptions" />
-                    </q-item-section>
-                  </q-item>
-                </q-list>
+                  </q-list>
+                </template>
 
                 <div class="settings-heading text-primary text-weight-bold q-mt-md">
                   {{ t('setup.sectionGold') }}
@@ -629,6 +649,9 @@ function start() {
 
   .q-item.tight {
     padding-top: 0;
+  }
+  .q-item.sub-option {
+    padding-inline-start: 32px;
   }
 }
 
