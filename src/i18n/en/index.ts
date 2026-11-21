@@ -337,7 +337,7 @@ export default {
           },
           {
             t: 'Multi-word mode',
-            b: 'A judge from another team holds the phone and taps Start. After a short countdown the first word appears and the timer starts. The judge turns the screen toward the actor, away from the actor\'s teammates. Tap Correct when the team guesses it, or Skip to move on (each skip costs a penalty, and the number of skips per turn is limited by default). Every correct word scores the tile points. The turn ends when time runs out or the tile has no words left.',
+            b: 'A judge from another team holds the phone and taps Start. After a short countdown the first word appears and the timer starts. The judge turns the screen toward the actor, away from the actor\'s teammates. Tap Correct when the team guesses it, or Skip to move on (each skip costs a penalty, and the number of skips per turn is limited by default). Every correct word scores the tile points. The turn ends when time runs out or the tile has no words left. If time runs out while a word is on screen, the actor may still finish it (Correct or Done) when "Finish the current word after time ends" is on.',
           },
           {
             t: 'Single-word mode',
