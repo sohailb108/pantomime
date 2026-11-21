@@ -23,6 +23,8 @@ export interface SingleSettings {
   stealHalf: boolean;
   /** Points lost for the one allowed reroll, 0 means free. */
   rerollPenalty: number;
+  /** After swapping the word, the actor may change back to the original (the penalty stays). */
+  allowRevert: boolean;
   /** Points lost for the one acting hint of a turn, 0 means free. */
   hintPenalty: number;
   /** The hint costs half of the tile points (rounded up) instead of `hintPenalty`. */

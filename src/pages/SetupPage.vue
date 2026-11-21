@@ -229,6 +229,12 @@
                       <NumberStepper v-model="setup.settings.single.rerollPenalty" :max="10" />
                     </q-item-section>
                   </q-item>
+                  <q-item tag="label" class="no-divider">
+                    <q-item-section>{{ t('setup.allowRevert') }}</q-item-section>
+                    <q-item-section side>
+                      <q-toggle v-model="setup.settings.single.allowRevert" />
+                    </q-item-section>
+                  </q-item>
                   <q-item class="pb-0">
                     <q-item-section>
                       <q-item-label>{{ t('setup.hintValue') }}</q-item-label>

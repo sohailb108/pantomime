@@ -120,6 +120,17 @@
           :label="rerollLabel"
           @click="reroll"
         />
+        <q-btn
+          v-if="rerolled && originalWord !== null && single.allowRevert"
+          outline
+          size="lg"
+          rounded
+          no-caps
+          color="primary"
+          icon="undo"
+          :label="word === originalWord ? t('turn.useSwapped') : t('turn.revert')"
+          @click="revertWord"
+        />
         <div v-if="!rerolled && deck.length === 0" class="text-body2 text-grey-7 text-center">
           {{ t('turn.noRerollWords') }}
         </div>
@@ -478,6 +489,10 @@ const emptiedMsg = ref(false);
 const deltas = ref<ScoreDelta[]>([]);
 const tally = ref({ correct: 0, skips: 0 });
 const rerolled = ref(false);
+/** The word shown before the swap, so the actor can change back to it. */
+const originalWord = ref<string | null>(null);
+/** The word the swap brought in, while the actor is back on the original. */
+const swappedWord = ref<string | null>(null);
 /** The word the actor asked an acting hint for, or null while the turn's one hint is unused. */
 const hintWord = ref<string | null>(null);
 const giveUpTap = useConfirmTap();
@@ -675,9 +690,18 @@ function takeHint() {
 
 function reroll() {
   // Check first: `draw()` clears the current word when the deck is empty.
-  if (rerolled.value || deck.value.length === 0 || !draw()) return;
+  if (rerolled.value || deck.value.length === 0) return;
+  const before = word.value;
+  if (!draw()) return;
   rerolled.value = true;
+  originalWord.value = before;
+  swappedWord.value = word.value;
   deltas.value.push(...rerollDelta(team.value!.id, single.value));
+}
+/** Toggles between the original word and the one the swap brought in; the penalty is not refunded. */
+function revertWord() {
+  if (!rerolled.value || originalWord.value === null || swappedWord.value === null) return;
+  word.value = word.value === originalWord.value ? swappedWord.value : originalWord.value;
 }
 function startSingle() {
   phase.value = 'play';
