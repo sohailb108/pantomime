@@ -3,6 +3,9 @@
   "editor.guides.bracketPairs": true,
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "search.exclude": {
     "dist/": true,

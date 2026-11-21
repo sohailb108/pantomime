@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="line-row q--avoid-card-border row items-center no-wrap justify-between"
-    :style="{ '--team': color }"
-  >
+  <div class="line-row q--avoid-card-border row items-center no-wrap justify-between" :style="{ '--team': color }">
     <div class="team-pill text-subtitle1 text-weight-bold" :style="{ background: color }">
       {{ name }}
     </div>
@@ -28,12 +25,14 @@ defineProps<{
   padding: 2px 16px;
   border-radius: 16px;
 }
+
 .line-row {
   padding: 8px 12px;
   border-radius: 12px;
   background: rgba(128, 128, 128, 0.08);
   border-inline-start: 6px solid var(--team);
 }
+
 .line-points {
   line-height: 1.2;
 }

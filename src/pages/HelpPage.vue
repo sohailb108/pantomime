@@ -1,27 +1,12 @@
 <template>
   <q-page class="q-pa-md help-page">
     <div class="row items-center q-mb-md">
-      <q-btn
-        flat
-        round
-        icon="arrow_back"
-        class="flip-rtl"
-        :aria-label="t('help.back')"
-        @click="goBack"
-      />
+      <q-btn flat round icon="arrow_back" class="flip-rtl" :aria-label="t('help.back')" @click="goBack" />
       <div class="text-h5 text-weight-bold q-mx-sm">{{ t('help.title') }}</div>
     </div>
 
     <div class="help-list">
-      <q-expansion-item
-        v-for="(id, i) in sectionIds"
-        :key="id"
-        :label="t(`help.sections.${id}.title`)"
-        group="help"
-        :default-opened="i === 0"
-        class="help-card"
-        header-class="help-header text-weight-bold"
-      >
+      <q-expansion-item v-for="(id, i) in sectionIds" :key="id" :label="t(`help.sections.${id}.title`)" group="help" :default-opened="i === 0" class="help-card" header-class="help-header text-weight-bold">
         <template #header>
           <q-item-section avatar>
             <div class="help-avatar"><q-icon :name="ICONS[id]" color="white" size="22px" /></div>
@@ -41,26 +26,8 @@
             </div>
           </template>
           <div v-if="id === 'about'" class="q-pt-sm row" style="gap: 8px">
-            <q-btn
-              v-if="updateSupported"
-              outline
-              rounded
-              no-caps
-              color="primary"
-              icon="system_update"
-              :loading="checking"
-              :label="t('update.check')"
-              @click="checkUpdate"
-            />
-            <q-btn
-              outline
-              rounded
-              no-caps
-              color="primary"
-              icon="restart_alt"
-              :label="t('update.reset')"
-              @click="resetOpen = true"
-            />
+            <q-btn v-if="updateSupported" outline rounded no-caps color="primary" icon="system_update" :loading="checking" :label="t('update.check')" @click="checkUpdate" />
+            <q-btn outline rounded no-caps color="primary" icon="restart_alt" :label="t('update.reset')" @click="resetOpen = true" />
           </div>
         </div>
       </q-expansion-item>
@@ -74,23 +41,8 @@
         </div>
         <p class="q-mb-none">{{ t('update.resetBody') }}</p>
         <div class="dialog-actions">
-          <q-btn
-            v-close-popup
-            outline
-            rounded
-            no-caps
-            color="primary"
-            :disable="resetting"
-            :label="t('setup.close')"
-          />
-          <q-btn
-            rounded
-            no-caps
-            color="negative"
-            :loading="resetting"
-            :label="t('update.resetConfirm')"
-            @click="reset"
-          />
+          <q-btn v-close-popup outline rounded no-caps color="primary" :disable="resetting" :label="t('setup.close')" />
+          <q-btn rounded no-caps color="negative" :loading="resetting" :label="t('update.resetConfirm')" @click="reset" />
         </div>
       </q-card>
     </q-dialog>
@@ -183,16 +135,19 @@ function goBack() {
   max-width: 40rem;
   margin-inline: auto;
 }
+
 .help-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .help-card {
   border-radius: 16px;
   background: rgba(128, 128, 128, 0.1);
   overflow: hidden;
 }
+
 .help-avatar {
   display: flex;
   align-items: center;
@@ -202,20 +157,25 @@ function goBack() {
   border-radius: 50%;
   background: var(--q-primary);
 }
+
 .help-body {
   padding: 4px 16px 16px;
 }
+
 .help-item {
   padding: 10px 0;
-  & + .help-item {
+
+  &+.help-item {
     border-top: 1px solid rgba(128, 128, 128, 0.2);
   }
 }
+
 .help-text {
   margin-top: 2px;
   opacity: 0.85;
   line-height: 1.6;
 }
+
 .help-group {
   margin-top: 12px;
   padding: 4px 10px;

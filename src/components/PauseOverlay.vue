@@ -4,26 +4,8 @@
       <q-icon name="pause_circle" size="88px" />
       <div class="text-h6 q-mt-md hint">{{ t('pause.hint') }}</div>
       <div class="column full-width actions q-mt-xl q-gutter-y-md">
-        <q-btn
-          rounded
-          no-caps
-          unelevated
-          size="lg"
-          color="white"
-          text-color="dark"
-          icon="play_arrow"
-          :label="t('pause.resume')"
-          @click="emit('resume')"
-        />
-        <q-btn
-          outline
-          rounded
-          no-caps
-          size="lg"
-          color="white"
-          :label="t('leave.button')"
-          @click="emit('leave')"
-        />
+        <q-btn rounded no-caps unelevated size="lg" color="white" text-color="dark" icon="play_arrow" :label="t('pause.resume')" @click="emit('resume')" />
+        <q-btn outline rounded no-caps size="lg" color="white" :label="t('leave.button')" @click="emit('leave')" />
       </div>
     </div>
   </q-dialog>
@@ -43,10 +25,12 @@ const { t } = useI18n();
   min-height: 100%;
   background: #1b1b1b;
 }
+
 .hint {
   max-width: 320px;
   opacity: 0.75;
 }
+
 .actions {
   max-width: 320px;
 }

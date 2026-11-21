@@ -1,34 +1,13 @@
 <template>
   <q-page v-if="state" class="column q-pa-md game-page">
     <div class="text-center q-mb-md header gold-header">
-      <q-btn
-        v-if="phase === 'prep' || phase === 'play'"
-        class="leave-btn"
-        flat
-        round
-        dense
-        icon="close"
-        :aria-label="t('leave.button')"
-        @click="leave.open.value = true"
-      />
-      <q-btn
-        v-if="phase === 'play' && countdown.running.value"
-        class="pause-btn"
-        flat
-        round
-        dense
-        icon="pause"
-        :aria-label="t('pause.button')"
-        @click="pauser.pause()"
-      />
+      <q-btn v-if="phase === 'prep' || phase === 'play'" class="leave-btn" flat round dense icon="close" :aria-label="t('leave.button')" @click="leave.open.value = true" />
+      <q-btn v-if="phase === 'play' && countdown.running.value" class="pause-btn" flat round dense icon="pause" :aria-label="t('pause.button')" @click="pauser.pause()" />
       <q-icon name="emoji_events" size="28px" class="q-mr-sm" />
       <span class="text-h5 text-weight-bold">{{ t('gold.title') }}</span>
     </div>
 
-    <div
-      v-if="phase === 'handoff'"
-      class="col column items-center justify-center q-gutter-y-lg text-center"
-    >
+    <div v-if="phase === 'handoff'" class="col column items-center justify-center q-gutter-y-lg text-center">
       <div class="handoff-icon" :style="{ background: teamHex(team?.color ?? '') }">
         <q-icon name="swap_horiz" size="48px" color="white" />
       </div>
@@ -36,81 +15,32 @@
         {{ t('turn.passTo', { team: teamName(team?.color) }) }}
       </div>
       <div class="column full-width turn-actions">
-        <q-btn
-          color="primary"
-          size="lg"
-          rounded
-          no-caps
-          :label="t('turn.showWord')"
-          @click="showWord"
-        />
-        <q-btn
-          outline
-          size="lg"
-          rounded
-          no-caps
-          color="primary"
-          :label="t('turn.back')"
-          @click="router.replace('/board')"
-        />
+        <q-btn color="primary" size="lg" rounded no-caps :label="t('turn.showWord')" @click="showWord" />
+        <q-btn outline size="lg" rounded no-caps color="primary" :label="t('turn.back')" @click="router.replace('/board')" />
       </div>
     </div>
 
-    <div
-      v-else-if="phase === 'prep'"
-      class="col column items-center justify-center q-gutter-y-lg text-center"
-    >
+    <div v-else-if="phase === 'prep'" class="col column items-center justify-center q-gutter-y-lg text-center">
       <div class="text-subtitle1 text-weight-bold" :style="colorStyle(team?.color)">
         {{ t('gold.attempt', { team: teamName(team?.color) }) }}
       </div>
       <div class="word-card text-h3 text-weight-bold" :class="longWordClass(word)">
         {{ word }}
       </div>
-      <q-btn
-        color="primary"
-        size="xl"
-        rounded
-        no-caps
-        :label="t('turn.start')"
-        @click="startPlay"
-      />
+      <q-btn color="primary" size="xl" rounded no-caps :label="t('turn.start')" @click="startPlay" />
     </div>
 
     <div v-else-if="phase === 'play'" class="col column q-gutter-y-md">
-      <TimerRing
-        :remaining-ms="countdown.remainingMs.value"
-        :total-seconds="countdown.total.value"
-        :seconds-left="countdown.secondsLeft.value"
-        color="amber-8"
-        low-color="amber-8"
-        :pulse="countdown.running.value"
-        :label="fmt(countdown.secondsLeft.value)"
-      />
+      <TimerRing :remaining-ms="countdown.remainingMs.value" :total-seconds="countdown.total.value" :seconds-left="countdown.secondsLeft.value" color="amber-8" low-color="amber-8" :pulse="countdown.running.value" :label="fmt(countdown.secondsLeft.value)" />
       <div class="col column justify-center">
         <PeekWord :word="word ?? ''" :label="t('turn.peek')" />
       </div>
       <div class="row no-wrap action-bar">
         <div class="col">
-          <q-btn
-            class="full-width"
-            color="primary"
-            size="lg"
-            rounded
-            no-caps
-            :label="t('turn.guessed')"
-            @click="resolve(true)"
-          />
+          <q-btn class="full-width" color="primary" size="lg" rounded no-caps :label="t('turn.guessed')" @click="resolve(true)" />
         </div>
         <div class="col">
-          <q-btn
-            class="full-width"
-            :color="confirmGiveUp ? 'grey-9' : 'grey'"
-            size="lg"
-            rounded
-            no-caps
-            :label="confirmGiveUp ? t('turn.giveUpConfirm') : t('turn.giveUp')"
-            @click="giveUp"
-          />
+          <q-btn class="full-width" :color="confirmGiveUp ? 'grey-9' : 'grey'" size="lg" rounded no-caps :label="confirmGiveUp ? t('turn.giveUpConfirm') : t('turn.giveUp')" @click="giveUp" />
         </div>
       </div>
     </div>
@@ -118,21 +48,12 @@
     <div v-else-if="phase === 'result'" class="col column no-wrap">
       <div class="col column q-gutter-y-md q-pt-md">
         <div class="text-h5 text-weight-bold text-center">
-          <q-icon
-            :name="success ? 'check_circle' : 'cancel'"
-            :color="success ? 'amber-8' : 'primary'"
-            size="28px"
-            class="q-mr-xs"
-          />
+          <q-icon :name="success ? 'check_circle' : 'cancel'" :color="success ? 'amber-8' : 'primary'" size="28px" class="q-mr-xs" />
           {{ success ? t('gold.result.success') : t('gold.result.failure') }}
         </div>
 
         <q-card flat class="soft-card q-pa-md">
-          <TeamPointsRow
-            :name="teamName(attemptColor)"
-            :color="teamHex(attemptColor)"
-            :points="t('board.points', { n: signed(success ? gold.bonus : -gold.penalty) })"
-          />
+          <TeamPointsRow :name="teamName(attemptColor)" :color="teamHex(attemptColor)" :points="t('board.points', { n: signed(success ? gold.bonus : -gold.penalty) })" />
         </q-card>
 
         <q-card flat class="soft-card q-pa-md column items-center text-center">
@@ -140,16 +61,7 @@
             {{ t('turn.wordWas', { word }) }}
             <div v-if="wordHidden" class="text-caption text-grey-7">{{ t('turn.statusHidden') }}</div>
           </div>
-          <q-btn
-            class="q-mt-sm"
-            outline
-            rounded
-            no-caps
-            color="primary"
-            :icon="wordHidden ? 'undo' : 'visibility_off'"
-            :label="wordHidden ? t('turn.undoChange') : t('turn.hideWord')"
-            @click="toggleHide"
-          />
+          <q-btn class="q-mt-sm" outline rounded no-caps color="primary" :icon="wordHidden ? 'undo' : 'visibility_off'" :label="wordHidden ? t('turn.undoChange') : t('turn.hideWord')" @click="toggleHide" />
         </q-card>
       </div>
 
@@ -304,17 +216,21 @@ function next() {
   position: absolute;
   inset-inline-start: 4px;
 }
+
 .pause-btn {
   inset-inline-start: auto;
   inset-inline-end: 4px;
 }
+
 .turn-actions {
   max-width: 320px;
   gap: 12px;
+
   .q-btn {
     min-height: 56px;
   }
 }
+
 .handoff-icon {
   display: flex;
   align-items: center;
@@ -324,6 +240,7 @@ function next() {
   border-radius: 50%;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
+
 .gold-header {
   position: relative;
   display: flex;
@@ -335,6 +252,7 @@ function next() {
   border-top: 5px solid #ffc107;
   color: #f9a825;
 }
+
 .word-card {
   width: 100%;
   padding: 28px 16px;
@@ -343,6 +261,7 @@ function next() {
   border: 2px solid rgba(255, 193, 7, 0.6);
   overflow-wrap: anywhere;
 }
+
 @media (max-height: 500px) {
   .word-card {
     padding: 12px 16px;

@@ -2,15 +2,7 @@
   <q-page class="home column items-center q-pa-md">
     <div class="home-col column no-wrap full-width">
       <div dir="ltr" class="row items-center justify-between no-wrap q-pt-sm">
-        <q-btn-toggle
-          class="lang-toggle"
-          v-model="language"
-          rounded
-          unelevated
-          no-caps
-          toggle-color="primary"
-          :options="languageOptions"
-        />
+        <q-btn-toggle class="lang-toggle" v-model="language" rounded unelevated no-caps toggle-color="primary" :options="languageOptions" />
         <q-btn flat round color="primary" icon="share" :aria-label="t('home.share')" @click="share">
           <q-tooltip>{{ t('home.share') }}</q-tooltip>
         </q-btn>
@@ -24,39 +16,10 @@
 
       <div class="column q-gutter-y-sm">
         <div v-if="canResume" class="row no-wrap resume-row">
-          <q-btn
-            class="col"
-            color="primary"
-            size="lg"
-            rounded
-            no-caps
-            no-wrap
-            icon="play_arrow"
-            :label="t('home.resume')"
-            to="/board"
-          />
-          <q-btn
-            class="col"
-            color="primary"
-            size="lg"
-            rounded
-            no-caps
-            no-wrap
-            icon="stop_circle"
-            :label="t('home.endGame')"
-            @click="endOpen = true"
-          />
+          <q-btn class="col" color="primary" size="lg" rounded no-caps no-wrap icon="play_arrow" :label="t('home.resume')" to="/board" />
+          <q-btn class="col" color="primary" size="lg" rounded no-caps no-wrap icon="stop_circle" :label="t('home.endGame')" @click="endOpen = true" />
         </div>
-        <q-btn
-          :color="canResume ? undefined : 'primary'"
-          :outline="canResume"
-          size="lg"
-          rounded
-          no-caps
-          icon="add"
-          :label="t('home.newGame')"
-          to="/setup"
-        />
+        <q-btn :color="canResume ? undefined : 'primary'" :outline="canResume" size="lg" rounded no-caps icon="add" :label="t('home.newGame')" to="/setup" />
       </div>
 
       <q-card flat class="home-card q-mt-lg">
@@ -89,25 +52,8 @@
             </q-item-section>
             <q-item-section>{{ t('settings.palette') }}</q-item-section>
             <q-item-section side>
-              <div
-                class="row no-wrap q-gutter-xs"
-                role="radiogroup"
-                :aria-label="t('settings.palette')"
-              >
-                <q-btn
-                  v-for="p in PALETTES"
-                  :key="p.id"
-                  round
-                  unelevated
-                  size="sm"
-                  role="radio"
-                  :aria-checked="settings.palette === p.id"
-                  :aria-label="t(`settings.palettes.${p.id}`)"
-                  :style="{ background: p.primary }"
-                  :icon="settings.palette === p.id ? 'check' : undefined"
-                  text-color="white"
-                  @click="settings.setPalette(p.id)"
-                />
+              <div class="row no-wrap q-gutter-xs" role="radiogroup" :aria-label="t('settings.palette')">
+                <q-btn v-for="p in PALETTES" :key="p.id" round unelevated size="sm" role="radio" :aria-checked="settings.palette === p.id" :aria-label="t(`settings.palettes.${p.id}`)" :style="{ background: p.primary }" :icon="settings.palette === p.id ? 'check' : undefined" text-color="white" @click="settings.setPalette(p.id)" />
               </div>
             </q-item-section>
           </q-item>
@@ -136,16 +82,7 @@
       </q-card>
 
       <div class="row justify-center q-gutter-sm q-mt-md q-pb-md">
-        <q-btn
-          v-if="installAvailable || iosHint"
-          outline
-          rounded
-          no-caps
-          icon="install_mobile"
-          color="primary"
-          :label="t('home.install')"
-          @click="install"
-        />
+        <q-btn v-if="installAvailable || iosHint" outline rounded no-caps icon="install_mobile" color="primary" :label="t('home.install')" @click="install" />
       </div>
 
       <div dir="ltr" class="text-caption text-center text-grey-7 q-pb-sm">
@@ -162,14 +99,7 @@
         <p class="q-mb-none">{{ t('home.endBody') }}</p>
         <div class="dialog-actions">
           <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
-          <q-btn
-            v-close-popup
-            rounded
-            no-caps
-            color="primary"
-            :label="t('home.endConfirm')"
-            @click="game.abort()"
-          />
+          <q-btn v-close-popup rounded no-caps color="primary" :label="t('home.endConfirm')" @click="game.abort()" />
         </div>
       </q-card>
     </q-dialog>

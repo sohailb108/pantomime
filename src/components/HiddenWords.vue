@@ -4,15 +4,7 @@
       {{ t('packs.hiddenWords', { n: fmt(words.length) }) }}
     </div>
     <div class="row q-gutter-xs">
-      <q-chip
-        v-for="w in words"
-        :key="w"
-        clickable
-        icon-right="visibility"
-        class="word-chip hidden-word"
-        :aria-label="t('packs.showWord', { word: w })"
-        @click="pending = w"
-      >
+      <q-chip v-for="w in words" :key="w" clickable icon-right="visibility" class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: w })" @click="pending = w">
         {{ w }}
       </q-chip>
     </div>
@@ -59,12 +51,15 @@ function confirmShow() {
   height: auto;
   min-height: 32px;
   overflow-wrap: anywhere;
+
   :deep(.q-chip__content) {
     white-space: normal;
   }
+
   background: rgba(128, 128, 128, 0.2);
   color: inherit;
 }
+
 .hidden-word {
   text-decoration: line-through;
   opacity: 0.7;

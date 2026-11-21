@@ -1,26 +1,8 @@
 <template>
   <q-page v-if="tile && team" class="column q-pa-md game-page">
     <div class="header text-center q-mb-md" :style="{ '--team': teamHex(team.color) }">
-      <q-btn
-        v-if="phase !== 'handoff'"
-        class="leave-btn"
-        flat
-        round
-        dense
-        icon="close"
-        :aria-label="t('leave.button')"
-        @click="leave.open.value = true"
-      />
-      <q-btn
-        v-if="phase === 'play' && countdown.running.value"
-        class="pause-btn"
-        flat
-        round
-        dense
-        icon="pause"
-        :aria-label="t('pause.button')"
-        @click="pauser.pause()"
-      />
+      <q-btn v-if="phase !== 'handoff'" class="leave-btn" flat round dense icon="close" :aria-label="t('leave.button')" @click="leave.open.value = true" />
+      <q-btn v-if="phase === 'play' && countdown.running.value" class="pause-btn" flat round dense icon="pause" :aria-label="t('pause.button')" @click="pauser.pause()" />
       <div class="team-pill text-subtitle1 text-weight-bold" :style="{ background: teamHex(team.color) }">
         {{ teamName(team.color) }}
       </div>
@@ -48,31 +30,13 @@
         {{ isMulti ? t('turn.passToJudge') : t('turn.passTo', { team: teamName(team.color) }) }}
       </div>
       <div class="column full-width turn-actions">
-        <q-btn
-          color="primary"
-          size="lg"
-          rounded
-          no-caps
-          :label="isMulti ? t('turn.startTurn') : t('turn.showWord')"
-          @click="begin"
-        />
-        <q-btn
-          outline
-          size="lg"
-          rounded
-          no-caps
-          color="primary"
-          :label="t('turn.back')"
-          @click="back"
-        />
+        <q-btn color="primary" size="lg" rounded no-caps :label="isMulti ? t('turn.startTurn') : t('turn.showWord')" @click="begin" />
+        <q-btn outline size="lg" rounded no-caps color="primary" :label="t('turn.back')" @click="back" />
       </div>
     </div>
 
     <!-- Multi mode: short countdown before the first word -->
-    <div
-      v-else-if="phase === 'getready'"
-      class="col column items-center justify-center q-gutter-y-md"
-    >
+    <div v-else-if="phase === 'getready'" class="col column items-center justify-center q-gutter-y-md">
       <div class="text-h5 text-weight-bold text-grey-7">{{ t('turn.getReady') }}</div>
       <div class="getready-number text-weight-bold" :style="colorOf(team.id)">
         {{ fmt(getReady.secondsLeft.value) }}
@@ -90,47 +54,10 @@
       </div>
       <div class="text-center text-grey-7 hint-text">{{ t('turn.prepHint') }}</div>
       <div class="column full-width turn-actions">
-        <q-btn
-          color="primary"
-          size="lg"
-          rounded
-          no-caps
-          :label="t('turn.start')"
-          @click="startSingle"
-        />
-        <q-btn
-          v-if="single.hint && hintWord === null && hintText"
-          outline
-          size="lg"
-          rounded
-          no-caps
-          color="primary"
-          icon="lightbulb"
-          :label="hintLabel"
-          @click="takeHint"
-        />
-        <q-btn
-          v-if="!rerolled && deck.length > 0"
-          outline
-          size="lg"
-          rounded
-          no-caps
-          color="primary"
-          icon="autorenew"
-          :label="rerollLabel"
-          @click="reroll"
-        />
-        <q-btn
-          v-if="canRevert"
-          outline
-          size="lg"
-          rounded
-          no-caps
-          color="primary"
-          icon="undo"
-          :label="word === originalWord ? t('turn.useSwapped') : t('turn.revert')"
-          @click="revertWord"
-        />
+        <q-btn color="primary" size="lg" rounded no-caps :label="t('turn.start')" @click="startSingle" />
+        <q-btn v-if="single.hint && hintWord === null && hintText" outline size="lg" rounded no-caps color="primary" icon="lightbulb" :label="hintLabel" @click="takeHint" />
+        <q-btn v-if="!rerolled && deck.length > 0" outline size="lg" rounded no-caps color="primary" icon="autorenew" :label="rerollLabel" @click="reroll" />
+        <q-btn v-if="canRevert" outline size="lg" rounded no-caps color="primary" icon="undo" :label="word === originalWord ? t('turn.useSwapped') : t('turn.revert')" @click="revertWord" />
         <div v-if="!rerolled && deck.length === 0" class="text-body2 text-grey-7 text-center">
           {{ t('turn.noRerollWords') }}
         </div>
@@ -139,13 +66,7 @@
 
     <!-- Playing -->
     <div v-else-if="phase === 'play' || phase === 'timeup'" class="col column q-gutter-y-md">
-      <TimerRing
-        :remaining-ms="countdown.remainingMs.value"
-        :total-seconds="countdown.total.value"
-        :seconds-left="countdown.secondsLeft.value"
-        color="primary"
-        :label="phase === 'timeup' ? t('turn.timeUp') : fmt(countdown.secondsLeft.value)"
-      />
+      <TimerRing :remaining-ms="countdown.remainingMs.value" :total-seconds="countdown.total.value" :seconds-left="countdown.secondsLeft.value" color="primary" :label="phase === 'timeup' ? t('turn.timeUp') : fmt(countdown.secondsLeft.value)" />
 
       <template v-if="isMulti">
         <div v-if="phase === 'timeup'" class="text-center text-grey-7">
@@ -159,51 +80,14 @@
         <div class="tally text-body2 text-center text-grey-7">
           {{ tallyText }}
         </div>
-        <q-btn
-          v-if="phase === 'play' && history.length > 0"
-          class="self-center"
-          outline
-          rounded
-          no-caps
-          color="primary"
-          :label="t('turn.undoLast')"
-          @click="undoLast"
-        />
+        <q-btn v-if="phase === 'play' && history.length > 0" class="self-center" outline rounded no-caps color="primary" :label="t('turn.undoLast')" @click="undoLast" />
         <div class="row no-wrap action-bar">
           <div class="col">
-            <q-btn
-              class="full-width"
-              color="primary"
-              size="lg"
-              rounded
-              no-caps
-              :label="t('turn.correct')"
-              @click="multiCorrect"
-            />
+            <q-btn class="full-width" color="primary" size="lg" rounded no-caps :label="t('turn.correct')" @click="multiCorrect" />
           </div>
           <div class="col">
-            <q-btn
-              v-if="phase === 'play'"
-              class="full-width"
-              outline
-              color="primary"
-              size="lg"
-              rounded
-              no-caps
-              :label="t('turn.skip')"
-              :disable="!canSkipNow"
-              @click="multiSkip"
-            />
-            <q-btn
-              v-else
-              class="full-width"
-              color="grey"
-              size="lg"
-              rounded
-              no-caps
-              :label="t('turn.done')"
-              @click="done"
-            />
+            <q-btn v-if="phase === 'play'" class="full-width" outline color="primary" size="lg" rounded no-caps :label="t('turn.skip')" :disable="!canSkipNow" @click="multiSkip" />
+            <q-btn v-else class="full-width" color="grey" size="lg" rounded no-caps :label="t('turn.done')" @click="done" />
           </div>
         </div>
       </template>
@@ -214,77 +98,29 @@
         </div>
         <div class="row no-wrap action-bar">
           <div class="col">
-            <q-btn
-              class="full-width"
-              color="primary"
-              size="lg"
-              rounded
-              no-caps
-              :label="t('turn.guessed')"
-              @click="guessed"
-            />
+            <q-btn class="full-width" color="primary" size="lg" rounded no-caps :label="t('turn.guessed')" @click="guessed" />
           </div>
           <div class="col">
-            <q-btn
-              class="full-width"
-              :color="confirmGiveUp ? 'grey-9' : 'grey'"
-              size="lg"
-              rounded
-              no-caps
-              :label="confirmGiveUp ? t('turn.giveUpConfirm') : t('turn.giveUp')"
-              @click="giveUp"
-            />
+            <q-btn class="full-width" :color="confirmGiveUp ? 'grey-9' : 'grey'" size="lg" rounded no-caps :label="confirmGiveUp ? t('turn.giveUpConfirm') : t('turn.giveUp')" @click="giveUp" />
           </div>
         </div>
       </template>
     </div>
 
     <!-- Steal -->
-    <div
-      v-else-if="phase === 'steal'"
-      class="col column items-center justify-center q-gutter-y-md text-center"
-    >
-      <div
-        class="text-h5 text-weight-bold"
-        :style="stealer === null ? undefined : colorOf(stealer)"
-      >
+    <div v-else-if="phase === 'steal'" class="col column items-center justify-center q-gutter-y-md text-center">
+      <div class="text-h5 text-weight-bold" :style="stealer === null ? undefined : colorOf(stealer)">
         {{ t('turn.stealTitle', { team: stealerName, n: fmt(stealValue) }) }}
       </div>
       <div>{{ t('turn.stealHint', { team: stealerName }) }}</div>
       <PeekWord class="full-width" :word="word ?? ''" :label="t('turn.peek')" />
-      <q-btn
-        v-if="undoStack.length > 0"
-        outline
-        size="lg"
-        rounded
-        no-caps
-        color="primary"
-        :label="t('turn.undo')"
-        @click="undo"
-      />
+      <q-btn v-if="undoStack.length > 0" outline size="lg" rounded no-caps color="primary" :label="t('turn.undo')" @click="undo" />
       <div class="row no-wrap full-width q-mt-lg action-bar">
         <div class="col">
-          <q-btn
-            class="full-width"
-            color="primary"
-            size="lg"
-            rounded
-            no-caps
-            :label="t('turn.stealRight')"
-            @click="steal(true)"
-          />
+          <q-btn class="full-width" color="primary" size="lg" rounded no-caps :label="t('turn.stealRight')" @click="steal(true)" />
         </div>
         <div class="col">
-          <q-btn
-            class="full-width"
-            outline
-            color="primary"
-            size="lg"
-            rounded
-            no-caps
-            :label="t('turn.stealWrong')"
-            @click="steal(false)"
-          />
+          <q-btn class="full-width" outline color="primary" size="lg" rounded no-caps :label="t('turn.stealWrong')" @click="steal(false)" />
         </div>
       </div>
     </div>
@@ -298,14 +134,7 @@
         </div>
 
         <q-card flat class="soft-card q-pa-md">
-          <TeamPointsRow
-            v-for="line in resultLines"
-            :key="line.teamId"
-            class="q-mb-sm"
-            :name="nameOf(line.teamId)"
-            :color="teamHex(state?.teams[line.teamId]?.color ?? '')"
-            :points="t('board.points', { n: signed(line.points) })"
-          />
+          <TeamPointsRow v-for="line in resultLines" :key="line.teamId" class="q-mb-sm" :name="nameOf(line.teamId)" :color="teamHex(state?.teams[line.teamId]?.color ?? '')" :points="t('board.points', { n: signed(line.points) })" />
           <div v-if="resultLines.length === 0" class="text-grey-7">{{ t('turn.noPoints') }}</div>
           <template v-if="breakdown.length > 0">
             <q-separator class="q-my-md" />
@@ -330,23 +159,10 @@
                 <q-item-label v-if="statusOf(w)" caption>{{ statusOf(w) }}</q-item-label>
               </q-item-section>
               <q-item-section side>
-                <q-btn
-                  outline
-                  rounded
-                  no-caps
-                  color="primary"
-                  size="sm"
-                  icon="tune"
-                  :label="t('turn.changeWord')"
-                >
+                <q-btn outline rounded no-caps color="primary" size="sm" icon="tune" :label="t('turn.changeWord')">
                   <q-menu auto-close>
                     <q-list>
-                      <q-item
-                        v-for="d in moveTargets(w)"
-                        :key="d"
-                        clickable
-                        @click="choose(w, d)"
-                      >
+                      <q-item v-for="d in moveTargets(w)" :key="d" clickable @click="choose(w, d)">
                         <q-item-section avatar><q-icon name="swap_vert" /></q-item-section>
                         <q-item-section>
                           {{ t('turn.moveTo', { level: t(`turn.level${d}`) }) }}
@@ -381,24 +197,8 @@
       </div>
 
       <div class="column action-bar q-gutter-y-md">
-        <q-btn
-          color="primary"
-          size="lg"
-          rounded
-          no-caps
-          :label="t('turn.next')"
-          @click="finish"
-        />
-        <q-btn
-          v-if="isMulti ? multiEnd : undoStack.length > 0"
-          outline
-          size="lg"
-          rounded
-          no-caps
-          color="primary"
-          :label="t('turn.undo')"
-          @click="isMulti ? undoEnd() : undo()"
-        />
+        <q-btn color="primary" size="lg" rounded no-caps :label="t('turn.next')" @click="finish" />
+        <q-btn v-if="isMulti ? multiEnd : undoStack.length > 0" outline size="lg" rounded no-caps color="primary" :label="t('turn.undo')" @click="isMulti ? undoEnd() : undo()" />
       </div>
     </div>
     <PauseOverlay v-model="pauser.paused.value" @resume="pauser.resume()" @leave="leave.open.value = true" />
@@ -597,9 +397,9 @@ const tallyText = computed(() =>
   multi.value.skipLimit === null
     ? t('turn.tallyUnlimited', { n: fmt(tally.value.correct) })
     : t('turn.tallyLeft', {
-        n: fmt(tally.value.correct),
-        left: fmt(Math.max(0, multi.value.skipLimit - tally.value.skips)),
-      }),
+      n: fmt(tally.value.correct),
+      left: fmt(Math.max(0, multi.value.skipLimit - tally.value.skips)),
+    }),
 );
 
 // Undo (multi-word mode). Each Correct/Skip that drew a new word is remembered so it can be taken
@@ -868,6 +668,7 @@ function finish() {
   padding: 2px 16px;
   border-radius: 16px;
 }
+
 // Top of every phase: the playing team's pill and the tile (category and points) it plays.
 .header {
   position: relative;
@@ -876,29 +677,35 @@ function finish() {
   background: rgba(128, 128, 128, 0.1);
   border-top: 5px solid var(--team);
 }
+
 .leave-btn,
 .pause-btn {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-start: 4px;
 }
+
 .pause-btn {
   inset-inline-start: auto;
   inset-inline-end: 4px;
 }
+
 .role-chip {
   margin-bottom: 8px;
   opacity: 0.8;
 }
+
 .words-list {
   // A long turn shows many words: the list scrolls instead of being cropped.
   max-height: 40vh;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+
 .soft-card {
   flex-shrink: 0;
 }
+
 .acting-hint {
   max-width: 24rem;
   padding: 0.75rem 1rem;
@@ -909,21 +716,26 @@ function finish() {
 .hint-text {
   max-width: 320px;
 }
+
 .getready-number {
   font-size: 7rem;
   line-height: 1;
 }
+
 .tile-chip {
   margin-top: 4px;
   opacity: 0.8;
 }
+
 .turn-actions {
   max-width: 320px;
   gap: 12px;
+
   .q-btn {
     min-height: 56px;
   }
 }
+
 .handoff-icon {
   display: flex;
   align-items: center;
@@ -933,6 +745,7 @@ function finish() {
   border-radius: 50%;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
+
 .word-card {
   width: 100%;
   padding: 28px 16px;
@@ -941,6 +754,7 @@ function finish() {
   border: 2px solid rgba(128, 128, 128, 0.25);
   overflow-wrap: anywhere;
 }
+
 @media (max-height: 500px) {
   .word-card {
     padding: 12px 16px;

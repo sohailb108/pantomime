@@ -1,19 +1,6 @@
 <template>
   <div class="row justify-center">
-    <q-circular-progress
-      class="timer-ring"
-      :class="{ pulse: low && pulse }"
-      show-value
-      :value="totalSeconds ? remainingMs / (totalSeconds * 1000) : 0"
-      :min="0"
-      :max="1"
-      size="132px"
-      :thickness="0.12"
-      rounded
-      reverse
-      track-color="grey-4"
-      :color="low ? lowColor : color"
-    >
+    <q-circular-progress class="timer-ring" :class="{ pulse: low && pulse }" show-value :value="totalSeconds ? remainingMs / (totalSeconds * 1000) : 0" :min="0" :max="1" size="132px" :thickness="0.12" rounded reverse track-color="grey-4" :color="low ? lowColor : color">
       <div class="timer text-center" :class="{ text: isText }">
         {{ label }}
       </div>
@@ -47,32 +34,39 @@ const isText = computed(() => props.label.length > 4);
 .pulse {
   animation: ring-pulse 1s ease-in-out infinite;
 }
+
 @keyframes ring-pulse {
   50% {
     opacity: 0.55;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .pulse {
     animation: none;
   }
 }
+
 .timer {
   font-size: 2.6rem;
   font-weight: 700;
   line-height: 1;
+
   &.text {
     max-width: 90px;
     font-size: 1.15rem;
     line-height: 1.3;
   }
 }
+
 @media (max-height: 500px) {
   .timer-ring {
     font-size: 84px !important;
   }
+
   .timer {
     font-size: 1.8rem;
+
     &.text {
       max-width: 60px;
       font-size: 0.85rem;

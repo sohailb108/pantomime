@@ -9,37 +9,13 @@
     </div>
 
     <q-form class="row no-wrap items-start q-gutter-x-sm q-my-sm" @submit.prevent="add">
-      <q-input
-        v-model="draft"
-        class="col"
-        outlined
-        dense
-        :maxlength="MAX_WORD_LENGTH"
-        :placeholder="t('packs.addWord')"
-        :error="!!error"
-        :error-message="error"
-        hide-bottom-space
-      />
-      <q-btn
-        type="submit"
-        round
-        unelevated
-        color="primary"
-        icon="add"
-        :aria-label="t('packs.addWord')"
-      />
+      <q-input v-model="draft" class="col" outlined dense :maxlength="MAX_WORD_LENGTH" :placeholder="t('packs.addWord')" :error="!!error" :error-message="error" hide-bottom-space />
+      <q-btn type="submit" round unelevated color="primary" icon="add" :aria-label="t('packs.addWord')" />
     </q-form>
 
     <div v-if="words.length === 0" class="text-grey-7">{{ t('packs.noCustomWords') }}</div>
     <div v-else class="row q-gutter-xs">
-      <q-chip
-        v-for="w in words"
-        :key="w"
-        removable
-        class="word-chip"
-        :remove-aria-label="t('packs.removeWord', { word: w })"
-        @remove="emit('remove', w)"
-      >
+      <q-chip v-for="w in words" :key="w" removable class="word-chip" :remove-aria-label="t('packs.removeWord', { word: w })" @remove="emit('remove', w)">
         {{ w }}
       </q-chip>
     </div>
@@ -85,6 +61,7 @@ function add() {
   background: rgba(128, 128, 128, 0.1);
   border-inline-start: 6px solid var(--tone);
 }
+
 .tone-dot {
   flex: none;
   width: 12px;
@@ -92,19 +69,23 @@ function add() {
   border-radius: 50%;
   background: var(--tone);
 }
+
 .builtin-chip {
   padding: 2px 10px;
   border-radius: 999px;
   background: rgba(128, 128, 128, 0.18);
 }
+
 .word-chip {
   margin: 2px;
   height: auto;
   min-height: 32px;
   overflow-wrap: anywhere;
+
   :deep(.q-chip__content) {
     white-space: normal;
   }
+
   background: rgba(128, 128, 128, 0.2);
   color: inherit;
 }

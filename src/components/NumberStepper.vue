@@ -1,36 +1,8 @@
 <template>
   <div class="row items-center no-wrap stepper">
-    <q-btn
-      class="stepper-btn"
-      round
-      outline
-      color="primary"
-      icon="remove"
-      :aria-label="t('setup.decrease')"
-      :disable="disabled || modelValue <= min"
-      @pointerdown="hold(-step, $event)"
-      @pointerup="release"
-      @pointercancel="release"
-      @pointerleave="release"
-      @contextmenu.prevent
-      @click="keyboardChange(-step, $event)"
-    />
+    <q-btn class="stepper-btn" round outline color="primary" icon="remove" :aria-label="t('setup.decrease')" :disable="disabled || modelValue <= min" @pointerdown="hold(-step, $event)" @pointerup="release" @pointercancel="release" @pointerleave="release" @contextmenu.prevent @click="keyboardChange(-step, $event)" />
     <div class="stepper-value text-h6 text-center" aria-live="polite">{{ display }}</div>
-    <q-btn
-      class="stepper-btn"
-      round
-      outline
-      color="primary"
-      icon="add"
-      :aria-label="t('setup.increase')"
-      :disable="disabled || modelValue >= max"
-      @pointerdown="hold(step, $event)"
-      @pointerup="release"
-      @pointercancel="release"
-      @pointerleave="release"
-      @contextmenu.prevent
-      @click="keyboardChange(step, $event)"
-    />
+    <q-btn class="stepper-btn" round outline color="primary" icon="add" :aria-label="t('setup.increase')" :disable="disabled || modelValue >= max" @pointerdown="hold(step, $event)" @pointerup="release" @pointercancel="release" @pointerleave="release" @contextmenu.prevent @click="keyboardChange(step, $event)" />
   </div>
 </template>
 
@@ -99,6 +71,7 @@ onBeforeUnmount(release);
 .stepper {
   gap: 4px;
 }
+
 .stepper-btn {
   width: 32px;
   height: 32px;
@@ -109,6 +82,7 @@ onBeforeUnmount(release);
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
+
 .stepper-value {
   min-width: 3.5ch;
 }

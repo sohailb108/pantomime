@@ -1,15 +1,5 @@
 <template>
-  <q-card
-    flat
-    bordered
-    class="peek column items-center justify-center text-center q-pa-lg"
-    :class="{ covered: !shown }"
-    @pointerdown.prevent="shown = true"
-    @pointerup="shown = false"
-    @pointerleave="shown = false"
-    @pointercancel="shown = false"
-    @contextmenu.prevent
-  >
+  <q-card flat bordered class="peek column items-center justify-center text-center q-pa-lg" :class="{ covered: !shown }" @pointerdown.prevent="shown = true" @pointerup="shown = false" @pointerleave="shown = false" @pointercancel="shown = false" @contextmenu.prevent>
     <div v-if="shown" class="text-h4 text-weight-bold" :class="longWordClass(word)">
       {{ word }}
     </div>
@@ -36,14 +26,13 @@ const shown = ref(false);
   user-select: none;
   overflow-wrap: anywhere;
   touch-action: none;
+
   &.covered {
-    background: repeating-linear-gradient(
-      45deg,
-      #9e9e9e33,
-      #9e9e9e33 10px,
-      transparent 10px,
-      transparent 20px
-    );
+    background: repeating-linear-gradient(45deg,
+        #9e9e9e33,
+        #9e9e9e33 10px,
+        transparent 10px,
+        transparent 20px);
   }
 }
 </style>

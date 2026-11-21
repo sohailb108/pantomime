@@ -10,48 +10,18 @@
         <div class="text-subtitle2 text-grey-7 q-mb-xs">{{ t('setup.teamsTitle') }}</div>
         <div class="team-row">
           <div class="team-circles">
-            <button
-              v-for="(color, i) in setup.teamColors"
-              :key="i"
-              type="button"
-              class="team-circle"
-              :style="{ background: teamHex(color) }"
-              :aria-label="`${t(`teamColors.${color}`)}: ${t('setup.pickColor')}`"
-              @click="colorTeam = i"
-            />
+            <button v-for="(color, i) in setup.teamColors" :key="i" type="button" class="team-circle" :style="{ background: teamHex(color) }" :aria-label="`${t(`teamColors.${color}`)}: ${t('setup.pickColor')}`" @click="colorTeam = i" />
           </div>
-          <q-btn
-            round
-            outline
-            color="primary"
-            icon="add"
-            :aria-label="t('setup.addTeam')"
-            :disable="setup.teamCount >= MAX_TEAMS"
-            @click="setup.addTeam()"
-          />
+          <q-btn round outline color="primary" icon="add" :aria-label="t('setup.addTeam')" :disable="setup.teamCount >= MAX_TEAMS" @click="setup.addTeam()" />
         </div>
 
         <div class="row q-col-gutter-sm">
           <div v-for="m in modes" :key="m.value" class="col-12 col-sm-6">
-            <q-card
-              flat
-              class="mode-card cursor-pointer"
-              :class="{ selected: setup.mode === m.value }"
-              role="radio"
-              :aria-checked="setup.mode === m.value"
-              tabindex="0"
-              @click="setup.mode = m.value"
-              @keydown.enter.space.prevent="setup.mode = m.value"
-            >
+            <q-card flat class="mode-card cursor-pointer" :class="{ selected: setup.mode === m.value }" role="radio" :aria-checked="setup.mode === m.value" tabindex="0" @click="setup.mode = m.value" @keydown.enter.space.prevent="setup.mode = m.value">
               <q-card-section>
                 <div class="row items-center no-wrap">
                   <div class="text-subtitle1 text-weight-medium col">{{ t(m.title) }}</div>
-                  <q-icon
-                    v-if="setup.mode === m.value"
-                    name="check_circle"
-                    size="sm"
-                    color="primary"
-                  />
+                  <q-icon v-if="setup.mode === m.value" name="check_circle" size="sm" color="primary" />
                 </div>
                 <div class="mode-desc">{{ t(m.desc) }}</div>
               </q-card-section>
@@ -60,15 +30,7 @@
         </div>
 
         <div class="q-mt-md">
-          <q-btn
-            outline
-            no-caps
-            rounded
-            color="primary"
-            icon="settings"
-            :label="t('setup.gameSettings')"
-            @click="openSettings"
-          />
+          <q-btn outline no-caps rounded color="primary" icon="settings" :label="t('setup.gameSettings')" @click="openSettings" />
           <div class="text-grey-7 q-mt-sm">{{ summary }}</div>
         </div>
 
@@ -76,58 +38,24 @@
           <q-card flat class="dialog-card">
             <div class="text-h6 text-weight-bold q-mb-md">{{ t('setup.pickColor') }}</div>
             <div v-if="colorTeam !== null" class="swatches" role="radiogroup">
-              <button
-                v-for="c in TEAM_COLORS"
-                :key="c.id"
-                type="button"
-                class="swatch"
-                :class="{ selected: c.id === setup.teamColors[colorTeam] }"
-                :style="{ background: c.hex }"
-                role="radio"
-                :aria-checked="c.id === setup.teamColors[colorTeam]"
-                :aria-label="t(`teamColors.${c.id}`)"
-                :disabled="c.id !== setup.teamColors[colorTeam] && setup.teamColors.includes(c.id)"
-                @click="pickColor(c.id)"
-              >
+              <button v-for="c in TEAM_COLORS" :key="c.id" type="button" class="swatch" :class="{ selected: c.id === setup.teamColors[colorTeam] }" :style="{ background: c.hex }" role="radio" :aria-checked="c.id === setup.teamColors[colorTeam]" :aria-label="t(`teamColors.${c.id}`)" :disabled="c.id !== setup.teamColors[colorTeam] && setup.teamColors.includes(c.id)" @click="pickColor(c.id)">
                 <q-icon v-if="c.id === setup.teamColors[colorTeam]" name="check" color="white" size="20px" />
               </button>
             </div>
             <div class="dialog-actions">
-              <q-btn
-                outline
-                rounded
-                no-caps
-                color="primary"
-                icon="delete_outline"
-                :label="t('setup.removeTeam')"
-                :disable="setup.teamCount <= MIN_TEAMS"
-                @click="removeColorTeam"
-              />
+              <q-btn outline rounded no-caps color="primary" icon="delete_outline" :label="t('setup.removeTeam')" :disable="setup.teamCount <= MIN_TEAMS" @click="removeColorTeam" />
               <q-btn v-close-popup rounded no-caps color="primary" :label="t('home.ok')" />
             </div>
           </q-card>
         </q-dialog>
 
-        <q-dialog
-          v-model="settingsOpen"
-          maximized
-          transition-show="slide-up"
-          transition-hide="slide-down"
-        >
+        <q-dialog v-model="settingsOpen" maximized transition-show="slide-up" transition-hide="slide-down">
           <q-card class="column no-wrap">
             <q-toolbar class="settings-bar">
               <q-toolbar-title class="text-weight-bold">{{
                 t('setup.gameSettings')
-              }}</q-toolbar-title>
-              <q-btn
-                outline
-                rounded
-                no-caps
-                dense
-                color="primary"
-                :label="t('setup.resetDefaults')"
-                @click="setup.resetSettings()"
-              />
+                }}</q-toolbar-title>
+              <q-btn outline rounded no-caps dense color="primary" :label="t('setup.resetDefaults')" @click="setup.resetSettings()" />
             </q-toolbar>
             <q-separator />
             <q-card-section class="col scroll">
@@ -150,12 +78,7 @@
                   <q-item>
                     <q-item-section>{{ t('setup.turnSeconds') }}</q-item-section>
                     <q-item-section side>
-                      <NumberStepper
-                        v-model="setup.settings.multi.turnSeconds"
-                        :min="15"
-                        :max="300"
-                        :step="15"
-                      />
+                      <NumberStepper v-model="setup.settings.multi.turnSeconds" :min="15" :max="300" :step="15" />
                     </q-item-section>
                   </q-item>
                   <q-item>
@@ -188,39 +111,21 @@
                   <q-item v-for="(d, i) in DIFFICULTIES" :key="d" :class="{ 'no-divider': i > 0 }">
                     <q-item-section>{{ t(`setup.timer${d}`) }}</q-item-section>
                     <q-item-section side>
-                      <NumberStepper
-                        v-model="setup.settings.single.timerSeconds[d]"
-                        :min="10"
-                        :max="300"
-                        :step="5"
-                      />
+                      <NumberStepper v-model="setup.settings.single.timerSeconds[d]" :min="10" :max="300" :step="5" />
                     </q-item-section>
                   </q-item>
-                  <q-item
-                    tag="label"
-                    :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }"
-                  >
+                  <q-item tag="label" :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }">
                     <q-item-section>
                       <q-item-label>{{ t('setup.steal') }}</q-item-label>
                       <q-item-label v-if="!stealAllowed" caption>{{
                         t('setup.stealTwoOnly')
-                      }}</q-item-label>
+                        }}</q-item-label>
                     </q-item-section>
-                    <q-item-section side
-                      ><q-toggle
-                        :model-value="stealAllowed && setup.settings.single.steal"
-                        :disable="!stealAllowed"
-                        @update:model-value="setup.settings.single.steal = $event"
-                    /></q-item-section>
+                    <q-item-section side><q-toggle :model-value="stealAllowed && setup.settings.single.steal" :disable="!stealAllowed" @update:model-value="setup.settings.single.steal = $event" /></q-item-section>
                   </q-item>
                   <q-item v-if="stealAllowed && setup.settings.single.steal" class="no-divider tight">
                     <q-item-section>
-                      <q-option-group
-                        v-model="stealValueMode"
-                        type="radio"
-                        color="primary"
-                        :options="stealValueOptions"
-                      />
+                      <q-option-group v-model="stealValueMode" type="radio" color="primary" :options="stealValueOptions" />
                     </q-item-section>
                   </q-item>
                   <q-item>
@@ -242,43 +147,24 @@
                     </q-item-section>
                   </q-item>
                   <template v-if="setup.settings.single.hint">
-                  <q-item class="no-divider pb-0">
-                    <q-item-section>
-                      <q-radio
-                        v-model="hintValueMode"
-                        val="fixed"
-                        color="primary"
-                        :label="t('setup.hintFixed')"
-                      />
-                    </q-item-section>
-                    <q-item-section side>
-                      <NumberStepper
-                        v-model="setup.settings.single.hintPenalty"
-                        :max="10"
-                        :disabled="hintValueMode !== 'fixed'"
-                        :class="{ 'hint-stepper-off': hintValueMode !== 'fixed' }"
-                      />
-                    </q-item-section>
-                  </q-item>
-                  <q-item class="no-divider tight">
-                    <q-item-section>
-                      <q-radio
-                        v-model="hintValueMode"
-                        val="half"
-                        color="primary"
-                        :label="t('setup.hintHalfOption')"
-                      />
-                    </q-item-section>
-                  </q-item>
+                    <q-item class="no-divider pb-0">
+                      <q-item-section>
+                        <q-radio v-model="hintValueMode" val="fixed" color="primary" :label="t('setup.hintFixed')" />
+                      </q-item-section>
+                      <q-item-section side>
+                        <NumberStepper v-model="setup.settings.single.hintPenalty" :max="10" :disabled="hintValueMode !== 'fixed'" :class="{ 'hint-stepper-off': hintValueMode !== 'fixed' }" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item class="no-divider tight">
+                      <q-item-section>
+                        <q-radio v-model="hintValueMode" val="half" color="primary" :label="t('setup.hintHalfOption')" />
+                      </q-item-section>
+                    </q-item>
                   </template>
                   <q-item>
                     <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
                     <q-item-section side>
-                      <NumberStepper
-                        v-model="setup.settings.single.fastGuessSeconds"
-                        :min="1"
-                        :max="60"
-                      />
+                      <NumberStepper v-model="setup.settings.single.fastGuessSeconds" :min="1" :max="60" />
                     </q-item-section>
                   </q-item>
                   <q-item class="no-divider">
@@ -295,9 +181,7 @@
                 <q-list class="settings-list">
                   <q-item tag="label">
                     <q-item-section>{{ t('setup.goldEnabled') }}</q-item-section>
-                    <q-item-section side
-                      ><q-toggle v-model="setup.settings.gold.enabled"
-                    /></q-item-section>
+                    <q-item-section side><q-toggle v-model="setup.settings.gold.enabled" /></q-item-section>
                   </q-item>
                   <template v-if="setup.settings.gold.enabled">
                     <q-item>
@@ -315,12 +199,7 @@
                     <q-item class="no-divider">
                       <q-item-section>{{ t('setup.goldTimer') }}</q-item-section>
                       <q-item-section side>
-                        <NumberStepper
-                          v-model="setup.settings.gold.timerSeconds"
-                          :min="10"
-                          :max="300"
-                          :step="5"
-                        />
+                        <NumberStepper v-model="setup.settings.gold.timerSeconds" :min="10" :max="300" :step="5" />
                       </q-item-section>
                     </q-item>
                   </template>
@@ -329,33 +208,14 @@
             </q-card-section>
             <q-separator />
             <q-card-actions class="settings-actions q-pa-md no-wrap" style="gap: 16px">
-              <q-btn
-                class="col"
-                outline
-                color="primary"
-                rounded
-                no-caps
-                :label="t('setup.cancel')"
-                @click="cancelSettings"
-              />
-              <q-btn
-                class="col"
-                color="primary"
-                rounded
-                no-caps
-                :label="t('setup.done')"
-                @click="confirmSettings"
-              />
+              <q-btn class="col" outline color="primary" rounded no-caps :label="t('setup.cancel')" @click="cancelSettings" />
+              <q-btn class="col" color="primary" rounded no-caps :label="t('setup.done')" @click="confirmSettings" />
             </q-card-actions>
           </q-card>
         </q-dialog>
       </q-step>
 
-      <q-step
-        name="categories"
-        :title="t('setup.steps.categories')"
-        icon="category"
-      >
+      <q-step name="categories" :title="t('setup.steps.categories')" icon="category">
         <div class="q-mb-md">
           <div class="q-mb-xs" :class="{ 'text-primary text-weight-bold': !enoughCategories }">
             {{
@@ -373,35 +233,12 @@
           </div>
         </div>
         <div class="row justify-center q-mb-md">
-          <q-btn
-            class="select-all-btn no-wrap"
-            outline
-            rounded
-            no-caps
-            color="primary"
-            :icon="allSelected ? 'deselect' : 'select_all'"
-            :label="allSelected ? t('setup.clearAll') : t('setup.selectAll')"
-            @click="toggleAll"
-          />
+          <q-btn class="select-all-btn no-wrap" outline rounded no-caps color="primary" :icon="allSelected ? 'deselect' : 'select_all'" :label="allSelected ? t('setup.clearAll') : t('setup.selectAll')" @click="toggleAll" />
         </div>
         <div class="row q-col-gutter-sm">
           <div v-for="c in categories" :key="c.id" class="col-6 col-sm-4">
-            <q-card
-              flat
-              class="cursor-pointer text-center q-pa-md category-card"
-              :class="{ selected: setup.categoryIds.includes(c.id) }"
-              role="checkbox"
-              :aria-checked="setup.categoryIds.includes(c.id)"
-              tabindex="0"
-              @click="setup.toggleCategory(c.id)"
-              @keydown.enter.space.prevent="setup.toggleCategory(c.id)"
-            >
-              <q-icon
-                v-if="setup.categoryIds.includes(c.id)"
-                name="check_circle"
-                class="check"
-                size="sm"
-              />
+            <q-card flat class="cursor-pointer text-center q-pa-md category-card" :class="{ selected: setup.categoryIds.includes(c.id) }" role="checkbox" :aria-checked="setup.categoryIds.includes(c.id)" tabindex="0" @click="setup.toggleCategory(c.id)" @keydown.enter.space.prevent="setup.toggleCategory(c.id)">
+              <q-icon v-if="setup.categoryIds.includes(c.id)" name="check_circle" class="check" size="sm" />
               <div class="text-subtitle1 text-weight-bold">{{ c.name }}</div>
               <div class="cat-meta text-caption">
                 <span v-if="c.custom" class="custom-tag">
@@ -416,34 +253,10 @@
     </q-stepper>
 
     <div class="setup-nav action-bar row justify-between items-center">
-      <q-btn
-        v-if="stepIndex > 0"
-        outline
-        rounded
-        no-caps
-        color="primary"
-        :label="t('setup.back')"
-        @click="step = steps[stepIndex - 1]!"
-      />
+      <q-btn v-if="stepIndex > 0" outline rounded no-caps color="primary" :label="t('setup.back')" @click="step = steps[stepIndex - 1]!" />
       <span v-else />
-      <q-btn
-        v-if="stepIndex < steps.length - 1"
-        color="primary"
-        rounded
-        no-caps
-        :label="t('setup.next')"
-        :disable="!canAdvance"
-        @click="step = steps[stepIndex + 1]!"
-      />
-      <q-btn
-        v-else
-        color="primary"
-        rounded
-        no-caps
-        :label="t('setup.start')"
-        :disable="!enoughCategories"
-        @click="start"
-      />
+      <q-btn v-if="stepIndex < steps.length - 1" color="primary" rounded no-caps :label="t('setup.next')" :disable="!canAdvance" @click="step = steps[stepIndex + 1]!" />
+      <q-btn v-else color="primary" rounded no-caps :label="t('setup.start')" :disable="!enoughCategories" @click="start" />
     </div>
   </q-page>
 </template>
@@ -607,6 +420,7 @@ function start() {
 .hint-stepper-off {
   opacity: 0.4;
 }
+
 .setup-page {
   display: flex;
   flex-direction: column;
@@ -800,20 +614,24 @@ function start() {
   background: rgba(128, 128, 128, 0.1);
   overflow: hidden;
 
-  .q-item + .q-item {
+  .q-item+.q-item {
     border-top: 1px solid rgba(128, 128, 128, 0.2);
   }
+
   .q-item.pb-0 {
     padding-bottom: 0;
     min-height: 0;
   }
-  .q-item + .q-item.no-divider {
+
+  .q-item+.q-item.no-divider {
     border-top: none;
   }
+
   .q-item.tight {
     padding-top: 0;
   }
 }
+
 .select-all-btn {
   width: 220px;
 }

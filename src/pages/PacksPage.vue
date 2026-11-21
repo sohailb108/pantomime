@@ -7,13 +7,7 @@
 
     <div class="packs-col">
       <div class="pack-list q-mb-lg">
-        <q-item
-          v-for="c in categories"
-          :key="c.id"
-          clickable
-          class="pack-card"
-          :to="`/packs/${c.id}`"
-        >
+        <q-item v-for="c in categories" :key="c.id" clickable class="pack-card" :to="`/packs/${c.id}`">
           <q-item-section avatar>
             <div class="pack-avatar">{{ initial(c.name) }}</div>
           </q-item-section>
@@ -42,51 +36,14 @@
         </q-item>
       </div>
 
-      <q-btn
-        class="full-width q-mb-sm"
-        color="primary"
-        size="lg"
-        rounded
-        no-caps
-        icon="add"
-        :label="t('packs.newCategory')"
-        @click="openNew"
-      />
+      <q-btn class="full-width q-mb-sm" color="primary" size="lg" rounded no-caps icon="add" :label="t('packs.newCategory')" @click="openNew" />
       <div class="row no-wrap q-gutter-sm">
-        <q-btn
-          class="col"
-          outline
-          rounded
-          no-caps
-          color="primary"
-          icon="download"
-          :label="t('packs.export')"
-          @click="doExport"
-        />
-        <q-btn
-          class="col"
-          outline
-          rounded
-          no-caps
-          color="primary"
-          icon="upload"
-          :label="t('packs.import')"
-          @click="openImport"
-        />
-        <input
-          ref="fileInput"
-          type="file"
-          accept="application/json,.json"
-          class="hidden"
-          @change="doImport"
-        />
+        <q-btn class="col" outline rounded no-caps color="primary" icon="download" :label="t('packs.export')" @click="doExport" />
+        <q-btn class="col" outline rounded no-caps color="primary" icon="upload" :label="t('packs.import')" @click="openImport" />
+        <input ref="fileInput" type="file" accept="application/json,.json" class="hidden" @change="doImport" />
       </div>
       <div v-if="message" class="status-banner q-mt-md">
-        <q-icon
-          :name="messageOk ? 'check_circle' : 'error'"
-          size="24px"
-          color="primary"
-        />
+        <q-icon :name="messageOk ? 'check_circle' : 'error'" size="24px" color="primary" />
         <div>{{ message }}</div>
       </div>
     </div>
@@ -98,26 +55,11 @@
           <div class="text-h6 text-weight-bold">{{ t('packs.newCategory') }}</div>
         </div>
         <div>
-          <q-input
-            v-model="newName"
-            outlined
-            dense
-            autofocus
-            :maxlength="MAX_NAME_LENGTH"
-            :label="t('packs.categoryName')"
-            @keyup.enter="create"
-          />
+          <q-input v-model="newName" outlined dense autofocus :maxlength="MAX_NAME_LENGTH" :label="t('packs.categoryName')" @keyup.enter="create" />
         </div>
         <div class="dialog-actions">
           <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
-          <q-btn
-            rounded
-            no-caps
-            color="primary"
-            :label="t('packs.create')"
-            :disable="!newName.trim()"
-            @click="create"
-          />
+          <q-btn rounded no-caps color="primary" :label="t('packs.create')" :disable="!newName.trim()" @click="create" />
         </div>
       </q-card>
     </q-dialog>
@@ -238,24 +180,29 @@ async function doImport(event: Event) {
 .hidden {
   display: none;
 }
+
 .packs-col {
   max-width: 480px;
   margin: 0 auto;
 }
+
 .pack-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .pack-card {
   border-radius: 16px;
   background: rgba(128, 128, 128, 0.1);
   min-height: 64px;
+
   &.gold {
     background: rgba(255, 193, 7, 0.14);
     box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.6);
   }
 }
+
 .pack-avatar {
   display: flex;
   align-items: center;
@@ -267,6 +214,7 @@ async function doImport(event: Event) {
   font-size: 1.1rem;
   background: var(--q-primary);
   color: #fff;
+
   &.gold {
     background: linear-gradient(135deg, #ffd54f, #f9a825);
   }

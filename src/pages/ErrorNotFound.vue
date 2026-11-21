@@ -3,16 +3,7 @@
     <AppLogo />
     <div class="code text-primary">404</div>
     <div class="text-h5 text-weight-bold">{{ t('notFound.title') }}</div>
-    <q-btn
-      class="q-mt-lg"
-      color="primary"
-      size="lg"
-      rounded
-      no-caps
-      icon="home"
-      to="/"
-      :label="t('notFound.home')"
-    />
+    <q-btn class="q-mt-lg" color="primary" size="lg" rounded no-caps icon="home" to="/" :label="t('notFound.home')" />
   </div>
 </template>
 

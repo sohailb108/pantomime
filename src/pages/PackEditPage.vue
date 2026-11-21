@@ -2,36 +2,12 @@
   <q-page v-if="ready" class="q-pa-md">
     <div class="edit-col">
       <div class="row items-center q-mb-md no-wrap">
-        <q-btn
-          flat
-          round
-          icon="arrow_back"
-          class="flip-rtl"
-          :aria-label="t('setup.back')"
-          to="/packs"
-        />
+        <q-btn flat round icon="arrow_back" class="flip-rtl" :aria-label="t('setup.back')" to="/packs" />
         <q-icon v-if="isGold" name="emoji_events" color="amber" size="sm" class="q-mx-sm" />
         <div class="text-h5 text-weight-bold col ellipsis">{{ title }}</div>
         <template v-if="customCategory">
-          <q-btn
-            outline
-            round
-            dense
-            icon="edit"
-            color="primary"
-            class="q-mx-xs"
-            :aria-label="t('packs.edit')"
-            @click="openEdit"
-          />
-          <q-btn
-            outline
-            round
-            dense
-            icon="delete_outline"
-            color="primary"
-            :aria-label="t('packs.deleteCategory')"
-            @click="deleteOpen = true"
-          />
+          <q-btn outline round dense icon="edit" color="primary" class="q-mx-xs" :aria-label="t('packs.edit')" @click="openEdit" />
+          <q-btn outline round dense icon="delete_outline" color="primary" :aria-label="t('packs.deleteCategory')" @click="deleteOpen = true" />
         </template>
       </div>
 
@@ -45,21 +21,8 @@
         <div>{{ t('packs.emptyBuiltinHint') }}</div>
       </div>
 
-      <WordList
-        v-for="d in levels"
-        :key="d"
-        :title="isGold ? t('packs.gold') : t(`packs.difficulty${d}`)"
-        :tone="isGold ? GOLD_TONE : TONES[d]"
-        :words="custom.wordsOf(lang, id, d)"
-        :builtin-count="customCategory ? undefined : builtinPool(lang, id, d).length"
-        :on-add="(w) => custom.addWord(lang, id, d, w)"
-        @remove="(w) => removeWord(d, w)"
-      />
-      <HiddenWords
-        v-if="!customCategory && custom.hiddenOf(lang, id).length > 0"
-        :words="custom.hiddenOf(lang, id)"
-        @unhide="(w) => custom.placeWord(lang, id, w, 'native')"
-      />
+      <WordList v-for="d in levels" :key="d" :title="isGold ? t('packs.gold') : t(`packs.difficulty${d}`)" :tone="isGold ? GOLD_TONE : TONES[d]" :words="custom.wordsOf(lang, id, d)" :builtin-count="customCategory ? undefined : builtinPool(lang, id, d).length" :on-add="(w) => custom.addWord(lang, id, d, w)" @remove="(w) => removeWord(d, w)" />
+      <HiddenWords v-if="!customCategory && custom.hiddenOf(lang, id).length > 0" :words="custom.hiddenOf(lang, id)" @unhide="(w) => custom.placeWord(lang, id, w, 'native')" />
     </div>
 
     <q-dialog v-model="editOpen">
@@ -69,25 +32,11 @@
           <div class="text-h6 text-weight-bold">{{ t('packs.categoryName') }}</div>
         </div>
         <div>
-          <q-input
-            v-model="editName"
-            outlined
-            dense
-            autofocus
-            :maxlength="MAX_NAME_LENGTH"
-            :label="t('packs.categoryName')"
-          />
+          <q-input v-model="editName" outlined dense autofocus :maxlength="MAX_NAME_LENGTH" :label="t('packs.categoryName')" />
         </div>
         <div class="dialog-actions">
           <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
-          <q-btn
-            rounded
-            no-caps
-            color="primary"
-            :label="t('packs.save')"
-            :disable="!editName.trim()"
-            @click="saveEdit"
-          />
+          <q-btn rounded no-caps color="primary" :label="t('packs.save')" :disable="!editName.trim()" @click="saveEdit" />
         </div>
       </q-card>
     </q-dialog>
@@ -102,15 +51,7 @@
         </div>
         <div class="dialog-actions">
           <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
-          <q-btn
-            v-if="!inActiveGame"
-            v-close-popup
-            rounded
-            no-caps
-            color="primary"
-            :label="t('packs.deleteCategory')"
-            @click="remove"
-          />
+          <q-btn v-if="!inActiveGame" v-close-popup rounded no-caps color="primary" :label="t('packs.deleteCategory')" @click="remove" />
         </div>
       </q-card>
     </q-dialog>
@@ -211,6 +152,7 @@ function remove() {
   max-width: 560px;
   margin: 0 auto;
 }
+
 .hint-card {
   display: flex;
   align-items: center;
