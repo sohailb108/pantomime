@@ -33,7 +33,13 @@
       "archaeologist",
       "translator",
       "puppeteer",
-      "beekeeper"
+      "beekeeper",
+      "detective",
+      "blacksmith",
+      "sculptor",
+      "juggler",
+      "stuntman",
+      "lumberjack"
     ]
   },
   "hints": {
@@ -41,16 +47,16 @@
     "magician": "Pull something out of a hat or from behind an ear, wave a wand with a flourish, then take a bow.",
     "archaeologist": "Kneel and brush dirt away very gently with a small brush, dig carefully, then lift up a find and examine it closely.",
     "lifeguard": "Sit up high scanning the water with a hand over your eyes, blow a whistle, then run, swim out and pull someone to shore.",
-    "translator": "Listen carefully with a hand at your ear, then turn and speak for the other person, going back and forth between two people.",
+    "translator": "Listen carefully with a hand at your ear, then turn and gesture for the other person, going back and forth between two people.",
     "conductor": "Stand in front of a big orchestra, raise a baton, wave it in time with the music, and cue different sections with your other hand.",
     "puppeteer": "Hold your hands up high with fingers moving strings, and make an invisible puppet below walk, dance and bow.",
     "beekeeper": "Pull on a bulky veil and gloves, puff smoke from a smoker, lift a frame out of a hive and slowly scrape off honey, ignoring the buzzing.",
     "firefighter": "Pull a heavy hose, aim a strong spray at flames, slide down a pole, and carry someone out on your shoulder.",
     "dentist": "Gesture for someone to open wide, peer into their mouth with a little mirror, drill with a steady hand, and pull a tooth.",
-    "pilot": "Hold a steering wheel in front of you, flick switches overhead, speak into a headset, and tilt for a landing.",
+    "pilot": "Hold a steering wheel in front of you, flick switches overhead, press a headset to your ear, and tilt for a landing.",
     "plumber": "Crouch under a sink, tighten a pipe with a big wrench, get splashed, and pull a plunger up and down.",
     "photographer": "Hold a camera to your eye, crouch and lean for the best angle, wave people into a pose, and click.",
-    "judge": "Bang a gavel, sit up straight in a long robe, listen to both sides sternly, and announce a verdict.",
+    "judge": "Bang a gavel, sit up straight in a long robe, listen to both sides sternly, and point firmly to give a verdict.",
     "tailor": "Measure a person with a tape around the shoulders and waist, hold up pins in your mouth, and sew with a needle and thread.",
     "referee": "Blow a whistle, run along with the players, wave a card in the air, and point firmly to one side.",
     "teacher": "Write on a board, point at students, and tap a ruler on the desk.",
@@ -60,6 +66,12 @@
     "farmer": "Dig with a hoe, scatter seeds, wipe your sweaty forehead, and harvest the crops.",
     "singer": "Hold a microphone to your mouth, sway to the beat, and bow to a cheering crowd.",
     "painter": "Hold a brush and a palette, dab at a canvas, step back, and tilt your head.",
-    "barber": "Snip scissors around someone's head, brush off their neck, and shave a beard with a razor."
+    "barber": "Snip scissors around someone's head, brush off their neck, and shave a beard with a razor.",
+    "detective": "Lift a magnifying glass, crouch to study a footprint, then tip your hat and point at the culprit.",
+    "blacksmith": "Hold hot metal with tongs, hammer it on an anvil with big swings, then plunge it into water in a cloud of steam.",
+    "sculptor": "Chip at a block of stone with a chisel, step back, brush away the dust, and smooth a shape with your hand.",
+    "juggler": "Toss imaginary balls up in a circle, keep your eyes up, and add one more ball.",
+    "stuntman": "Jump from somewhere high, roll on the ground, then stand up dazed and give a thumbs-up.",
+    "lumberjack": "Swing a heavy axe at a tree trunk, wipe your forehead, then step back and point as the tree falls."
   }
 }

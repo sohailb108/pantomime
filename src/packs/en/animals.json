@@ -24,7 +24,10 @@
       "giraffe",
       "bat",
       "crab",
-      "octopus"
+      "octopus",
+      "owl",
+      "shark",
+      "turtle"
     ],
     "3": [
       "chameleon",
@@ -33,7 +36,10 @@
       "hedgehog",
       "praying mantis",
       "jellyfish",
-      "woodpecker"
+      "woodpecker",
+      "peacock",
+      "scorpion",
+      "seahorse"
     ]
   },
   "hints": {
@@ -60,6 +66,12 @@
     "cow": "Hold two fingers up as horns, chew slowly, then pretend to milk with both hands.",
     "duck": "Make a beak with one hand, waddle with your elbows tucked, and flap your wings.",
     "pig": "Push your nose up with a finger, waddle on all fours, and roll around in imaginary mud.",
-    "frog": "Crouch low, puff out your cheeks, and leap forward, flicking your tongue at a fly."
+    "frog": "Crouch low, puff out your cheeks, and leap forward, flicking your tongue at a fly.",
+    "owl": "Turn your head slowly from side to side with huge round eyes, and perch on an imaginary branch, flapping silent wings.",
+    "shark": "Hold a hand as a fin above your head, glide in slow circles, then snap your arms together like huge jaws.",
+    "turtle": "Crawl very slowly on hands and knees with a heavy shell on your back, then pull your head in.",
+    "peacock": "Strut proudly with your chin high, then fan your arms out behind you like a huge shimmering tail.",
+    "scorpion": "Raise your hands as claws, curl one arm over your back like a stinging tail, and scuttle sideways.",
+    "seahorse": "Stand upright with a curled tail, bob gently up and down, and drift along with a long curved snout."
   }
 }

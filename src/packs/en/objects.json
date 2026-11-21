@@ -7,7 +7,6 @@
   "words": {
     "1": [
       "chair",
-      "phone",
       "key",
       "umbrella",
       "spoon",
@@ -19,21 +18,28 @@
       "hammer"
     ],
     "2": [
-      "camera",
       "ladder",
       "guitar",
       "backpack",
       "mirror",
       "vacuum cleaner",
       "parachute",
-      "telescope"
+      "telescope",
+      "broom",
+      "binoculars",
+      "candle"
     ],
     "3": [
       "hourglass",
       "compass",
       "typewriter",
       "stapler",
-      "kaleidoscope"
+      "kaleidoscope",
+      "sewing machine",
+      "magnifying glass",
+      "metronome",
+      "corkscrew",
+      "pocket watch"
     ]
   },
   "hints": {
@@ -47,19 +53,25 @@
     "parachute": "Jump from high up, fall, yank a cord over your shoulder, then float down gently holding straps above you.",
     "scissors": "Make a V with two fingers and snip open and shut as you cut through a piece of paper.",
     "toothbrush": "Brush your teeth with a finger, front and back and up and down, then rinse and spit.",
-    "camera": "Hold a box up to your eye, press a button with a finger, and click, then check the screen.",
     "ladder": "Show a tall frame leaning on a wall, climb it rung by rung with wobbly hands, and reach up high.",
     "guitar": "Hold a wide neck with one hand and strum across the body with the other, with a rocker's pose.",
     "backpack": "Pull on two straps over your shoulders, hunch under a heavy load, and zip it shut behind you.",
     "hammer": "Hold a nail and swing a heavy object down onto it again and again, and wince when you hit your finger.",
     "mirror": "Face someone and copy every move at the same time, so they feel like they are seeing themselves.",
     "chair": "Bend your knees as if sitting on nothing, lean back, then rock on two legs.",
-    "phone": "Hold a flat rectangle, tap and swipe it with your thumb, then press it to your ear.",
     "key": "Put a small thing into a lock, turn it, and push the door open.",
     "umbrella": "Hold a handle, push up a big canopy over your head, and walk in the rain.",
     "spoon": "Scoop something from a bowl, lift it to your mouth, and feed a baby.",
     "clock": "Circle your arms like hands around a face and swing one arm side to side like a pendulum.",
     "book": "Hold your flat hands like covers, turn pages, and move your eyes along the lines.",
-    "shoe": "Slip a foot in, bend down, tie the laces in a bow, and stomp."
+    "shoe": "Slip a foot in, bend down, tie the laces in a bow, and stomp.",
+    "broom": "Hold a long handle with both hands and sweep side to side, then gather the dust and tip it away.",
+    "binoculars": "Hold two small tubes to your eyes, twist to focus, and scan the horizon.",
+    "candle": "Light a small wick, cup a hand around the flame, and watch the wax drip down.",
+    "sewing machine": "Sit at a table, press a pedal with your foot, guide fabric under a fast needle, and snip the thread.",
+    "magnifying glass": "Hold a round lens close to one eye, bend over a tiny thing, and look amazed at how big it is.",
+    "metronome": "Stand a small triangle on a table and sway one finger side to side in steady beats.",
+    "corkscrew": "Twist a spiral into a bottle top, pull hard until it pops out, then pour.",
+    "pocket watch": "Pull a chain from your vest, flip open a small lid, glance at it, and snap it shut."
   }
 }

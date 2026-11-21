@@ -26,14 +26,20 @@
       "corn on the cob",
       "pomegranate",
       "cotton candy",
-      "lasagna"
+      "lasagna",
+      "taco"
     ],
     "3": [
       "fondue",
       "baklava",
       "artichoke",
       "oyster",
-      "stir-fry"
+      "stir-fry",
+      "kebab",
+      "fortune cookie",
+      "lobster",
+      "ramen",
+      "croissant"
     ]
   },
   "hints": {
@@ -59,7 +65,13 @@
     "ice cream": "Hold a cone and lick it quickly before it melts, shivering from the cold.",
     "egg": "Tap a shell on the edge of a pan, crack it open, and watch it sizzle.",
     "soup": "Stir a pot, blow on a hot spoonful, and sip carefully.",
-    "cake": "Blow out candles on top, then cut a slice and eat it with a fork.",
-    "banana": "Peel back the skin of a long curved fruit, take a bite, and slip on the peel."
+    "cake": "Spread frosting with a knife, cut a slice, and eat it with a fork.",
+    "banana": "Peel back the skin of a long curved fruit, take a bite, and slip on the peel.",
+    "taco": "Hold a folded shell with both hands, pile on toppings, and take a big crunchy bite as it falls apart.",
+    "kebab": "Turn a long skewer over a fire, slide the meat off, and eat it with a happy nod.",
+    "fortune cookie": "Snap a small crescent cookie in half, pull out a tiny slip of paper, and read it with a raised eyebrow.",
+    "lobster": "Make two big claws with your hands and snap them, then crack a hard red shell and dip the meat in butter.",
+    "ramen": "Lift long noodles high with chopsticks, blow on the hot bowl, slurp them up, and wipe your forehead.",
+    "croissant": "Shape a curved crescent with your hands, pull it into flaky layers, and bite it while crumbs fall."
   }
 }

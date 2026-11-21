@@ -10,12 +10,12 @@
       "Messi",
       "Michael Jackson",
       "Charlie Chaplin",
-      "Superman",
-      "Mickey Mouse",
-      "Santa Claus",
       "Elvis Presley",
       "Cristiano Ronaldo",
-      "Mr. Bean"
+      "Usain Bolt",
+      "Barack Obama",
+      "Queen Elizabeth II",
+      "Pelé"
     ],
     "2": [
       "Napoleon",
@@ -31,8 +31,7 @@
       "Freddie Mercury",
       "Picasso",
       "Beethoven",
-      "Cleopatra",
-      "Sherlock Holmes"
+      "Cleopatra"
     ],
     "3": [
       "Nikola Tesla",
@@ -44,8 +43,7 @@
       "Salvador Dalí",
       "Mother Teresa",
       "Bob Marley",
-      "Abraham Lincoln",
-      "Mona Lisa"
+      "Abraham Lincoln"
     ]
   },
   "hints": {
@@ -53,15 +51,11 @@
     "Messi": "Dribble fast with small steps, dodge people, score with a left foot, and point up at the sky.",
     "Michael Jackson": "Do a moonwalk, grab your hat, spin, and wear one sparkly glove.",
     "Charlie Chaplin": "Waddle with feet turned out, twirl a cane, tip a small bowler hat, and twitch a little mustache.",
-    "Superman": "Rip open your shirt, strike a pose with a fist forward, and fly with one arm out.",
-    "Mickey Mouse": "Make round ears with your hands, talk in a high squeaky voice, and give a big white-gloved wave.",
-    "Santa Claus": "Pat a big round belly, stroke a long beard, laugh \"ho ho ho\" silently, and carry a heavy sack.",
     "Elvis Presley": "Curl your lip, swivel your hips, strum a guitar, and slick your hair back.",
-    "Cristiano Ronaldo": "Stand with feet wide apart, jump high, score, and shout in celebration with arms spread.",
-    "Mr. Bean": "Make a silly rubber face, wiggle your eyebrows, and carry a small teddy bear.",
+    "Cristiano Ronaldo": "Stand with feet wide apart, jump high, score, then spin and land with your arms spread wide in celebration.",
     "Napoleon": "Put one hand in your jacket, stand in a proud stance, and give a loud command.",
     "Mozart": "Powder a wig, play fast piano keys, then conduct with a flourish.",
-    "Shakespeare": "Write with a feather pen, hold a skull, and recite dramatically with one hand on your chest.",
+    "Shakespeare": "Write with a feather pen, hold a skull, and strike a dramatic pose with one hand on your chest.",
     "Leonardo da Vinci": "Paint with a thin brush, sketch a flying machine, and smile faintly.",
     "Mahatma Gandhi": "Walk with a staff, wear simple robes, sit and spin thread, and stay calm.",
     "Michael Jordan": "Run, leap with your tongue out, dunk a ball, and hang in the air.",
@@ -69,21 +63,23 @@
     "Rumi": "Spin in slow circles with one palm up and one down, and stare toward the sky.",
     "Marilyn Monroe": "Hold down a billowing dress, pout, and blow a kiss with a breathy wink.",
     "Bruce Lee": "Make fast kicks and punches, rub your thumb over your nose, and let out a battle cry.",
-    "Freddie Mercury": "Pump a fist, hold a half microphone stand, strut with a big mustache, and sing to a crowd.",
+    "Freddie Mercury": "Pump a fist, hold a half microphone stand, strut with a big mustache, and pose for a roaring crowd.",
     "Picasso": "Paint a face with both eyes on the same side, then tilt your head to look at it.",
     "Beethoven": "Play wild piano, cup your ear at nothing, and scowl with wild hair.",
     "Cleopatra": "Draw heavy eyeliner, pose in profile, and have a servant fan you.",
-    "Sherlock Holmes": "Hold a magnifying glass, puff a curved pipe, squint at clues, and say \"elementary\".",
     "Nikola Tesla": "Hold a glowing ball, make sparks with your fingers, and shake as lightning hits you.",
     "Frida Kahlo": "Paint a self-portrait with a unibrow, wear flowers in your hair, and look serious.",
     "Isaac Newton": "Sit under a tree, get hit on the head by something, and look up amazed.",
     "Marie Curie": "Peer at glowing glass tubes in a lab, then hold your fingers up to see them shine.",
-    "Steve Jobs": "Walk on stage in a turtleneck, hold up a small thing, and say \"one more thing\".",
+    "Steve Jobs": "Walk on stage in a turtleneck, hold up a small thing, then raise one finger as if adding \"one more thing\".",
     "Nelson Mandela": "Raise a fist in a cell, walk free, and wave to a joyful crowd.",
     "Salvador Dalí": "Twirl a long thin mustache upward, melt a clock over your arm, and stare wildly.",
     "Mother Teresa": "Wrap a cloth over your head, hold hands with sick people, and care for them gently.",
     "Bob Marley": "Shake long dreadlocks, strum a guitar slowly, sway with a smile, and puff on something.",
     "Abraham Lincoln": "Put on a tall hat, stroke a beard with no mustache, and stand very tall.",
-    "Mona Lisa": "Sit still with folded hands, tilt your head a little, and give a tiny mysterious smile."
+    "Usain Bolt": "Crouch at a starting line, burst out running at full speed, then strike a lightning-bolt pose with one arm pointing up.",
+    "Barack Obama": "Stride up to a podium, point at a cheering crowd with a broad smile, and wave warmly.",
+    "Queen Elizabeth II": "Stand upright with a handbag on your arm, give a small gentle wave with a stiff wrist, and nod politely.",
+    "Pelé": "Leap and kick an imaginary ball backward over your head in a bicycle kick, then pump a fist with a big smile."
   }
 }

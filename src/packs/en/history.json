@@ -15,18 +15,13 @@
       "crown",
       "Viking",
       "mummy",
-      "gladiator"
+      "caveman"
     ],
     "2": [
-      "Titanic",
-      "Cleopatra",
-      "Colosseum",
-      "Great Wall",
       "printing press",
       "Stone Age",
       "Trojan horse",
       "Silk Road",
-      "Napoleon",
       "moon landing",
       "Industrial Revolution",
       "Roman emperor",
@@ -44,7 +39,6 @@
       "Ottoman Empire",
       "Cold War",
       "Gutenberg",
-      "Machu Picchu",
       "Persian Empire"
     ]
   },
@@ -58,16 +52,10 @@
     "crown": "Lift something heavy and precious with both hands, set it slowly on your head, and sit up very straight.",
     "Viking": "Put on a horned helmet, row hard with a big oar, then raise an axe and shout silently.",
     "mummy": "Wrap your arms around yourself, walk stiffly with arms forward, and unwind long strips from your body.",
-    "gladiator": "March into a huge arena, salute a crowd, then fight with a shield and short sword while the crowd roars.",
-    "Titanic": "Stand at the front with arms spread wide, then act a huge ship tilting and sinking.",
-    "Cleopatra": "Draw heavy eyeliner, pose with a stiff, elegant profile, and be carried or fanned like royalty.",
-    "Colosseum": "Draw a giant round shape around you, sit in rising rows of seats, and cheer or give a thumbs down.",
-    "Great Wall": "Show a very long wall winding over hills with your arm, then walk along it and look far into the distance.",
     "printing press": "Press down a big heavy handle, peel off a sheet, and read it, then repeat quickly over and over.",
     "Stone Age": "Hunch over like a caveman, bang two rocks to make fire, and carry a heavy club.",
     "Trojan horse": "Show a giant horse being pulled by rope, then climb out of its belly quietly and sneak around.",
     "Silk Road": "Lead a camel train across the desert, then touch and show off shiny, soft fabric to a buyer.",
-    "Napoleon": "Put one hand inside your coat, wear a big hat sideways, and stand tiny but proud, giving orders.",
     "moon landing": "Walk in slow bounces in a bulky suit, plant a flag, then look back at a faraway round Earth.",
     "Industrial Revolution": "Pull big levers like a factory machine, shovel coal, and let puffs of smoke rise from a tall chimney.",
     "Roman emperor": "Wear a wreath on your head, drape a toga, and give a thumbs up or down over a crowd.",
@@ -83,7 +71,7 @@
     "Ottoman Empire": "Wear a big turban, stroke a long mustache, and command huge armies from a big cushion.",
     "Cold War": "Shiver and rub your arms, glare at a rival across a border, and eye a big red button nervously.",
     "Gutenberg": "Pick tiny metal letters one by one, line them up in a tray, press a big handle, and show the page.",
-    "Machu Picchu": "Climb steep stone steps high in the mountains, look down over the clouds, and carry a llama.",
-    "Persian Empire": "Show a huge army of marching soldiers, then bow before a king on a tall throne with a long beard."
+    "Persian Empire": "Show a huge army of marching soldiers, then bow before a king on a tall throne with a long beard.",
+    "caveman": "Hunch over, drag a heavy club, and draw a mammoth on an imaginary cave wall."
   }
 }
