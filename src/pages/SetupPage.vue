@@ -114,18 +114,16 @@
                       <NumberStepper v-model="setup.settings.single.timerSeconds[d]" :min="10" :max="300" :step="5" />
                     </q-item-section>
                   </q-item>
-                  <q-item tag="label" :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }">
-                    <q-item-section>
-                      <q-item-label>{{ t('setup.steal') }}</q-item-label>
-                      <q-item-label v-if="!stealAllowed" caption>{{
-                        t('setup.stealTwoOnly')
-                        }}</q-item-label>
+                  <q-item>
+                    <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="setup.settings.single.fastGuessSeconds" :min="1" :max="60" />
                     </q-item-section>
-                    <q-item-section side><q-toggle :model-value="stealAllowed && setup.settings.single.steal" :disable="!stealAllowed" @update:model-value="setup.settings.single.steal = $event" /></q-item-section>
                   </q-item>
-                  <q-item v-if="stealAllowed && setup.settings.single.steal" class="no-divider tight">
-                    <q-item-section>
-                      <q-option-group v-model="stealValueMode" type="radio" color="primary" :options="stealValueOptions" />
+                  <q-item class="no-divider">
+                    <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
+                    <q-item-section side>
+                      <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
                     </q-item-section>
                   </q-item>
                   <q-item>
@@ -161,16 +159,18 @@
                       </q-item-section>
                     </q-item>
                   </template>
-                  <q-item>
-                    <q-item-section>{{ t('setup.fastSeconds') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.fastGuessSeconds" :min="1" :max="60" />
+                  <q-item tag="label" :class="{ 'pb-0': stealAllowed && setup.settings.single.steal }">
+                    <q-item-section>
+                      <q-item-label>{{ t('setup.steal') }}</q-item-label>
+                      <q-item-label v-if="!stealAllowed" caption>{{
+                        t('setup.stealTwoOnly')
+                        }}</q-item-label>
                     </q-item-section>
+                    <q-item-section side><q-toggle :model-value="stealAllowed && setup.settings.single.steal" :disable="!stealAllowed" @update:model-value="setup.settings.single.steal = $event" /></q-item-section>
                   </q-item>
-                  <q-item class="no-divider">
-                    <q-item-section>{{ t('setup.fastBonus') }}</q-item-section>
-                    <q-item-section side>
-                      <NumberStepper v-model="setup.settings.single.fastGuessBonus" :max="10" />
+                  <q-item v-if="stealAllowed && setup.settings.single.steal" class="no-divider tight">
+                    <q-item-section>
+                      <q-option-group v-model="stealValueMode" type="radio" color="primary" :options="stealValueOptions" />
                     </q-item-section>
                   </q-item>
                 </q-list>
