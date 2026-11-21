@@ -65,13 +65,13 @@ export default {
     categoriesHint: 'Pick at least {min}. Selected: {n}.',
     tiles: 'Board: {n} tiles',
     trimmed:
-      '{n} easy tile removed so every team gets equal turns | {n} easy tiles removed so every team gets equal turns',
+      '{n} easy tile removed so every team gets equal turns. | {n} easy tiles removed so every team gets equal turns.',
     modeMulti: 'Multi-word',
     modeMultiDesc:
       'Act out as many words as you can before time runs out. A player from another team holds the phone as judge.',
     modeSingle: 'Single-word',
     modeSingleDesc:
-      'One word per turn. The actor keeps the phone and judges. Hold to peek and reroll; steal needs 2 teams.',
+      'One word per turn. The actor keeps the phone and judges. They can peek at the word and change it once; steal needs 2 teams.',
     turnSeconds: 'Turn time (seconds)',
     skipLimit: 'Skips per turn',
     unlimitedSkips: 'Unlimited skips',
@@ -87,11 +87,11 @@ export default {
     stealFull: 'All of the tile points',
     stealHalfOption: 'Half of the tile points (rounded up)',
     stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
-    rerollPenalty: 'Reroll penalty',
+    rerollPenalty: 'Change word penalty',
     allowRevert: 'Allow changing back to the original word',
     hint: 'Acting hint',
     hintValue: 'Hint cost',
-    hintFixed: 'Fixed',
+    hintFixed: 'Fixed cost',
     hintHalfOption: 'Half of the tile points (rounded up)',
     fastSeconds: 'Fast guess within (seconds)',
     fastBonus: 'Fast guess bonus',
@@ -107,11 +107,11 @@ export default {
     sectionTiming: 'Timing',
     sectionSkips: 'Skips',
     sectionTimers: 'Timers',
-    sectionHelps: 'Helps and penalties',
+    sectionHelps: 'Word changes and hints',
     sectionSteal: 'Steal',
     sectionGold: 'Gold round',
     sumTurn: '{n} s turn',
-    sumSkips: '{n} skips',
+    sumSkips: '{n} skip(s)',
     sumSkipsUnlimited: 'unlimited skips',
     sumTimers: 'timers {a}/{b}/{c} s',
     sumSteal: 'steal on',
@@ -131,8 +131,8 @@ export default {
     back: 'Back to the results',
   },
   turn: {
-    passTo: 'Pass the phone to the actor on {team}',
-    passToJudge: 'Pass the phone to a judge from another team',
+    passTo: 'Pass the phone to the actor on {team}.',
+    passToJudge: 'Pass the phone to a judge from another team.',
     prepHint: 'Only the actor looks. Tap Start when ready, then hold the covered word to check guesses.',
     getReady: 'Get ready',
     roleJudge: 'Judge: a player from another team',
@@ -140,10 +140,10 @@ export default {
     tileInfo: '{category}, {points}',
     back: 'Back to the board',
     showWord: 'Show the word',
-    startTurn: 'I am the judge, start',
+    startTurn: 'Start (I am the judge)',
     correct: 'Correct',
     skip: 'Skip',
-    tallyLeft: '{n} correct, {left} skips left',
+    tallyLeft: '{n} correct, {left} skip(s) left',
     tallyUnlimited: '{n} correct, unlimited skips',
     timeUp: "Time's up!",
     finishWord: 'Finish the current word?',
@@ -173,7 +173,7 @@ export default {
     wordWas: 'The word was: {word}',
     wordsShown: 'Words shown this turn',
     hideWord: 'Hide this word from the game',
-    changeWord: 'Change',
+    changeWord: 'Hide or move',
     moveTo: 'Move to {level}',
     level1: 'Easy',
     level2: 'Medium',
@@ -257,7 +257,7 @@ export default {
     deleteInGame: 'This category is used by the game in progress. End the game from the home page first.',
     editInGame: 'A game is in progress. End the game from the home page before changing these words.',
     importInGame: 'A game is in progress. End the game from the home page before importing.',
-    incomplete: 'Needs at least one word at every difficulty to be used in a game',
+    incomplete: 'Needs at least one word at every difficulty to be used in a game.',
     incompleteHint:
       'Add at least one easy, one medium and one hard word to use this category in a game.',
     export: 'Export',
@@ -304,7 +304,7 @@ export default {
           },
           {
             t: '2. Pick a tile',
-            b: 'The team that goes first is chosen at random. Teams take turns. Choose a tile: the category sets the word pool and the difficulty sets the points.',
+            b: 'The team that goes first is chosen at random, and a screen shows the turn order. Teams take turns. Choose a tile: the category sets the word pool and the difficulty sets the points.',
           },
           {
             t: '3. Act it out',
@@ -329,11 +329,11 @@ export default {
           },
           {
             t: 'Roles',
-            b: 'In multi-word mode a player from another team is the judge: they hold the phone, see the words and tap Correct or Skip. In single-word mode the actor keeps the phone and judges their own team\'s guesses, so in a steal the other team never sees the word. Steal only works with 2 teams.',
+            b: 'In multi-word mode a player from another team is the judge: they hold the phone, see the words and tap Correct or Skip. In single-word mode the actor keeps the phone and judges their own team\'s guesses, so in a steal the other team never sees the word.',
           },
           {
             t: 'Tile points',
-            b: "Easy, medium and hard tiles are worth {p1} / {p2} / {p3} points by default. You can change each value in Game settings (a button in the Mode step). In multi-word mode every correct word earns the tile's points; in single-word mode a correct guess earns them once.",
+            b: "Easy, medium and hard tiles are worth {p1} / {p2} / {p3} points by default. You can change each value in Game settings (a button in the Teams and mode step). In multi-word mode every correct word earns the tile's points; in single-word mode a correct guess earns them once.",
           },
           {
             t: 'Multi-word mode',
@@ -349,15 +349,19 @@ export default {
           },
           {
             t: 'Acting hint',
-            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of half the tile points (rounded up) by default. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after swapping the word the tip is gone and no second hint is allowed. If the tip was taken for the word on screen, changing back to the other word is no longer offered.',
+            b: 'While the word is shown and before pressing Start, the actor may ask once for a short tip on how to act it, for a penalty of half the tile points (rounded up) by default. This can be turned off in the game settings. The timer has not started, so reading it costs no time. Only words with a written tip have the button, custom words never do. A hint belongs to its word: after changing the word the tip is gone and no second hint is allowed. If the tip was taken for the word on screen, changing back to the other word is no longer offered.',
           },
           {
-            t: 'Reroll',
-            b: 'Before pressing Start, the actor may swap the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so. After a swap, a second button changes back to the original word (and again to the new one) for free, so the penalty stays; the setting below can turn it off.',
+            t: 'Pause and leaving a turn',
+            b: 'During a turn, the pause button stops the clock and hides the word, for example if someone interrupts. The close button leaves the turn: it is not scored and the tile stays available. In the gold round the attempt does not count. Your game is saved either way.',
+          },
+          {
+            t: 'Changing the word',
+            b: 'Before pressing Start, the actor may change the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so. After a change, a second button changes back to the original word (and again to the new one) for free, so the penalty stays; the setting below can turn it off.',
           },
           {
             t: 'Gold round',
-            b: 'If enabled, after the last tile the teams that are not leading get one attempt each at a very hard word, lowest score first. Success adds the bonus ({goldBonus} points by default). Failure costs a penalty ({goldPenalty} points by default) and the next team goes. A team that prefers to keep its points can tap "Keep my points (skip)" with no penalty. There is no reroll and no steal. If teams are tied for the lead, each of them gets an attempt too. The highest score then wins.',
+            b: 'If enabled, after the last tile the teams that are not leading get one attempt each at a very hard word, lowest score first. Success adds the bonus ({goldBonus} points by default). Failure costs a penalty ({goldPenalty} points by default) and the next team goes. A team that prefers to keep its points can tap "Keep my points (skip)" with no penalty. There is no word change and no steal. If teams are tied for the lead, each of them gets an attempt too. The highest score then wins.',
           },
         ],
       },
@@ -375,6 +379,10 @@ export default {
             b: 'How long the actor has to get as many words as possible. Default: {turnSeconds}.',
           },
           {
+            t: 'Finish the current word after time ends',
+            b: 'When on, the actor may still finish the word they are acting once time is up. No new word is given.',
+          },
+          {
             t: 'Skips per turn / Unlimited skips',
             b: 'How many words the actor may skip in one turn. Default: {skipLimit}. Turn on "Unlimited skips" to remove the limit.',
           },
@@ -382,14 +390,26 @@ export default {
             t: 'Penalty per skip',
             b: 'Points the team loses for each skip. Default: {skipPenalty}. Set 0 for free skips.',
           },
-          {
-            t: 'Finish the current word after time ends',
-            b: 'When on, the actor may still finish the word they are acting once time is up. No new word is given.',
-          },
           { g: 'Single-word mode' },
           {
             t: 'Timer, easy / medium / hard (seconds)',
             b: "Time for the turn, depending on the tile's difficulty. Defaults: {t1} / {t2} / {t3}.",
+          },
+          {
+            t: 'Fast guess within (seconds) / Fast guess bonus',
+            b: 'A correct guess within this time earns extra points. Defaults: {fastSeconds} seconds and {fastBonus} extra point.',
+          },
+          {
+            t: 'Change word penalty',
+            b: 'Points lost when the actor changes the word before starting (once per turn). Default: {rerollPenalty}. Set 0 for a free change.',
+          },
+          {
+            t: 'Allow changing back',
+            b: 'Shows a button after a word change that goes back to the original word. The change penalty is not refunded. On by default.',
+          },
+          {
+            t: 'Acting hint / Hint cost',
+            b: 'Turns the acting hint on or off (default: on). The cost is the points lost when the actor asks for a hint before starting (once per turn). Default: half of the tile points, rounded up. Choose a fixed number instead if you prefer; set it to 0 for a free hint.',
           },
           {
             t: 'Steal chance for the other team',
@@ -398,22 +418,6 @@ export default {
           {
             t: 'Points for a correct steal',
             b: "Choose whether a correct steal earns all of the tile's points (default) or half of them, rounded up. Only shown while steal is on.",
-          },
-          {
-            t: 'Reroll penalty',
-            b: 'Points lost when the actor swaps the word before starting (once per turn). Default: {rerollPenalty}. Set 0 for a free swap.',
-          },
-          {
-            t: 'Allow changing back',
-            b: 'Shows a button after a word swap that goes back to the original word. The swap penalty is not refunded. On by default.',
-          },
-          {
-            t: 'Hint penalty',
-            b: 'Points lost when the actor asks for an acting hint before starting (once per turn). Default: half of the tile points, rounded up. Choose a fixed number instead if you prefer; set it to 0 for a free hint.',
-          },
-          {
-            t: 'Fast guess within (seconds) / Fast guess bonus',
-            b: 'A correct guess within this time earns extra points. Defaults: {fastSeconds} seconds and {fastBonus} extra point.',
           },
           { g: 'Gold round' },
           {
@@ -458,7 +462,7 @@ export default {
           },
           {
             t: 'Hiding and moving built-in words',
-            b: 'Built-in words cannot be edited, but on the result screen of a turn you can tap Change next to any word to hide it or move it to another difficulty. Built-in words are never listed, so nobody can study them. Only the words you hid are shown in Categories and words, where you can tap one to show it again. Hidden words never appear in games. A moved word is not listed anywhere: it shows up at its new difficulty, and when it does, Change lets you send it back to its original level.',
+            b: 'Built-in words cannot be edited, but on the result screen of a turn you can tap Hide or move next to any word to hide it or move it to another difficulty. Built-in words are never listed, so nobody can study them. Only the words you hid are shown in Categories and words, where you can tap one to show it again. Hidden words never appear in games. A moved word is not listed anywhere: it shows up at its new difficulty, and when it does, Hide or move lets you send it back to its original level.',
           },
           {
             t: 'Changing and deleting',
@@ -483,7 +487,7 @@ export default {
         items: [
           {
             t: 'Auto-save',
-            b: 'The game saves after every move. If you close the app or the phone restarts, choose Resume game on the home page.',
+            b: 'The game saves after every move. If you close the app or the phone restarts, tap Resume on the home page.',
           },
           {
             t: 'Your data stays on your device',
@@ -504,6 +508,10 @@ export default {
           },
           { t: 'iPhone and iPad (Safari)', b: 'Tap Share, then Add to Home Screen.' },
           {
+            t: 'Share the app',
+            b: 'The share button at the top of the home page sends a link to the app to your friends, or copies it.',
+          },
+          {
             t: 'Offline',
             b: 'After the first load the game works without internet, so you can play anywhere.',
           },
@@ -522,7 +530,7 @@ export default {
           },
           {
             t: 'Why can a score go below zero?',
-            b: 'Penalties for skips, rerolls and failed gold attempts can push a team under zero. That is intended.',
+            b: 'Penalties for skips, word changes and failed gold attempts can push a team under zero. That is intended.',
           },
           {
             t: 'What if the scores are tied at the end?',
@@ -536,6 +544,10 @@ export default {
           {
             t: 'Pantomime - version {version}',
             b: 'A free party game with no tracking and no accounts.',
+          },
+          {
+            t: 'Updates and reset',
+            b: 'The buttons below check for a new version, or reset the app. Resetting deletes all settings, custom words and the saved game, and cannot be undone.',
           },
         ],
       },
