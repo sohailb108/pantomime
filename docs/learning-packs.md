@@ -235,9 +235,32 @@ e2e smoke test after each. No step commits on its own.
 9. **German A1 content.**
    - Write A1 for all planned categories. Review with a German speaker if possible.
    - Check the pack tests and play a full game with A1 alone.
+   - Done (2026-11-22): a first draft in `src/packs/de/learning/a1/` (food, animals, jobs, objects, places,
+     general; 12 to 15 words per difficulty) and `learning/index.json`. The words were written from general
+     knowledge, **not** checked against any CEFR list, so they are a draft and not yet real A1. Known
+     doubtful words: Programmierer, Ingenieur, Architekt, Eichhörnchen, Krokodil, Briefträger, and others.
+   - **Still to do: make the words real A1.**
+     1. Check the licence of the Goethe-Institut "Wortliste Goethe-Zertifikat A1: Start Deutsch 1" (decision 5
+        in section 3). If copying is not allowed, use it only as a reference to look words up in, and write
+        our own entries; do not copy the list or its example sentences.
+     2. Compare every word in `a1/*.json` with the list. For each word decide: keep (it is on the list),
+        move to A2 (it is on the A2 list, to be used in step 10), or remove (on neither list, or not
+        actable).
+     3. Fill gaps: go through the list by topic and add missing words that fit our categories and can be
+        acted out. Words that do not fit any category (grammar words, numbers, greetings) are left out.
+     4. Keep the size target (10 to 20 words per difficulty per category). Difficulty (1 to 3) stays a game
+        difficulty (how hard to act), not a CEFR measure.
+     5. Have a German speaker review the result if possible.
+     6. A one-off script or a test (`tests/content/learning.test.ts`, step 7) may check the words against a
+        local copy of the list, but the list itself is not committed unless the licence allows it.
 
 10. **German A2 and B1 content**, one level at a time, each with a combined-level play test (A1+A2,
     A1+A2+B1).
+    - Done (2026-11-22): a first draft of A2 in `src/packs/de/learning/a2/` for the same six categories
+      (11 to 15 words per difficulty; no word repeats an A1 word or appears in two categories), and
+      `learning/index.json` lists them at `a1` and `a2`. Like A1 it was written from general knowledge and
+      is **not** checked against the Goethe A2 list: the same check as in step 9 applies (including words
+      that belong to A1 or B1). A combined A1+A2 play test is still to do. B1 is not started.
 
 11. **Docs and release.**
     - Update `DESIGN.md` (sections 2, 3 and 4: setup flow, pack format, storage, screens) and the

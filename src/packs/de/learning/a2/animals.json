@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "animals",
+  "lang": "de",
+  "level": "a2",
+  "version": 1,
+  "name": "Tiere",
+  "words": {
+    "1": [
+      "Kaninchen",
+      "Hamster",
+      "Meerschweinchen",
+      "Taube",
+      "Gans",
+      "Truthahn",
+      "Kalb",
+      "Lamm",
+      "Biber",
+      "Maulwurf",
+      "Ratte",
+      "Käfer",
+      "Wespe",
+      "Mücke"
+    ],
+    "2": [
+      "Nashorn",
+      "Nilpferd",
+      "Gorilla",
+      "Leopard",
+      "Gepard",
+      "Kängeguru",
+      "Eisbär",
+      "Seehund",
+      "Wal",
+      "Seepferdchen",
+      "Qualle",
+      "Krebs",
+      "Hummer",
+      "Möwe",
+      "Storch"
+    ],
+    "3": [
+      "Marienkäfer",
+      "Raupe",
+      "Libelle",
+      "Heuschrecke",
+      "Fledermaus",
+      "Dachs",
+      "Wildschwein",
+      "Rentier",
+      "Pfau",
+      "Flamingo",
+      "Adler",
+      "Specht",
+      "Tintenfisch",
+      "Seestern",
+      "Salamander"
+    ]
+  }
+}

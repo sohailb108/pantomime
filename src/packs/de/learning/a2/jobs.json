@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "id": "jobs",
+  "lang": "de",
+  "level": "a2",
+  "version": 1,
+  "name": "Berufe",
+  "words": {
+    "1": [
+      "Tierärztin",
+      "Bauarbeiter",
+      "Elektriker",
+      "Klempner",
+      "Tischler",
+      "Reporter",
+      "Bibliothekar",
+      "Apotheker",
+      "Zauberer",
+      "Clown",
+      "Schornsteinfeger"
+    ],
+    "2": [
+      "Rechtsanwalt",
+      "Wissenschaftler",
+      "Astronaut",
+      "Dirigent",
+      "Maurer",
+      "Dachdecker",
+      "Bademeister",
+      "Rettungssanitäter",
+      "Wächter",
+      "Zirkusartist",
+      "Taxifahrer",
+      "Näherin",
+      "Kapitän",
+      "Fischer"
+    ],
+    "3": [
+      "Pfleger",
+      "Hausmeister",
+      "Landwirt",
+      "Förster",
+      "Geschäftsführer",
+      "Dolmetscher",
+      "Bankkaufmann",
+      "Fliesenleger",
+      "Optiker",
+      "Pastor",
+      "Müllmann",
+      "Bergführer",
+      "Schiedsrichter",
+      "Trainer",
+      "Moderator"
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "objects",
+  "lang": "de",
+  "level": "a1",
+  "version": 1,
+  "name": "Gegenstände",
+  "words": {
+    "1": [
+      "Tisch",
+      "Stuhl",
+      "Bett",
+      "Buch",
+      "Stift",
+      "Tasche",
+      "Uhr",
+      "Handy",
+      "Lampe",
+      "Tür",
+      "Fenster",
+      "Schlüssel"
+    ],
+    "2": [
+      "Schuhe",
+      "Brille",
+      "Hut",
+      "Jacke",
+      "Hose",
+      "Regenschirm",
+      "Fernseher",
+      "Computer",
+      "Kamera",
+      "Radio",
+      "Ball",
+      "Auto",
+      "Fahrrad",
+      "Schere"
+    ],
+    "3": [
+      "Spiegel",
+      "Koffer",
+      "Kerze",
+      "Seife",
+      "Zahnbürste",
+      "Handtuch",
+      "Kissen",
+      "Decke",
+      "Besen",
+      "Hammer",
+      "Schrank",
+      "Sofa",
+      "Teppich",
+      "Wecker",
+      "Geldbeutel"
+    ]
+  }
+}

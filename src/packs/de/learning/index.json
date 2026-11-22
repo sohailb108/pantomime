@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "lang": "de",
+  "categories": [
+    {
+      "id": "food",
+      "name": "Essen und Trinken",
+      "levels": [
+        "a1",
+        "a2"
+      ]
+    },
+    {
+      "id": "animals",
+      "name": "Tiere",
+      "levels": [
+        "a1",
+        "a2"
+      ]
+    },
+    {
+      "id": "jobs",
+      "name": "Berufe",
+      "levels": [
+        "a1",
+        "a2"
+      ]
+    },
+    {
+      "id": "objects",
+      "name": "Gegenstände",
+      "levels": [
+        "a1",
+        "a2"
+      ]
+    },
+    {
+      "id": "places",
+      "name": "Orte",
+      "levels": [
+        "a1",
+        "a2"
+      ]
+    },
+    {
+      "id": "general",
+      "name": "Allgemeines",
+      "levels": [
+        "a1",
+        "a2"
+      ]
+    }
+  ]
+}

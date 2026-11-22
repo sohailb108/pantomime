@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "animals",
+  "lang": "de",
+  "level": "a1",
+  "version": 1,
+  "name": "Tiere",
+  "words": {
+    "1": [
+      "Hund",
+      "Katze",
+      "Vogel",
+      "Fisch",
+      "Pferd",
+      "Kuh",
+      "Schwein",
+      "Schaf",
+      "Maus",
+      "Hase",
+      "Ente",
+      "Huhn"
+    ],
+    "2": [
+      "Elefant",
+      "Löwe",
+      "Affe",
+      "Bär",
+      "Tiger",
+      "Giraffe",
+      "Frosch",
+      "Schlange",
+      "Schmetterling",
+      "Biene",
+      "Fliege",
+      "Spinne",
+      "Wolf",
+      "Esel"
+    ],
+    "3": [
+      "Zebra",
+      "Krokodil",
+      "Schildkröte",
+      "Papagei",
+      "Kamel",
+      "Delfin",
+      "Hai",
+      "Eule",
+      "Igel",
+      "Fuchs",
+      "Ziege",
+      "Hirsch",
+      "Eichhörnchen",
+      "Pinguin",
+      "Ameise"
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "general",
+  "lang": "de",
+  "level": "a1",
+  "version": 1,
+  "name": "Allgemeines",
+  "words": {
+    "1": [
+      "schlafen",
+      "essen",
+      "trinken",
+      "laufen",
+      "springen",
+      "lachen",
+      "weinen",
+      "tanzen",
+      "singen",
+      "lesen",
+      "schreiben",
+      "schwimmen"
+    ],
+    "2": [
+      "kochen",
+      "fahren",
+      "fliegen",
+      "telefonieren",
+      "duschen",
+      "warten",
+      "zeigen",
+      "suchen",
+      "waschen",
+      "putzen",
+      "spielen",
+      "arbeiten",
+      "kaufen",
+      "fragen"
+    ],
+    "3": [
+      "helfen",
+      "tragen",
+      "öffnen",
+      "schließen",
+      "klatschen",
+      "winken",
+      "zählen",
+      "malen",
+      "bezahlen",
+      "anrufen",
+      "aufstehen",
+      "anziehen",
+      "einkaufen",
+      "besuchen",
+      "umarmen"
+    ]
+  }
+}

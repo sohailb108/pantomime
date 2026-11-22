@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "places",
+  "lang": "de",
+  "level": "a1",
+  "version": 1,
+  "name": "Orte",
+  "words": {
+    "1": [
+      "Haus",
+      "Schule",
+      "Park",
+      "Bad",
+      "Küche",
+      "Garten",
+      "Straße",
+      "Strand",
+      "Kino",
+      "Bahnhof",
+      "Markt",
+      "Zimmer"
+    ],
+    "2": [
+      "Supermarkt",
+      "Restaurant",
+      "Café",
+      "Bank",
+      "Apotheke",
+      "Krankenhaus",
+      "Flughafen",
+      "Hotel",
+      "Kirche",
+      "Bibliothek",
+      "Spielplatz",
+      "Schwimmbad",
+      "Bäckerei",
+      "Stadt"
+    ],
+    "3": [
+      "Post",
+      "Museum",
+      "Theater",
+      "Fabrik",
+      "Brücke",
+      "Berg",
+      "See",
+      "Wald",
+      "Dorf",
+      "Balkon",
+      "Keller",
+      "Treppe",
+      "Büro",
+      "Haltestelle",
+      "Parkplatz"
+    ]
+  }
+}

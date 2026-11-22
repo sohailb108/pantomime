@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "id": "food",
+  "lang": "de",
+  "level": "a2",
+  "version": 1,
+  "name": "Essen und Trinken",
+  "words": {
+    "1": [
+      "Joghurt",
+      "Müsli",
+      "Keks",
+      "Bonbon",
+      "Limonade",
+      "Gurke",
+      "Karotte",
+      "Zwiebel",
+      "Paprika",
+      "Erdbeere",
+      "Kirsche",
+      "Zitrone"
+    ],
+    "2": [
+      "Pfannkuchen",
+      "Semmel",
+      "Torte",
+      "Sahne",
+      "Spaghetti",
+      "Pommes",
+      "Hähnchen",
+      "Schinken",
+      "Braten",
+      "Eintopf",
+      "Pilz",
+      "Traube",
+      "Birne",
+      "Pfirsich",
+      "Knoblauch"
+    ],
+    "3": [
+      "Frikadelle",
+      "Sauerkraut",
+      "Brezel",
+      "Maultasche",
+      "Pudding",
+      "Mehl",
+      "Gewürz",
+      "Essig",
+      "Senf",
+      "Ketchup",
+      "Mayonnaise",
+      "Spiegelei",
+      "Rührei",
+      "Aufschnitt",
+      "Nachtisch"
+    ]
+  }
+}

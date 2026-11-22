@@ -66,6 +66,7 @@ describe('built-in packs', () => {
 
       it('has a file for every category and no unlisted files', () => {
         const files = readdirSync(join(root, lang))
+          .filter((f) => f.endsWith('.json'))
           .map((f) => f.replace(/\.json$/, ''))
           .filter((f) => f !== 'index' && f !== 'gold')
           .sort();

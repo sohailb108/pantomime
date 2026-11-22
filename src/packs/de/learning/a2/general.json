@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "general",
+  "lang": "de",
+  "level": "a2",
+  "version": 1,
+  "name": "Allgemeines",
+  "words": {
+    "1": [
+      "klettern",
+      "werfen",
+      "fangen",
+      "schieben",
+      "ziehen",
+      "biegen",
+      "stolpern",
+      "gähnen",
+      "niesen",
+      "husten",
+      "flüstern",
+      "schreien",
+      "pfeifen",
+      "zeichnen"
+    ],
+    "2": [
+      "bügeln",
+      "kehren",
+      "backen",
+      "schneiden",
+      "schälen",
+      "rühren",
+      "gießen",
+      "pflanzen",
+      "reparieren",
+      "packen",
+      "verstecken",
+      "streicheln",
+      "küssen",
+      "träumen",
+      "schnarchen"
+    ],
+    "3": [
+      "rasieren",
+      "kämmen",
+      "bürsten",
+      "stricken",
+      "nähen",
+      "basteln",
+      "angeln",
+      "segeln",
+      "reiten",
+      "rodeln",
+      "tauchen",
+      "zittern",
+      "schwitzen",
+      "verbeugen",
+      "Rad fahren"
+    ]
+  }
+}

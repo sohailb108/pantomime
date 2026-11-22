@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "id": "places",
+  "lang": "de",
+  "level": "a2",
+  "version": 1,
+  "name": "Orte",
+  "words": {
+    "1": [
+      "Spielzimmer",
+      "Wohnzimmer",
+      "Schlafzimmer",
+      "Badezimmer",
+      "Flur",
+      "Dach",
+      "Garage",
+      "Hof",
+      "Zoo",
+      "Zirkus",
+      "Eisdiele",
+      "Tankstelle",
+      "Friseursalon",
+      "Kreuzung"
+    ],
+    "2": [
+      "Rathaus",
+      "Polizeiwache",
+      "Feuerwehr",
+      "Schloss",
+      "Burg",
+      "Turm",
+      "Insel",
+      "Wiese",
+      "Wüste",
+      "Höhle",
+      "Fluss",
+      "Hafen",
+      "Campingplatz",
+      "Jugendherberge",
+      "Sportplatz"
+    ],
+    "3": [
+      "Fußgängerzone",
+      "Autobahn",
+      "Tunnel",
+      "Baustelle",
+      "Friedhof",
+      "Kaufhaus",
+      "Reisebüro",
+      "Waschsalon",
+      "Metzgerei",
+      "Gärtnerei",
+      "Skipiste",
+      "Freibad",
+      "Rummelplatz",
+      "Leuchtturm",
+      "Bauernhof"
+    ]
+  }
+}

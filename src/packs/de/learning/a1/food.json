@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "food",
+  "lang": "de",
+  "level": "a1",
+  "version": 1,
+  "name": "Essen und Trinken",
+  "words": {
+    "1": [
+      "Brot",
+      "Apfel",
+      "Banane",
+      "Ei",
+      "Käse",
+      "Milch",
+      "Wasser",
+      "Kuchen",
+      "Eis",
+      "Pizza",
+      "Suppe",
+      "Kaffee"
+    ],
+    "2": [
+      "Tee",
+      "Saft",
+      "Bier",
+      "Wein",
+      "Reis",
+      "Nudeln",
+      "Kartoffel",
+      "Tomate",
+      "Salat",
+      "Wurst",
+      "Schokolade",
+      "Orange",
+      "Zucker",
+      "Butter"
+    ],
+    "3": [
+      "Gabel",
+      "Messer",
+      "Löffel",
+      "Teller",
+      "Tasse",
+      "Glas",
+      "Flasche",
+      "Frühstück",
+      "Mittagessen",
+      "Abendessen",
+      "Gemüse",
+      "Fleisch",
+      "Brötchen",
+      "Honig",
+      "Marmelade"
+    ]
+  }
+}
