@@ -7,7 +7,8 @@
       "name": "Essen und Trinken",
       "levels": [
         "a1",
-        "a2"
+        "a2",
+        "b1"
       ]
     },
     {
@@ -15,7 +16,8 @@
       "name": "Tiere",
       "levels": [
         "a1",
-        "a2"
+        "a2",
+        "b1"
       ]
     },
     {
@@ -23,7 +25,8 @@
       "name": "Berufe",
       "levels": [
         "a1",
-        "a2"
+        "a2",
+        "b1"
       ]
     },
     {
@@ -31,7 +34,8 @@
       "name": "Gegenstände",
       "levels": [
         "a1",
-        "a2"
+        "a2",
+        "b1"
       ]
     },
     {
@@ -39,7 +43,8 @@
       "name": "Orte",
       "levels": [
         "a1",
-        "a2"
+        "a2",
+        "b1"
       ]
     },
     {
@@ -47,7 +52,8 @@
       "name": "Allgemeines",
       "levels": [
         "a1",
-        "a2"
+        "a2",
+        "b1"
       ]
     }
   ]

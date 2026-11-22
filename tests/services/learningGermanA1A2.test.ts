@@ -7,7 +7,9 @@ import { builtinWords, hintFor } from '@/services/words';
 // Uses the real German packs: what a player gets when A1 and A2 are both selected.
 const a1: Content = { lang: 'de', kind: 'learning', levels: ['a1'] };
 const a2: Content = { lang: 'de', kind: 'learning', levels: ['a2'] };
+const b1: Content = { lang: 'de', kind: 'learning', levels: ['b1'] };
 const both: Content = { lang: 'de', kind: 'learning', levels: ['a1', 'a2'] };
+const all: Content = { lang: 'de', kind: 'learning', levels: ['a1', 'a2', 'b1'] };
 const difficulties: Difficulty[] = [1, 2, 3];
 
 describe('German A1 + A2 together', () => {
@@ -56,5 +58,42 @@ describe('German A1 + A2 together', () => {
   it('hints with a word from each level', () => {
     expect(hintFor(both, 'food', 'das Brot', 'en')).toBe('bread');
     expect(hintFor(both, 'food', 'der Joghurt', 'en')).toBe('yoghurt');
+  });
+});
+
+describe('German A1 + A2 + B1 together', () => {
+  beforeEach(() => setActivePinia(createPinia()));
+  const ids = ['animals', 'food', 'general', 'jobs', 'objects', 'places'];
+
+  it('offers all six categories, each playable at every difficulty', () => {
+    expect(listCategories(all).map((c) => c.id).sort()).toEqual(ids);
+    for (const id of ids) {
+      for (const d of difficulties) expect(builtinWords(b1, id, d).length).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('merges the three levels in order, without repeats', () => {
+    for (const id of ids) {
+      for (const d of difficulties) {
+        const merged = builtinWords(all, id, d);
+        expect(new Set(merged).size).toBe(merged.length);
+        expect(merged).toEqual([
+          ...builtinWords(a1, id, d),
+          ...builtinWords(a2, id, d),
+          ...builtinWords(b1, id, d),
+        ]);
+      }
+    }
+  });
+
+  it('translates every word into English and Persian', () => {
+    for (const id of ids) {
+      for (const d of difficulties) {
+        for (const word of builtinWords(all, id, d)) {
+          expect(hintFor(all, id, word, 'en'), `${id}: ${word} (en)`).toBeTruthy();
+          expect(hintFor(all, id, word, 'fa'), `${id}: ${word} (fa)`).toBeTruthy();
+        }
+      }
+    }
   });
 });

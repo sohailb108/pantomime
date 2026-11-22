@@ -471,6 +471,11 @@ function start() {
   opacity: 0.4;
 }
 
+// Latin letters (A1, B1) in the Persian font sit high; nudge them down to the middle of the pill.
+[dir='rtl'] .level-chips :deep(.q-chip__content) {
+  padding-top: 4px;
+}
+
 .setup-page {
   display: flex;
   flex-direction: column;

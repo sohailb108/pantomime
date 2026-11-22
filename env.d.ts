@@ -12,5 +12,6 @@
  *   readonly MY_OTHER_VAR: string;
  * }
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- Vite augments this interface; no variables yet.
 interface ImportMetaEnv {}
 declare const __APP_VERSION__: string;
