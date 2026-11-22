@@ -38,6 +38,13 @@
             <q-item-section>{{ t('home.help') }}</q-item-section>
             <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
           </q-item>
+          <q-item clickable to="/about">
+            <q-item-section avatar>
+              <div class="item-icon"><q-icon name="info" color="white" size="20px" /></div>
+            </q-item-section>
+            <q-item-section>{{ t('home.about') }}</q-item-section>
+            <q-item-section side><q-icon name="chevron_right" class="flip-rtl" /></q-item-section>
+          </q-item>
         </q-list>
       </q-card>
 

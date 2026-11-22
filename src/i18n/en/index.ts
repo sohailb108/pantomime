@@ -10,6 +10,7 @@ export default {
     endConfirm: 'End game',
     packs: 'Categories and words',
     help: 'Help',
+    about: 'About',
     settings: 'Settings',
     install: 'Install the app',
     iosInstall: 'In Safari, tap the Share button, then choose Add to Home Screen.',
@@ -538,20 +539,17 @@ export default {
           },
         ],
       },
-      about: {
-        title: 'About',
-        items: [
-          {
-            t: 'Pantomime - version {version}',
-            b: 'A free party game with no tracking and no accounts.',
-          },
-          {
-            t: 'Updates and reset',
-            b: 'The buttons below check for a new version, or reset the app. Resetting deletes all settings, custom words and the saved game, and cannot be undone.',
-          },
-        ],
-      },
     },
+  },
+  about: {
+    title: 'About',
+    version: 'Version {version}',
+    description: 'A free party game with no tracking and no accounts.',
+    author: 'Made by Sohail',
+    contactTitle: 'Feedback and contact',
+    contactBody: 'Found a wrong word or a bug, or have an idea? Write to',
+    updatesTitle: 'Updates and reset',
+    updatesBody: 'The buttons below check for a new version, or reset the app. Resetting deletes all settings, custom words and the saved game, and cannot be undone.',
   },
   notFound: {
     title: 'Nothing here',
