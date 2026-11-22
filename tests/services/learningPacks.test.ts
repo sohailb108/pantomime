@@ -26,8 +26,8 @@ describe('learning packs loader', () => {
   });
 
   it('finds a hint at the first level that has one', () => {
-    expect(lp.learningHint('de', ['a1', 'a2'], 'food', 'suppe')).toBe('Löffel');
-    expect(lp.learningHint('de', ['a1'], 'food', 'Käse')).toBeNull();
-    expect(lp.learningHint('de', ['a1', 'a2'], 'food', 'Käse')).toBe('Schneiden');
+    expect(lp.learningHint('de', ['a1', 'a2'], 'food', 'brot', 'en')).toBe('bread');
+    expect(lp.learningHint('de', ['a1'], 'food', 'Käse', 'en')).toBeNull();
+    expect(lp.learningHint('de', ['a1', 'a2'], 'food', 'Käse', 'en')).toBe('cheese');
   });
 });

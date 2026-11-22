@@ -129,7 +129,8 @@ export const useSetupStore = defineStore('setup', () => {
   const tileCount = computed(() => categoryIds.value.length * DIFFICULTIES.length - trimmedCount.value);
 
   function setWordLanguage(code: string) {
-    if (getWordLanguage(code)) wordLanguage.value = code;
+    // The interface language is the default, so picking it goes back to following the interface.
+    if (getWordLanguage(code)) wordLanguage.value = code === settingsStore.language ? null : code;
   }
   function setPackKind(kind: PackKind) {
     packKind.value = kind;

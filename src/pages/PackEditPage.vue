@@ -121,6 +121,7 @@ const inActiveGame = computed(
   () =>
     game.state !== null &&
     game.state.status !== 'finished' &&
+    game.content.kind === 'normal' &&
     game.lang === lang.value &&
     game.state.tiles.some((tile) => tile.categoryId === id.value),
 );

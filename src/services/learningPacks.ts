@@ -102,8 +102,8 @@ export function createLearningPacks(
   }
 
   /**
-   * The hint of a word, from the first level that has one: its translation into `appLang`, else its
-   * acting tip, else null.
+   * The hint of a word, from the first level that has one: its translation into `appLang`, else null.
+   * Acting tips (`hints`) are not used here, because the hint button is labelled "Translation".
    */
   function learningHint(
     lang: string,
@@ -116,8 +116,6 @@ export function createLearningPacks(
       const pack = packs.get(`${lang}/${level}/${categoryId}`);
       const gloss = appLang ? entryFor(pack?.glosses?.[appLang], word) : undefined;
       if (gloss) return gloss;
-      const tip = entryFor(pack?.hints, word);
-      if (tip) return tip;
     }
     return null;
   }

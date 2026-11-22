@@ -180,8 +180,8 @@ a translation helps more than an acting description.
   "How to act it".
 - **Rules stay the same:** one hint per turn, the same cost setting (half the tile points or a fixed
   number, 0 for free), only in single-word mode. The existing "Acting hint" setting turns it on or off.
-- **Lookup order** (`learningHint`): the translation in the app language, else the word's acting tip
-  (`hints`) if the file has one, else no hint. A word with no hint has no hint button, as before. Levels
+- **Lookup order** (`learningHint`): the translation in the app language, else no hint
+  (acting tips in `hints` are not used for Learning, because the button says "Translation"). A word with no hint has no hint button, as before. Levels
   are searched in CEFR order, so a word found at A1 uses the A1 entry.
 - **Normal packs** keep their acting hints unchanged.
 - **Content status (2026-11-22):** `en` and `fa` glosses exist only for **German A1 Animals**, so there is
@@ -257,7 +257,7 @@ e2e smoke test after each. No step commits on its own.
      Turn page passes the interface language and titles the card "Translation" (section 4.6).
    - i18n: `turn.translationTitle` in en and fa, and the Help text for Learning words.
    - Tests: translations by language, several meanings, level search, no hint without a translation,
-     fallback to the acting tip.
+     fallback to the acting tip (dropped later, see the lookup order above).
    - To do: translations for the other categories and levels, after step 9 verifies the word lists.
 
 7. **Content tests.** (Done 2026-11-22.)

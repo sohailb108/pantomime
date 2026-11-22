@@ -47,8 +47,7 @@ describe('learning content', () => {
     expect(categoryWordCount(learn('a1', 'a2'), 'food')).toBe(7);
   });
 
-  it('finds hints and native difficulty over the levels', () => {
-    expect(hintFor(learn('a1'), 'food', 'Suppe')).toBe('Löffel');
+  it('finds native difficulty over the levels', () => {
     expect(nativeLevel(learn('a1', 'a2'), 'food', 'Nudel')).toBe(2);
     expect(nativeLevel(learn('a1'), 'food', 'Nudel')).toBeNull();
   });
@@ -71,9 +70,10 @@ describe('learning content', () => {
     expect(hintFor(learn('a1', 'a2'), 'food', 'Nudel', 'en')).toBeNull();
   });
 
-  it('falls back to the acting tip when there is no translation', () => {
-    expect(hintFor(learn('a1'), 'food', 'Suppe', 'en')).toBe('Löffel');
-    expect(hintFor(learn('a1', 'a2'), 'food', 'Käse', 'fa')).toBe('Schneiden');
+  it('does not fall back to the acting tip when there is no translation', () => {
+    expect(hintFor(learn('a1'), 'food', 'Suppe', 'en')).toBeNull();
+    expect(hintFor(learn('a1', 'a2'), 'food', 'Käse', 'fa')).toBeNull();
+    expect(hintFor(learn('a1'), 'food', 'Suppe')).toBeNull();
   });
 
   it('has no gold pool', () => {

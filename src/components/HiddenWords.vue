@@ -4,7 +4,7 @@
       {{ t('packs.hiddenWords', { n: fmt(words.length) }) }}
     </div>
     <div class="chips">
-      <q-chip v-for="w in words" :key="w" clickable class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: w })" @click="pending = w">
+      <q-chip v-for="w in words" :key="w" clickable class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: isolate(w) })" @click="pending = w">
         <span dir="auto" class="word">{{ w }}</span>
         <q-icon name="visibility" size="18px" class="eye" />
       </q-chip>

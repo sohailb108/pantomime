@@ -445,7 +445,8 @@ onMounted(() => {
 
 // Selected categories must exist in the current word language's pack.
 watch(categories, (list) => setup.pruneCategories(list.map((c) => c.id)));
-// A new word language, pack type or level set starts as the last game with it had it (all selected the first time).
+// The selection is shared by all word languages, pack types and level sets: a category id that exists in
+// more than one (for example "food") keeps its state across them, and new ids start selected.
 watch(
   () => [setup.contentLang, setup.content.kind, setup.content.levels.join()],
   () => setup.syncCategories(categories.value.map((c) => c.id)),

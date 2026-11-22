@@ -31,7 +31,7 @@ export async function applyLanguage(code: string): Promise<void> {
   root.dir = lang.dir;
   root.style.setProperty('--app-font', lang.font.family);
 
-  await loadFont(code);
+  await loadFont(lang.code);
 
   const pack = (await lang.quasarLang()).default;
   // A newer call started while this one was loading: let it have the last word.

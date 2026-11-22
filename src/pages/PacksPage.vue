@@ -188,8 +188,13 @@ function doExport() {
 }
 
 function openImport() {
-  // Importing can merge or remove categories that a running game still uses.
-  if (game.state !== null && game.state.status !== 'finished' && game.lang === lang.value) {
+  // Importing can merge or remove categories that a running game still uses (Learning games use no custom data).
+  if (
+    game.state !== null &&
+    game.state.status !== 'finished' &&
+    game.content.kind === 'normal' &&
+    game.lang === lang.value
+  ) {
     $q.notify({ message: t('packs.importInGame'), icon: 'info', timeout: 4000 });
     return;
   }
