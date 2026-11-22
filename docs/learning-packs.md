@@ -327,7 +327,8 @@ e2e smoke test after each. No step commits on its own.
         Pastor, Moderator
       - objects: Harke, Schubkarre, Wäscheklammer, Zange
       - places: Spielzimmer, Waschsalon, Skipiste, Gärtnerei, Leuchtturm
-    - A2 has no translations yet and still needs a German speaker's review.
+    - Done (2026-11-22): A2 translations (English and Persian) for all six categories, written from general
+      knowledge. A2 still needs a German speaker's review.
 
 11. **Docs and release.**
     - Update `DESIGN.md` (sections 2, 3 and 4: setup flow, pack format, storage, screens) and the

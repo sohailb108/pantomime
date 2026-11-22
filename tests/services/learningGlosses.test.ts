@@ -5,7 +5,7 @@ import type { Content } from '@/game/types';
 
 const a1: Content = { lang: 'de', kind: 'learning', levels: ['a1'] };
 
-// Uses the real German A1 packs. A2 has no translations yet.
+// Uses the real German A1 and A2 packs.
 beforeEach(() => setActivePinia(createPinia()));
 
 it('translates German A1 animals into English and Persian', () => {
@@ -20,7 +20,8 @@ it('translates other German A1 categories', () => {
   expect(hintFor(a1, 'jobs', 'der Arzt', 'fa')).toBe('پزشک');
 });
 
-it('has no hint for a level without translations yet', () => {
+it('translates German A2 words and has no hint for an unknown word', () => {
   const a2: Content = { lang: 'de', kind: 'learning', levels: ['a2'] };
-  expect(hintFor(a2, 'food', 'Joghurt', 'en')).toBeNull();
+  expect(hintFor(a2, 'food', 'der Joghurt', 'en')).toBe('yoghurt');
+  expect(hintFor(a2, 'food', 'Unbekannt', 'en')).toBeNull();
 });
