@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "jobs",
+  "lang": "de",
+  "version": 1,
+  "name": "Berufe",
+  "words": {
+    "1": [
+      "Lehrer",
+      "Arzt",
+      "Koch",
+      "Fahrer",
+      "Bäcker",
+      "Polizist",
+      "Feuerwehrmann",
+      "Friseur",
+      "Gärtner",
+      "Maler"
+    ],
+    "2": [
+      "Pilot",
+      "Tierarzt",
+      "Zahnarzt",
+      "Mechaniker",
+      "Fotograf",
+      "Schornsteinfeger",
+      "Kellner",
+      "Astronaut",
+      "Bauarbeiter",
+      "Briefträger"
+    ],
+    "3": [
+      "Archäologe",
+      "Dolmetscher",
+      "Puppenspieler",
+      "Imker",
+      "Dirigent",
+      "Goldschmied",
+      "Taucher",
+      "Zauberer",
+      "Zirkusdirektor",
+      "Leuchtturmwärter"
+    ]
+  }
+}

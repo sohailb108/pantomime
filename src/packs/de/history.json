@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "history",
+  "lang": "de",
+  "version": 1,
+  "name": "Geschichte",
+  "words": {
+    "1": [
+      "Pyramide",
+      "Burg",
+      "Ritter",
+      "König",
+      "Schwert",
+      "Krone",
+      "Mumie",
+      "Römer",
+      "Wikinger",
+      "Pirat"
+    ],
+    "2": [
+      "Mauerfall",
+      "Dinosaurier",
+      "Steinzeit",
+      "Gladiator",
+      "Kolosseum",
+      "Kreuzritter",
+      "Hexenverbrennung",
+      "Buchdruck",
+      "Kutsche",
+      "Mittelalter"
+    ],
+    "3": [
+      "Renaissance",
+      "Reformation",
+      "Französische Revolution",
+      "Industrielle Revolution",
+      "Berliner Mauer",
+      "Kalter Krieg",
+      "Römisches Reich",
+      "Entdeckung Amerikas",
+      "Dreißigjähriger Krieg",
+      "Weimarer Republik"
+    ]
+  }
+}

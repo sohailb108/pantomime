@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "proverbs",
+  "lang": "de",
+  "version": 1,
+  "name": "Sprichwörter",
+  "words": {
+    "1": [
+      "Besser spät als nie",
+      "Übung macht den Meister",
+      "Zwei Köpfe sind besser als einer",
+      "Der Apfel fällt nicht weit vom Stamm",
+      "Aller Anfang ist schwer",
+      "Ende gut, alles gut",
+      "Lügen haben kurze Beine",
+      "Morgenstund hat Gold im Mund",
+      "Wer rastet, der rostet",
+      "Ohne Fleiß kein Preis"
+    ],
+    "2": [
+      "Man soll den Tag nicht vor dem Abend loben",
+      "Wer andern eine Grube gräbt, fällt selbst hinein",
+      "Hunde, die bellen, beißen nicht",
+      "Eine Hand wäscht die andere",
+      "Kleinvieh macht auch Mist",
+      "Der Klügere gibt nach",
+      "Wo gehobelt wird, fallen Späne",
+      "Was ich nicht weiß, macht mich nicht heiß",
+      "Liebe geht durch den Magen",
+      "Gelegenheit macht Diebe",
+      "Aus Fehlern wird man klug",
+      "Reden ist Silber, Schweigen ist Gold",
+      "Ein Unglück kommt selten allein"
+    ],
+    "3": [
+      "Schlafende Hunde soll man nicht wecken",
+      "Man soll nicht auf zwei Hochzeiten tanzen",
+      "Wer den Pfennig nicht ehrt, ist des Talers nicht wert",
+      "Den Letzten beißen die Hunde",
+      "Es ist nicht alles Gold, was glänzt",
+      "Der Mensch denkt, Gott lenkt",
+      "Steter Tropfen höhlt den Stein",
+      "Die Katze lässt das Mausen nicht",
+      "Wer im Glashaus sitzt, sollte nicht mit Steinen werfen",
+      "Man soll das Fell des Bären nicht verteilen, bevor man ihn erlegt hat",
+      "Den Wald vor lauter Bäumen nicht sehen",
+      "Mit Speck fängt man Mäuse",
+      "Das Auge des Herrn macht die Kühe fett"
+    ]
+  }
+}

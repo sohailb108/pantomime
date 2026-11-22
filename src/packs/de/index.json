@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "lang": "de",
+  "categories": [
+    {
+      "id": "abstract",
+      "name": "Abstraktes"
+    },
+    {
+      "id": "animals",
+      "name": "Tiere"
+    },
+    {
+      "id": "books",
+      "name": "Bücher"
+    },
+    {
+      "id": "cartoons",
+      "name": "Zeichentrick"
+    },
+    {
+      "id": "celebrities",
+      "name": "Prominente"
+    },
+    {
+      "id": "food",
+      "name": "Essen und Trinken"
+    },
+    {
+      "id": "general",
+      "name": "Allgemeines"
+    },
+    {
+      "id": "history",
+      "name": "Geschichte"
+    },
+    {
+      "id": "jobs",
+      "name": "Berufe"
+    },
+    {
+      "id": "movies",
+      "name": "Filme und Serien"
+    },
+    {
+      "id": "objects",
+      "name": "Gegenstände"
+    },
+    {
+      "id": "places",
+      "name": "Orte"
+    },
+    {
+      "id": "proverbs",
+      "name": "Sprichwörter"
+    },
+    {
+      "id": "technology",
+      "name": "Technik"
+    }
+  ]
+}

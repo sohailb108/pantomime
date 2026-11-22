@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "abstract",
+  "lang": "de",
+  "version": 1,
+  "name": "Abstraktes",
+  "words": {
+    "1": [
+      "Liebe",
+      "Schlaf",
+      "Glück",
+      "Angst",
+      "Zeit",
+      "Traum",
+      "Freundschaft",
+      "Wut",
+      "Stille",
+      "Hunger"
+    ],
+    "2": [
+      "Heimweh",
+      "Eifersucht",
+      "Langeweile",
+      "Geduld",
+      "Überraschung",
+      "Stolz",
+      "Zufall",
+      "Neugier",
+      "Mut",
+      "Ehrlichkeit",
+      "Einsamkeit",
+      "Streit",
+      "Schwerkraft",
+      "Erinnerung",
+      "Freiheit",
+      "Frieden"
+    ],
+    "3": [
+      "Nostalgie",
+      "Gerechtigkeit",
+      "Unendlichkeit",
+      "Ironie",
+      "Gewissen",
+      "Vergänglichkeit",
+      "Zwiespalt",
+      "Fernweh",
+      "Schadenfreude",
+      "Zeitgeist"
+    ]
+  }
+}

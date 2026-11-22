@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "objects",
+  "lang": "de",
+  "version": 1,
+  "name": "Gegenstände",
+  "words": {
+    "1": [
+      "Stuhl",
+      "Schlüssel",
+      "Regenschirm",
+      "Löffel",
+      "Tisch",
+      "Brille",
+      "Uhr",
+      "Schere",
+      "Telefon",
+      "Bett"
+    ],
+    "2": [
+      "Sanduhr",
+      "Taschenlampe",
+      "Kompass",
+      "Staubsauger",
+      "Fernglas",
+      "Bügeleisen",
+      "Wecker",
+      "Toaster",
+      "Zahnbürste",
+      "Hängematte"
+    ],
+    "3": [
+      "Schreibmaschine",
+      "Metronom",
+      "Kaleidoskop",
+      "Lupe",
+      "Fallschirm",
+      "Mikroskop",
+      "Korkenzieher",
+      "Sextant",
+      "Grammophon",
+      "Lavalampe"
+    ]
+  }
+}

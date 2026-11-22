@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "food",
+  "lang": "de",
+  "version": 1,
+  "name": "Essen und Trinken",
+  "words": {
+    "1": [
+      "Pizza",
+      "Brot",
+      "Apfel",
+      "Eis",
+      "Ei",
+      "Suppe",
+      "Kuchen",
+      "Banane",
+      "Hamburger",
+      "Popcorn"
+    ],
+    "2": [
+      "Spaghetti",
+      "Wassermelone",
+      "Brezel",
+      "Pfannkuchen",
+      "Sushi",
+      "Maiskolben",
+      "Zuckerwatte",
+      "Döner",
+      "Croissant",
+      "Hummer"
+    ],
+    "3": [
+      "Fondue",
+      "Baklava",
+      "Artischocke",
+      "Sauerkraut",
+      "Currywurst",
+      "Schwarzwälder Kirschtorte",
+      "Spätzle",
+      "Weißwurst",
+      "Leberkäse",
+      "Knödel"
+    ]
+  }
+}

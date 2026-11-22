@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "animals",
+  "lang": "de",
+  "version": 1,
+  "name": "Tiere",
+  "words": {
+    "1": [
+      "Katze",
+      "Hund",
+      "Fisch",
+      "Vogel",
+      "Kuh",
+      "Schwein",
+      "Pferd",
+      "Frosch",
+      "Affe",
+      "Hase"
+    ],
+    "2": [
+      "Elefant",
+      "Giraffe",
+      "Pinguin",
+      "Schlange",
+      "Krebs",
+      "Eule",
+      "Schmetterling",
+      "Delfin",
+      "Kamel",
+      "Igel"
+    ],
+    "3": [
+      "Chamäleon",
+      "Flamingo",
+      "Faultier",
+      "Seepferdchen",
+      "Gürteltier",
+      "Nilpferd",
+      "Känguru",
+      "Tintenfisch",
+      "Stinktier",
+      "Waschbär"
+    ]
+  }
+}

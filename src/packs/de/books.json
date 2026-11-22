@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "id": "books",
+  "lang": "de",
+  "version": 1,
+  "name": "Bücher",
+  "words": {
+    "1": [
+      "Harry Potter",
+      "Hänsel und Gretel",
+      "Rotkäppchen",
+      "Pinocchio",
+      "Aschenputtel",
+      "Der Kleine Prinz",
+      "Schneewittchen",
+      "Der Hobbit",
+      "Pippi Langstrumpf",
+      "Die kleine Raupe Nimmersatt"
+    ],
+    "2": [
+      "Faust",
+      "Die Verwandlung",
+      "Momo",
+      "Die unendliche Geschichte",
+      "Der Struwwelpeter",
+      "Das Parfum",
+      "Emil und die Detektive",
+      "Der Herr der Ringe",
+      "Der Vorleser",
+      "Die Biene Maja",
+      "Tintenherz",
+      "Das doppelte Lottchen",
+      "Max und Moritz",
+      "Heidi",
+      "Robinson Crusoe",
+      "Don Quijote",
+      "Der Besuch der alten Dame"
+    ],
+    "3": [
+      "Die Leiden des jungen Werther",
+      "Der Zauberberg",
+      "Die Blechtrommel",
+      "Im Westen nichts Neues",
+      "Schuld und Sühne",
+      "Hundert Jahre Einsamkeit",
+      "Der Graf von Monte Christo",
+      "Das Schloss",
+      "Der Steppenwolf",
+      "Die Räuber"
+    ]
+  }
+}

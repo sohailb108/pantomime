@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "places",
+  "lang": "de",
+  "version": 1,
+  "name": "Orte",
+  "words": {
+    "1": [
+      "Eiffelturm",
+      "Pyramiden von Gizeh",
+      "Freiheitsstatue",
+      "Big Ben",
+      "Brandenburger Tor",
+      "Schwimmbad",
+      "Bahnhof",
+      "Flughafen",
+      "Zoo",
+      "Strand"
+    ],
+    "2": [
+      "Schloss Neuschwanstein",
+      "Kölner Dom",
+      "Taj Mahal",
+      "Kolosseum",
+      "Chinesische Mauer",
+      "Niagarafälle",
+      "Hamburger Hafen",
+      "Oktoberfest",
+      "Schwarzwald",
+      "Alpen",
+      "Bodensee",
+      "Venedig",
+      "Sahara",
+      "Nordsee",
+      "Rhein"
+    ],
+    "3": [
+      "Stonehenge",
+      "Petra",
+      "Angkor Wat",
+      "Machu Picchu",
+      "Grand Canyon",
+      "Mount Everest",
+      "Titicacasee",
+      "Atlantis",
+      "Bermudadreieck",
+      "Antarktis",
+      "Reichstagskuppel"
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "general",
+  "lang": "de",
+  "version": 1,
+  "name": "Allgemeines",
+  "words": {
+    "1": [
+      "Geburtstag",
+      "Regen",
+      "Einkaufen",
+      "Schwimmen",
+      "Frühstück",
+      "Urlaub",
+      "Schnee",
+      "Hochzeit",
+      "Zahnarzt",
+      "Tanzen"
+    ],
+    "2": [
+      "Jetlag",
+      "Déjà-vu",
+      "Lampenfieber",
+      "Stau",
+      "Sonnenbrand",
+      "Schluckauf",
+      "Muskelkater",
+      "Umzug",
+      "Fahrstuhl",
+      "Schlafwandeln",
+      "Verabredung",
+      "Feuerwerk",
+      "Bergsteigen",
+      "Kopfschmerzen",
+      "Camping"
+    ],
+    "3": [
+      "Fernweh",
+      "Zeitumstellung",
+      "Ohrwurm",
+      "Gänsehaut",
+      "Reisefieber",
+      "Seekrankheit",
+      "Flaschenpost",
+      "Amtsschimmel",
+      "Pfandflasche",
+      "Feierabend",
+      "Sonntagsspaziergang"
+    ]
+  }
+}

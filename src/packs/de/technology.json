@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "technology",
+  "lang": "de",
+  "version": 1,
+  "name": "Technik",
+  "words": {
+    "1": [
+      "Handy",
+      "Computer",
+      "Kamera",
+      "Roboter",
+      "Fernseher",
+      "Kopfhörer",
+      "Tastatur",
+      "Drucker",
+      "Radio",
+      "Taschenrechner"
+    ],
+    "2": [
+      "Virtuelle Realität",
+      "Künstliche Intelligenz",
+      "3D-Drucker",
+      "Drohne",
+      "Smartwatch",
+      "Navigationsgerät",
+      "Videospiel",
+      "Selfie-Stange",
+      "Solarzelle",
+      "Mikrowelle",
+      "Ladekabel",
+      "Fitnessarmband",
+      "Videoanruf",
+      "Lautsprecher"
+    ],
+    "3": [
+      "Rakete",
+      "Satellit",
+      "Hologramm",
+      "Quantencomputer",
+      "Raumstation",
+      "Elektroauto",
+      "Kryptowährung",
+      "Chatbot",
+      "Virenscanner",
+      "Datenbrille",
+      "Mondlandung",
+      "Kernkraftwerk"
+    ]
+  }
+}

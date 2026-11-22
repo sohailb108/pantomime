@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "id": "movies",
+  "lang": "de",
+  "version": 1,
+  "name": "Filme und Serien",
+  "words": {
+    "1": [
+      "Titanic",
+      "Batman",
+      "Spider-Man",
+      "Der weiße Hai",
+      "Shrek",
+      "Findet Nemo",
+      "Der König der Löwen",
+      "Harry Potter",
+      "Die Eiskönigin",
+      "Cars"
+    ],
+    "2": [
+      "Jurassic Park",
+      "Star Wars",
+      "Das Boot",
+      "Good Bye, Lenin!",
+      "Die Welle",
+      "Lola rennt",
+      "Fack ju Göhte",
+      "Der Pate",
+      "Forrest Gump",
+      "Ghostbusters",
+      "Der Herr der Ringe",
+      "Ice Age",
+      "Toy Story",
+      "Kevin allein zu Haus",
+      "Pirates of the Caribbean"
+    ],
+    "3": [
+      "Matrix",
+      "Inception",
+      "Zurück in die Zukunft",
+      "Das Leben der Anderen",
+      "Der Untergang",
+      "Das Parfum",
+      "Der Tatortreiniger",
+      "Dark",
+      "Babylon Berlin",
+      "Der Schuh des Manitu"
+    ]
+  }
+}

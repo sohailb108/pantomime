@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "cartoons",
+  "lang": "de",
+  "version": 1,
+  "name": "Zeichentrick",
+  "words": {
+    "1": [
+      "Micky Maus",
+      "Tom und Jerry",
+      "SpongeBob",
+      "Donald Duck",
+      "Biene Maja",
+      "Pumuckl",
+      "Heidi",
+      "Bob der Baumeister",
+      "Die Maus",
+      "Peppa Wutz"
+    ],
+    "2": [
+      "Käpt'n Blaubär",
+      "Wickie und die starken Männer",
+      "Asterix",
+      "Lucky Luke",
+      "Die Schlümpfe",
+      "Pinocchio",
+      "Scooby-Doo",
+      "Pokémon",
+      "Tweety",
+      "Bugs Bunny",
+      "Garfield",
+      "Dragon Ball",
+      "Die Simpsons",
+      "Das Sandmännchen",
+      "Alfred J. Kwak"
+    ],
+    "3": [
+      "Johnny Bravo",
+      "Ben 10",
+      "Doraemon",
+      "Familie Feuerstein",
+      "Der rosarote Panther",
+      "Fix und Foxi",
+      "Hägar der Schreckliche",
+      "Tim und Struppi",
+      "Calimero",
+      "Futurama",
+      "Dexters Labor"
+    ]
+  }
+}

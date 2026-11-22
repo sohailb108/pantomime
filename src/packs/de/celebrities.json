@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "id": "celebrities",
+  "lang": "de",
+  "version": 1,
+  "name": "Prominente",
+  "words": {
+    "1": [
+      "Einstein",
+      "Messi",
+      "Michael Jackson",
+      "Charlie Chaplin",
+      "Angela Merkel",
+      "Mozart",
+      "Beethoven",
+      "Michael Schumacher",
+      "Marilyn Monroe",
+      "Elvis Presley"
+    ],
+    "2": [
+      "Mutter Teresa",
+      "Goethe",
+      "Nikola Tesla",
+      "Frida Kahlo",
+      "Marie Curie",
+      "Heidi Klum",
+      "Thomas Müller",
+      "Boris Becker",
+      "Steffi Graf",
+      "Til Schweiger",
+      "Helene Fischer",
+      "Dirk Nowitzki",
+      "Marlene Dietrich",
+      "Sigmund Freud"
+    ],
+    "3": [
+      "Leonardo da Vinci",
+      "Sophie Scholl",
+      "Karl Marx",
+      "Johann Sebastian Bach",
+      "Kleopatra",
+      "Napoleon",
+      "Mahatma Gandhi",
+      "Nelson Mandela",
+      "Muhammad Ali",
+      "Clara Schumann"
+    ]
+  }
+}

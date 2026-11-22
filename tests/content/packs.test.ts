@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { wordLanguages } from '@/config/wordLanguages';
 import { compareKey, normalizeWord } from '@/services/customData';
 
 const root = join(__dirname, '../../src/packs');
@@ -30,6 +31,10 @@ function checkWords(words: string[]) {
 }
 
 describe('built-in packs', () => {
+  it('has a pack folder for every word language and no other', () => {
+    expect([...langs].sort()).toEqual(wordLanguages.map((l) => l.code).sort());
+  });
+
   it('has the same category ids in every language', () => {
     const ids = langs.map((l) => read<Index>(l, 'index').categories.map((c) => c.id).sort());
     for (const list of ids) expect(list).toEqual(ids[0]);
