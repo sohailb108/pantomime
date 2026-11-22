@@ -9,12 +9,16 @@ export interface WordLanguage {
   name: string;
   /** Text direction of the words. */
   dir: 'rtl' | 'ltr';
+  /** CSS font-family stack for its name in the picker (the same as the interface language's, if any). */
+  font: string;
 }
 
+const SYSTEM_FONT = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+
 export const wordLanguages: WordLanguage[] = [
-  { code: 'fa', name: 'فارسی', dir: 'rtl' },
-  { code: 'en', name: 'English', dir: 'ltr' },
-  { code: 'de', name: 'Deutsch', dir: 'ltr' },
+  { code: 'fa', name: 'فارسی', dir: 'rtl', font: "'Vazirmatn', sans-serif" },
+  { code: 'en', name: 'English', dir: 'ltr', font: SYSTEM_FONT },
+  { code: 'de', name: 'Deutsch', dir: 'ltr', font: SYSTEM_FONT },
 ];
 
 export function getWordLanguage(code: string): WordLanguage | undefined {

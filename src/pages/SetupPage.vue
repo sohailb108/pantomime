@@ -264,7 +264,7 @@
           <div v-for="c in categories" :key="c.id" class="col-6 col-sm-4">
             <q-card flat class="cursor-pointer text-center q-pa-md category-card" :class="{ selected: setup.categoryIds.includes(c.id) }" role="checkbox" :aria-checked="setup.categoryIds.includes(c.id)" tabindex="0" @click="setup.toggleCategory(c.id)" @keydown.enter.space.prevent="setup.toggleCategory(c.id)">
               <q-icon v-if="setup.categoryIds.includes(c.id)" name="check_circle" class="check" size="sm" />
-              <div class="text-subtitle1 text-weight-bold">{{ c.name }}</div>
+              <div class="text-subtitle1 text-weight-bold" dir="auto">{{ c.name }}</div>
               <div class="cat-meta text-caption">
                 <span v-if="c.custom" class="custom-tag">
                   <q-icon name="edit_note" size="14px" />{{ t('setup.customTag') }}
@@ -425,10 +425,7 @@ onMounted(() => {
 });
 
 // Selected categories must exist in the current word language's pack.
-watch(categories, (list) => {
-  const ids = new Set(list.map((c) => c.id));
-  setup.categoryIds = setup.categoryIds.filter((id) => ids.has(id));
-});
+watch(categories, (list) => setup.pruneCategories(list.map((c) => c.id)));
 // A new word language starts as the last game in that language had it (all selected the first time).
 watch(
   () => setup.contentLang,

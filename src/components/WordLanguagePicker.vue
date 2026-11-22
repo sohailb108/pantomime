@@ -5,9 +5,10 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { wordLanguages } from '@/config/wordLanguages';
-import { getLanguage } from '@/i18n/languages';
+import { loadFont } from '@/services/language';
 import { useSetupStore } from '@/stores/setup';
 
 const { t } = useI18n();
@@ -16,7 +17,10 @@ const setup = useSetupStore();
 // Left-to-right languages first, so the order never depends on the page direction.
 const options = [...wordLanguages]
   .sort((a, b) => Number(a.dir === 'rtl') - Number(b.dir === 'rtl'))
-  .map((l) => ({ label: l.name, value: l.code, style: { fontFamily: getLanguage(l.code).font.family } }));
+  .map((l) => ({ label: l.name, value: l.code, style: { fontFamily: l.font } }));
+
+// Persian words need the Persian font even when the interface is English.
+watch(() => setup.contentLang, (code) => void loadFont(code), { immediate: true });
 </script>
 
 <style scoped lang="scss">

@@ -127,6 +127,16 @@ export const useSetupStore = defineStore('setup', () => {
   function resetSettings() {
     settings.value = cloneSettings();
   }
+  /** Drops selected categories that no longer exist (removed, or another word language). */
+  function pruneCategories(allIds: string[]) {
+    const all = new Set(allIds);
+    const dropped = new Set(categoryIds.value.filter((id) => !all.has(id)));
+    if (dropped.size === 0) return;
+    categoryIds.value = categoryIds.value.filter((id) => all.has(id));
+    // A dropped id was selected, not deselected: forget it, so it is selected again when it returns.
+    knownCategoryIds.value = knownCategoryIds.value.filter((id) => !dropped.has(id));
+  }
+
   /**
    * Matches the remembered selection to the categories that exist now: drops removed ones, selects
    * new ones, and selects everything when nothing is left (first game, or a different language).
@@ -158,6 +168,7 @@ export const useSetupStore = defineStore('setup', () => {
     setColor,
     toggleCategory,
     resetSettings,
+    pruneCategories,
     syncCategories,
   };
 });

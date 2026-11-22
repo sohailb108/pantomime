@@ -44,6 +44,20 @@ describe('built-in packs', () => {
     describe(lang, () => {
       const index = read<Index>(lang, 'index');
 
+      it('has no word in two categories', () => {
+        const seen = new Map<string, string>();
+        for (const { id } of index.categories) {
+          const pack = read<Pack>(lang, id);
+          for (const d of ['1', '2', '3']) {
+            for (const word of pack.words[d]!) {
+              const key = compareKey(word);
+              expect(seen.has(key), `"${word}" is in ${seen.get(key)} and ${id}`).toBe(false);
+              seen.set(key, id);
+            }
+          }
+        }
+      });
+
       it('has an index that matches its folder', () => {
         expect(index.lang).toBe(lang);
         expect(new Set(index.categories.map((c) => c.id)).size).toBe(index.categories.length);

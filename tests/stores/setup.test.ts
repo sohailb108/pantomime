@@ -99,6 +99,19 @@ describe('setup store', () => {
     expect(next.categoryIds).toEqual(['x', 'y']);
   });
 
+  it('selects a pruned category again when it comes back, and keeps deselections', () => {
+    const store = useSetupStore();
+    store.syncCategories(['a', 'b', 'cars']);
+    store.toggleCategory('b');
+    // Another word language has no "cars": it is pruned, then the new list is synced.
+    store.pruneCategories(['a', 'b']);
+    store.syncCategories(['a', 'b']);
+    expect(store.categoryIds).toEqual(['a']);
+    store.pruneCategories(['a', 'b', 'cars']);
+    store.syncCategories(['a', 'b', 'cars']);
+    expect(store.categoryIds).toEqual(['a', 'cars']);
+  });
+
   it('ignores invalid saved teams', () => {
     saveJson('pantomime:setup', { mode: 'single', settings: {}, teamColors: ['red', 'red'] });
     expect(useSetupStore().teamColors).toEqual(['red', 'blue']);
