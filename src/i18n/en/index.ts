@@ -545,10 +545,8 @@ export default {
     title: 'About',
     version: 'Version {version}',
     description: 'A free party game with no tracking and no accounts.',
-    author: 'Made by Sohail',
-    contactTitle: 'Feedback and contact',
+    author: 'Made by Sohail Bakhtiari',
     contactBody: 'Found a wrong word or a bug, or have an idea? Write to',
-    updatesTitle: 'Updates and reset',
     updatesBody: 'The buttons below check for a new version, or reset the app. Resetting deletes all settings, custom words and the saved game, and cannot be undone.',
   },
   notFound: {

@@ -14,7 +14,6 @@
     </div>
 
     <q-card flat class="about-card q-pa-md q-mb-md">
-      <div class="text-weight-bold">{{ t('about.contactTitle') }}</div>
       <div class="about-text q-mt-xs">
         {{ t('about.contactBody') }}
         <a class="email" :href="`mailto:${EMAIL}`">{{ EMAIL }}</a>
@@ -22,7 +21,6 @@
     </q-card>
 
     <q-card flat class="about-card q-pa-md">
-      <div class="text-weight-bold">{{ t('about.updatesTitle') }}</div>
       <div class="about-text q-mt-xs">{{ t('about.updatesBody') }}</div>
       <div class="q-pt-md row" style="gap: 8px">
         <q-btn v-if="updateSupported" outline rounded no-caps color="primary" icon="system_update" :loading="checking" :label="t('update.check')" @click="checkUpdate" />
