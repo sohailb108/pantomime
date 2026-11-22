@@ -161,7 +161,10 @@ export default {
     rerollFree: 'Change word',
     hint: 'Acting hint ({n})',
     hintFree: 'Acting hint',
+    translationHint: 'Show translation ({n})',
+    translationHintFree: 'Show translation',
     hintTitle: 'How to act it',
+    translationTitle: 'Translation',
     start: 'Start',
     peek: 'Hold to see the word',
     guessed: 'Guessed',
@@ -368,7 +371,7 @@ export default {
           },
           {
             t: 'Learning words',
-            b: 'For language learners. In Setup, pick a language that has learning packs, then choose Learning instead of Normal and tick the levels (A1 is the easiest). Words from all ticked levels are mixed, and the categories are the ones that have words at those levels. Learning games have no gold round, and you cannot add your own words to them. You can still hide or move a word from the result screen.',
+            b: 'For language learners. In Setup, pick a language that has learning packs, then choose Learning instead of Normal and tick the levels (A1 is the easiest). Words from all ticked levels are mixed, and the categories are the ones that have words at those levels. The hint button shows the translation of the word into the app language, with the same cost as the acting hint; a word with several meanings lists the most common ones, and a word without a translation has no hint. Learning games have no gold round, and you cannot add your own words to them. You can still hide or move a word from the result screen.',
           },
           {
             t: 'Gold round',

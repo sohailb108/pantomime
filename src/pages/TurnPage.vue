@@ -49,8 +49,8 @@
         {{ word }}
       </div>
       <div v-if="hintWord === word && hintText" class="acting-hint text-body1 text-center">
-        <div class="text-caption text-grey-7">{{ t('turn.hintTitle') }}</div>
-        {{ hintText }}
+        <div class="text-caption text-grey-7">{{ t(game.content.kind === 'learning' ? 'turn.translationTitle' : 'turn.hintTitle') }}</div>
+        <span dir="auto">{{ hintText }}</span>
       </div>
       <div class="text-center text-grey-7 hint-text">{{ t('turn.prepHint') }}</div>
       <div class="column full-width turn-actions">
@@ -475,12 +475,16 @@ const stealerName = computed(() => (stealer.value === null ? '' : nameOf(stealer
 
 /** What a hint costs on this tile under the game's hint setting. */
 const hintPrice = computed(() => hintCostFor(tileValue.value, single.value));
-const hintLabel = computed(() =>
-  hintPrice.value > 0 ? t('turn.hint', { n: signed(-hintPrice.value) }) : t('turn.hintFree'),
-);
+const hintLabel = computed(() => {
+  // Learning games hint with the translation, so the button says so.
+  const prefix = game.content.kind === 'learning' ? 'turn.translationHint' : 'turn.hint';
+  return hintPrice.value > 0
+    ? t(prefix, { n: signed(-hintPrice.value) })
+    : t(`${prefix}Free`);
+});
 /** The shown word's acting tip, if it has one (custom words never do). */
 const hintText = computed(() =>
-  word.value && tile.value ? hintFor(game.content, tile.value.categoryId, word.value) : null,
+  word.value && tile.value ? hintFor(game.content, tile.value.categoryId, word.value, settings.language) : null,
 );
 function takeHint() {
   if (hintWord.value !== null || !hintText.value) return;

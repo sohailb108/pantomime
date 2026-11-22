@@ -11,6 +11,11 @@ export interface LearningPack {
   words: Record<string, string[]>;
   /** Optional acting tips, keyed by a word of the pack. */
   hints?: Record<string, string>;
+  /**
+   * Translations of the words, by interface language, then word. A word with several meanings lists
+   * the most common ones in one string, in the style of that language ("castle / lock").
+   */
+  glosses?: Record<string, Record<string, string>>;
 }
 
 /** `src/packs/<lang>/learning/index.json`: the categories and the levels that have a file for each. */
@@ -89,18 +94,30 @@ export function createLearningPacks(
       });
   }
 
-  /** The acting tip of a word at the first of the levels that has one, or null. */
+  /** Entry of a word in a list keyed by words, matched the way word lists compare. */
+  function entryFor<T>(list: Record<string, T> | undefined, word: string): T | undefined {
+    if (!list) return undefined;
+    const key = compareKey(word);
+    return Object.entries(list).find(([w]) => compareKey(w) === key)?.[1];
+  }
+
+  /**
+   * The hint of a word, from the first level that has one: its translation into `appLang`, else its
+   * acting tip, else null.
+   */
   function learningHint(
     lang: string,
     levels: readonly Level[],
     categoryId: string,
     word: string,
+    appLang?: string,
   ): string | null {
-    const key = compareKey(word);
     for (const level of sortLevels(levels)) {
-      const hints = packs.get(`${lang}/${level}/${categoryId}`)?.hints;
-      const entry = hints && Object.entries(hints).find(([w]) => compareKey(w) === key);
-      if (entry) return entry[1];
+      const pack = packs.get(`${lang}/${level}/${categoryId}`);
+      const gloss = appLang ? entryFor(pack?.glosses?.[appLang], word) : undefined;
+      if (gloss) return gloss;
+      const tip = entryFor(pack?.hints, word);
+      if (tip) return tip;
     }
     return null;
   }

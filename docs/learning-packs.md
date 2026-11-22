@@ -93,7 +93,9 @@ A learning category file has the existing shape plus a level, and room for trans
   "name": "Essen und Trinken",
   "words": { "1": ["Brot", "Apfel"], "2": ["Suppe"], "3": ["Gabel"] },
   "hints": { "Suppe": "..." },
-  "glosses": {}          // reserved, empty in v1 (see section 7)
+  "glosses": {           // translations by interface language, see 4.6
+    "en": { "Brot": "bread", "Schloss": "castle / lock" }
+  }
 }
 ```
 
@@ -160,6 +162,34 @@ Added at the top of the Categories step in `SetupPage.vue`:
 
 The tile preview, the trimmed-tiles note and the minimum-categories rule do not change.
 
+### 4.6 Translation as the hint
+
+In Learning games the hint button shows the **translation of the word into the app language** (the
+interface language, not the word language). The actor sees the word, and a learner may not know it, so
+a translation helps more than an acting description.
+
+- **Data:** `glosses` in each learning pack file, by interface language and then word:
+  `"glosses": { "en": { "Hund": "dog" }, "fa": { "Hund": "سگ" } }`. The value is one plain string.
+  Many words have several meanings, so list the most common ones in the same string, most common
+  first, with the separator that fits the language: `"Schloss": "castle / lock"` in English and
+  `"Fliege": "مگس، پاپیون"` in Persian (Persian uses "،"). Words are matched the way word lists compare
+  (`compareKey`), so spelling variants still find their gloss. A string was chosen over a list of
+  meanings because nothing needs the meanings separately yet; switch to a list if a quiz or a
+  first-meaning-only display is added.
+- **Display:** the string is shown as written. The hint card is titled "Translation" instead of
+  "How to act it".
+- **Rules stay the same:** one hint per turn, the same cost setting (half the tile points or a fixed
+  number, 0 for free), only in single-word mode. The existing "Acting hint" setting turns it on or off.
+- **Lookup order** (`learningHint`): the translation in the app language, else the word's acting tip
+  (`hints`) if the file has one, else no hint. A word with no hint has no hint button, as before. Levels
+  are searched in CEFR order, so a word found at A1 uses the A1 entry.
+- **Normal packs** keep their acting hints unchanged.
+- **Content status (2026-11-22):** `en` and `fa` glosses exist only for **German A1 Animals**, so there is
+  something to test. The Persian entries need a native reviewer. The rest of the words get translations
+  after the A1 and A2 word lists are verified (step 9), so no word is translated twice.
+- **Still open:** a gloss test in `tests/content/learning.test.ts` (step 7: every gloss key is a word of the
+  pack, no empty strings), and translations for the other categories and levels.
+
 ## 5. Out of scope for v1
 
 - A German interface translation.
@@ -222,6 +252,14 @@ e2e smoke test after each. No step commits on its own.
    - Tests: `SetupPage` for each toggle, the minimum-categories rule with merged pools, `i18n` key parity
      test.
 
+6b. **Translation hints.** (Done 2026-11-22, code and German A1 Animals only.)
+   - `glosses` in `LearningPack`, `learningHint(…, appLang)` and `hintFor(content, …, appLang)`, the
+     Turn page passes the interface language and titles the card "Translation" (section 4.6).
+   - i18n: `turn.translationTitle` in en and fa, and the Help text for Learning words.
+   - Tests: translations by language, several meanings, level search, no hint without a translation,
+     fallback to the acting tip.
+   - To do: translations for the other categories and levels, after step 9 verifies the word lists.
+
 7. **Content tests.**
    - `tests/content/learning.test.ts`: file shape, `level` matches the folder, index matches files, no
      word in two levels of one category, `hints` keys exist in `words`, size minimums per level.
@@ -272,9 +310,9 @@ work and are where most of the effort goes.
 
 ## 7. Future work
 
-- **Glosses**: show the translation (interface language) next to each word on the result screen, from
-  the reserved `glosses` map. This is the first thing to add after v1 because it turns a game round
-  into vocabulary review.
+- **Glosses on the result screen**: the translations (see 4.6) now serve as the in-turn hint. Showing
+  them next to each word on the result screen is still to do, and turns a round into vocabulary
+  review. Translations for all categories and levels also remain to be written.
 - **Review screen**: after a game, a list of the words that were shown, with translations, and a way
   to keep difficult ones for next time.
 - **B2, C1, C2 content.** These levels are abstract, so category choices and difficulties need

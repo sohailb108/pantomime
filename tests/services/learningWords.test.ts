@@ -53,6 +53,29 @@ describe('learning content', () => {
     expect(nativeLevel(learn('a1'), 'food', 'Nudel')).toBeNull();
   });
 
+  it('hints with the translation into the app language, as written in the pack', () => {
+    expect(hintFor(learn('a1'), 'food', 'Brot', 'en')).toBe('bread');
+    expect(hintFor(learn('a1'), 'food', 'brot', 'en')).toBe('bread');
+    expect(hintFor(learn('a1'), 'food', 'Gabel', 'en')).toBe('fork / pitchfork');
+    expect(hintFor(learn('a1'), 'food', 'Brot', 'fa')).toBe('نان');
+  });
+
+  it('finds a translation at the level that has it', () => {
+    expect(hintFor(learn('a1'), 'food', 'Käse', 'en')).toBeNull();
+    expect(hintFor(learn('a1', 'a2'), 'food', 'Käse', 'en')).toBe('cheese');
+  });
+
+  it('has no hint for a word without a translation in the app language', () => {
+    expect(hintFor(learn('a1'), 'food', 'Apfel', 'en')).toBeNull();
+    expect(hintFor(learn('a1'), 'food', 'Gabel', 'fa')).toBeNull();
+    expect(hintFor(learn('a1', 'a2'), 'food', 'Nudel', 'en')).toBeNull();
+  });
+
+  it('falls back to the acting tip when there is no translation', () => {
+    expect(hintFor(learn('a1'), 'food', 'Suppe', 'en')).toBe('Löffel');
+    expect(hintFor(learn('a1', 'a2'), 'food', 'Käse', 'fa')).toBe('Schneiden');
+  });
+
   it('has no gold pool', () => {
     expect(getGoldPool(learn('a1'))).toEqual([]);
   });

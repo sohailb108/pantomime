@@ -46,9 +46,15 @@ export function builtinWords(content: Content, categoryId: string, difficulty: D
  * The acting tip a built-in word has, or null when it has none (custom words never do). Words are
  * matched the way the word lists compare them, so spelling variants still find their tip.
  */
-export function hintFor(content: Content, categoryId: string, word: string): string | null {
+export function hintFor(
+  content: Content,
+  categoryId: string,
+  word: string,
+  /** Interface language: learning words are translated into it. */
+  appLang?: string,
+): string | null {
   if (content.kind === 'learning') {
-    return learningHint(content.lang, content.levels, categoryId, word);
+    return learningHint(content.lang, content.levels, categoryId, word, appLang);
   }
   const hints = find(content.lang, categoryId)?.hints;
   if (!hints) return null;

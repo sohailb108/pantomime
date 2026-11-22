@@ -14,7 +14,7 @@ import { builtinWords, getPool } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
-import type { Difficulty, Mode } from '@/game/types';
+import type { Content, Difficulty, Mode } from '@/game/types';
 
 const en = messages.en.turn;
 
@@ -32,17 +32,21 @@ function memoryStorage() {
 }
 
 /** Mounts the turn page for the first tile of a new game, with a fixed deck of words. */
-async function openTurn(mode: Mode, deckOf: string[] | ((game: ReturnType<typeof useGameStore>) => string[])) {
+async function openTurn(
+  mode: Mode,
+  deckOf: string[] | ((game: ReturnType<typeof useGameStore>) => string[]),
+  options: { content?: Content; categoryIds?: string[] } = {},
+) {
   const pinia = createPinia();
   setActivePinia(pinia);
   useSettingsStore().language = 'en';
   const game = useGameStore();
   game.start({
     teamColors: ['red', 'blue'],
-    categoryIds: ['animals', 'movies'],
+    categoryIds: options.categoryIds ?? ['animals', 'movies'],
     mode,
     settings: structuredClone(DEFAULT_GAME_SETTINGS),
-    content: normalContent('en'),
+    content: options.content ?? normalContent('en'),
   });
   game.pick(0);
   const deck = typeof deckOf === 'function' ? deckOf(game) : deckOf;
@@ -308,6 +312,38 @@ describe('TurnPage', () => {
       const hint = wrapper.findAll('button').find((b) => b.text().includes('Acting hint'));
       await hint!.trigger('click');
       expect(hasLabel(wrapper, en.revert)).toBe(false);
+    });
+  });
+
+  describe('translation hint in a learning game', () => {
+    const learning: Content = { lang: 'de', kind: 'learning', levels: ['a1'] };
+    const open = (word: string) => openTurn('single', [word], { content: learning, categoryIds: ['animals'] });
+    const find = (wrapper: VueWrapper, label: string) =>
+      wrapper.findAll('button').find((b) => b.text().includes(label));
+
+    it('offers the translation instead of an acting hint, and shows it', async () => {
+      const { wrapper } = await open('Schlange');
+      await press(wrapper, en.showWord);
+      expect(find(wrapper, 'Acting hint')).toBeUndefined();
+      expect(wrapper.text()).not.toContain('snake / queue');
+      await find(wrapper, en.translationHint.replace(' ({n})', ''))!.trigger('click');
+      expect(wrapper.text()).toContain(en.translationTitle);
+      expect(wrapper.text()).toContain('snake / queue');
+    });
+
+    it('says the translation is free when the hint costs nothing', async () => {
+      const { wrapper, game } = await open('Hund');
+      game.state!.settings.single.hintHalf = false;
+      game.state!.settings.single.hintPenalty = 0;
+      await press(wrapper, en.showWord);
+      await find(wrapper, en.translationHintFree)!.trigger('click');
+      expect(wrapper.text()).toContain('dog');
+    });
+
+    it('has no hint button for a word without a translation', async () => {
+      const { wrapper } = await open('Unbekannt');
+      await press(wrapper, en.showWord);
+      expect(find(wrapper, 'Show translation')).toBeUndefined();
     });
   });
 
