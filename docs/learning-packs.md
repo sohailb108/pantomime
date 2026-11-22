@@ -313,7 +313,7 @@ e2e smoke test after each. No step commits on its own.
       (11 to 15 words per difficulty; no word repeats an A1 word or appears in two categories), and
       `learning/index.json` lists them at `a1` and `a2`. Like A1 it was written from general knowledge and
       is **not** checked against the Goethe A2 list: the same check as in step 9 applies (including words
-      that belong to A1 or B1). A combined A1+A2 play test is still to do. B1 is not started.
+      that belong to A1 or B1). B1 is not started.
     - Done (2026-11-22): A2 checked against the Goethe A2 list (PDF, no licence statement, local reference
       only), with the same hybrid rule as A1. Only 47 of the 285 draft words were on the list (animals 0,
       food 5, general verbs 11, jobs 2, objects 8, places 21), so most are kept as common, concrete words.
@@ -329,6 +329,8 @@ e2e smoke test after each. No step commits on its own.
       - places: Spielzimmer, Waschsalon, Skipiste, Gärtnerei, Leuchtturm
     - Done (2026-11-22): A2 translations (English and Persian) for all six categories, written from general
       knowledge. A2 still needs a German speaker's review.
+    - Done (2026-11-22): combined A1+A2 play test, `tests/services/learningGermanA1A2.test.ts` (real packs:
+      all categories playable, merge without repeats, every word translated). A1+A2+B1 is still to do.
 
 11. **Docs and release.**
     - Update `DESIGN.md` (sections 2, 3 and 4: setup flow, pack format, storage, screens) and the
