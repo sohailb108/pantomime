@@ -1,4 +1,5 @@
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
+import { normalContent } from '@/game/content';
 import type { Mode, ScoreDelta } from '@/game/types';
 import { useGameStore } from '@/stores/game';
 
@@ -12,7 +13,7 @@ export function startGame(options: { mode?: Mode; categories?: string[]; teams?:
     categoryIds: options.categories ?? ['animals', 'movies'],
     mode: options.mode ?? 'multi',
     settings,
-    lang: 'en',
+    content: normalContent('en'),
   });
   game.revealStart();
   return game;

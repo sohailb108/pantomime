@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
-import { loadJson } from '@/services/storage';
+import { normalContent } from '@/game/content';
+import { loadJson, saveJson } from '@/services/storage';
 import { useGameStore } from '@/stores/game';
 
 function memoryStorage() {
@@ -24,7 +25,7 @@ const options = {
   categoryIds: ['animals', 'movies'],
   mode: 'multi' as const,
   settings: JSON.parse(JSON.stringify(DEFAULT_GAME_SETTINGS)) as typeof DEFAULT_GAME_SETTINGS,
-  lang: 'en',
+  content: normalContent('en'),
 };
 
 describe('game store persistence', () => {
@@ -127,11 +128,33 @@ describe('game store persistence', () => {
     a.markTileSeen('animals', 1, 'removed word');
     await nextTick();
     const history = () =>
-      loadJson<Record<string, Record<string, string[]>>>('pantomime:history')![options.lang]!;
+      loadJson<Record<string, Record<string, string[]>>>('pantomime:history')![options.content.lang]!;
     expect(history()['animals:1']).toEqual([deck[0], 'removed word']);
 
     a.tileDeck('animals', 1);
     await nextTick();
     expect(history()['animals:1']).toEqual([deck[0]]);
+  });
+
+  it('reads a game saved before learning packs as normal content', () => {
+    const a = freshStore();
+    a.start(options);
+    saveJson('pantomime:game', { state: a.state, lang: 'de' });
+    const b = freshStore();
+    expect(b.content).toEqual(normalContent('de'));
+    expect(b.lang).toBe('de');
+  });
+
+  it('keeps history apart per level set', async () => {
+    const a = freshStore();
+    a.start({ ...options, content: { lang: 'en', kind: 'learning', levels: ['a1'] } });
+    a.markTileSeen('animals', 1, 'cat');
+    a.start({ ...options, content: { lang: 'en', kind: 'learning', levels: ['a1', 'a2'] } });
+    a.markTileSeen('animals', 1, 'dog');
+    await nextTick();
+    const history = loadJson<Record<string, Record<string, string[]>>>('pantomime:history')!;
+    expect(history['en:learning:a1']!['animals:1']).toEqual(['cat']);
+    expect(history['en:learning:a1+a2']!['animals:1']).toEqual(['dog']);
+    expect(history['en']).toBeUndefined();
   });
 });

@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
 import { TEAM_COLORS } from '@/config/teamColors';
 import { createGame, declineGoldAttempt, finishTurn, resolveGoldAttempt } from '@/game/game';
-import type { Difficulty, GameState, Mode, ScoreDelta, Settings } from '@/game/types';
+import { historyNamespace, readContent } from '@/game/content';
+import type { Content, Difficulty, GameState, Mode, ScoreDelta, Settings } from '@/game/types';
 import { buildDeck, isPoolExhausted } from '@/game/words';
 import { loadJson, removeKey, saveJson } from '@/services/storage';
 import { getGoldPool, getPool } from '@/services/words';
@@ -14,7 +15,9 @@ const HISTORY_STORAGE_KEY = 'pantomime:history';
 
 interface SavedGame {
   state: GameState;
-  lang: string;
+  /** Games saved before learning packs have only `lang`. */
+  lang?: string;
+  content?: Content;
 }
 
 /** Words shown so far: language, then pool id, then words. Kept across games. */
@@ -45,16 +48,18 @@ export const useGameStore = defineStore('game', () => {
       team.color ??= TEAM_COLORS[i % TEAM_COLORS.length]!.id;
     });
   }
-  /** Language the game's words come from, fixed when the game starts. */
-  const lang = ref(saved?.lang ?? 'fa');
+  /** What the game's words come from, fixed when the game starts. An old save is normal content. */
+  const content = ref<Content>(readContent(saved?.content, saved?.lang ?? 'fa'));
+  /** Language the game's words come from. */
+  const lang = computed(() => content.value.lang);
   /** Tile the current team picked on the board. Not saved: an interrupted turn restarts. */
   const pickedTile = ref<number | null>(null);
   const history = ref<History>(loadJson<History>(HISTORY_STORAGE_KEY) ?? {});
 
   watch(
-    [state, lang],
+    [state, content],
     () => {
-      if (state.value) saveJson(GAME_STORAGE_KEY, { state: state.value, lang: lang.value });
+      if (state.value) saveJson(GAME_STORAGE_KEY, { state: state.value, content: content.value });
       else removeKey(GAME_STORAGE_KEY);
     },
     { deep: true },
@@ -66,11 +71,11 @@ export const useGameStore = defineStore('game', () => {
     categoryIds: string[];
     mode: Mode;
     settings: Settings;
-    lang: string;
+    content: Content;
   }) {
-    const { lang: language, ...rest } = options;
+    const { content: chosen, ...rest } = options;
     state.value = createGame({ ...rest, rng: Math.random });
-    lang.value = language;
+    content.value = chosen;
     pickedTile.value = null;
   }
 
@@ -83,7 +88,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function deckFor(poolId: string, pool: string[]): string[] {
-    const langHistory = (history.value[lang.value] ??= {});
+    const langHistory = (history.value[historyNamespace(content.value)] ??= {});
     // Forget words that left the pool (hidden, removed or deleted with their category).
     const inPool = new Set(pool);
     const old = langHistory[poolId] ?? [];
@@ -100,16 +105,16 @@ export const useGameStore = defineStore('game', () => {
 
   /** Shuffled words for the picked tile, unseen words first. */
   function tileDeck(categoryId: string, difficulty: Difficulty): string[] {
-    return deckFor(poolKey(categoryId, difficulty), getPool(lang.value, categoryId, difficulty));
+    return deckFor(poolKey(categoryId, difficulty), getPool(content.value, categoryId, difficulty));
   }
 
   function goldDeck(): string[] {
-    return deckFor(GOLD_KEY, getGoldPool(lang.value));
+    return deckFor(GOLD_KEY, getGoldPool(content.value));
   }
 
   /** Records a word as used so later games do not draw it again soon. */
   function markSeen(poolId: string, word: string) {
-    const list = ((history.value[lang.value] ??= {})[poolId] ??= []);
+    const list = ((history.value[historyNamespace(content.value)] ??= {})[poolId] ??= []);
     if (!list.includes(word)) list.push(word);
   }
   function markTileSeen(categoryId: string, difficulty: Difficulty, word: string) {
@@ -146,6 +151,7 @@ export const useGameStore = defineStore('game', () => {
 
   return {
     state,
+    content,
     lang,
     pickedTile,
     start,

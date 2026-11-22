@@ -12,6 +12,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { startGame } from '../helpers/game';
 import { mountPage } from '../helpers/mountPage';
 import { stubLocalStorage } from '../helpers/storage';
+import { normalContent } from '@/game/content';
 
 const notify = vi.hoisted(() => vi.fn());
 vi.mock('quasar', async (original) => ({
@@ -54,7 +55,7 @@ describe('PackEditPage', () => {
       const { wrapper } = await openEdit('animals');
       const cards = wrapper.findAll('.word-card');
       expect(cards).toHaveLength(3);
-      expect(cards[0]!.text()).toContain(`${builtinWords('en', 'animals', 1).length} built-in`);
+      expect(cards[0]!.text()).toContain(`${builtinWords(normalContent('en'), 'animals', 1).length} built-in`);
       expect(wrapper.text()).toContain('Animals');
     });
 
@@ -82,7 +83,7 @@ describe('PackEditPage', () => {
     });
 
     it('lists hidden words and puts one back after confirming', async () => {
-      const word = builtinWords('en', 'animals', 1)[0]!;
+      const word = builtinWords(normalContent('en'), 'animals', 1)[0]!;
       const { wrapper, custom } = await openEdit('animals', () => {
         setActivePinia(createPinia());
         useCustomStore().placeWord('en', 'animals', word, 'hidden');
@@ -96,7 +97,7 @@ describe('PackEditPage', () => {
     });
 
     it('does not list a moved word, but counts it at its new level', async () => {
-      const word = builtinWords('en', 'animals', 1)[0]!;
+      const word = builtinWords(normalContent('en'), 'animals', 1)[0]!;
       const { wrapper, custom } = await openEdit('animals', () => {
         setActivePinia(createPinia());
         useCustomStore().placeWord('en', 'animals', word, 3);
@@ -106,9 +107,9 @@ describe('PackEditPage', () => {
       expect(custom.wordsOf('en', 'animals', 3)).toEqual([]);
       const chips = wrapper.findAll('.builtin-chip').map((c) => c.text());
       expect(chips).toEqual([
-        `${builtinWords('en', 'animals', 1).length - 1} built-in`,
-        `${builtinWords('en', 'animals', 2).length} built-in`,
-        `${builtinWords('en', 'animals', 3).length + 1} built-in`,
+        `${builtinWords(normalContent('en'), 'animals', 1).length - 1} built-in`,
+        `${builtinWords(normalContent('en'), 'animals', 2).length} built-in`,
+        `${builtinWords(normalContent('en'), 'animals', 3).length + 1} built-in`,
       ]);
     });
 
@@ -116,7 +117,7 @@ describe('PackEditPage', () => {
       const { wrapper } = await openEdit('animals', () => {
         setActivePinia(createPinia());
         const custom = useCustomStore();
-        for (const w of builtinWords('en', 'animals', 3)) custom.placeWord('en', 'animals', w, 'hidden');
+        for (const w of builtinWords(normalContent('en'), 'animals', 3)) custom.placeWord('en', 'animals', w, 'hidden');
       });
       expect(wrapper.text()).toContain(en.emptyBuiltinHint);
     });
@@ -126,7 +127,7 @@ describe('PackEditPage', () => {
     it('shows a single list and adds gold words', async () => {
       const { wrapper, custom } = await openEdit('gold');
       expect(wrapper.findAll('.word-card')).toHaveLength(1);
-      expect(wrapper.text()).toContain(`${builtinWords('en', GOLD_ID, GOLD_LEVEL).length} built-in`);
+      expect(wrapper.text()).toContain(`${builtinWords(normalContent('en'), GOLD_ID, GOLD_LEVEL).length} built-in`);
       await addWord(wrapper, 0, 'time machine');
       expect(custom.wordsOf('en', GOLD_ID, GOLD_LEVEL)).toEqual(['time machine']);
     });

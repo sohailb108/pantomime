@@ -6,6 +6,18 @@ export type Rng = () => number;
 
 export type Mode = 'multi' | 'single';
 
+export type PackKind = 'normal' | 'learning';
+export type Level = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2';
+
+/** What a game's words come from: the word language and, for learning packs, the CEFR levels. */
+export interface Content {
+  /** Word language: 'de', 'en', 'fa'. */
+  lang: string;
+  kind: PackKind;
+  /** Empty for normal packs, at least one for learning packs. */
+  levels: Level[];
+}
+
 export interface MultiSettings {
   turnSeconds: number;
   /** null means unlimited. */

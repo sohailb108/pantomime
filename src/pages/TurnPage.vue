@@ -268,7 +268,7 @@ const team = computed(() => state.value?.teams[state.value.currentTeam]);
 const isMulti = computed(() => state.value?.mode === 'multi');
 const category = computed(() => {
   const id = tile.value?.categoryId ?? '';
-  return categoryOrFallback(listAllCategories(game.lang), id);
+  return categoryOrFallback(listAllCategories(game.content), id);
 });
 
 const fmt = (n: number) => formatNumber(n, settings.language);
@@ -480,7 +480,7 @@ const hintLabel = computed(() =>
 );
 /** The shown word's acting tip, if it has one (custom words never do). */
 const hintText = computed(() =>
-  word.value && tile.value ? hintFor(game.lang, tile.value.categoryId, word.value) : null,
+  word.value && tile.value ? hintFor(game.content, tile.value.categoryId, word.value) : null,
 );
 function takeHint() {
   if (hintWord.value !== null || !hintText.value) return;
@@ -641,7 +641,7 @@ function choose(w: string, target: Target | null) {
   if (previous) revertPoolChange(previous.change);
   changes.value[w] = undefined;
   if (target !== null) {
-    const change = changePoolWord(game.lang, t.categoryId, t.difficulty, w, target);
+    const change = changePoolWord(game.content, t.categoryId, t.difficulty, w, target);
     if (change) {
       changes.value[w] = { change, target };
       // Not shown again soon at its new difficulty, as it was just played.
@@ -650,7 +650,7 @@ function choose(w: string, target: Target | null) {
       }
     }
   }
-  emptiedMsg.value = getPool(game.lang, t.categoryId, t.difficulty).length === 0;
+  emptiedMsg.value = getPool(game.content, t.categoryId, t.difficulty).length === 0;
 }
 
 function finish() {

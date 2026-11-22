@@ -294,6 +294,7 @@ import NumberStepper from '@/components/NumberStepper.vue';
 import WordLanguagePicker from '@/components/WordLanguagePicker.vue';
 import { TEAM_COLORS, teamHex } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS } from '@/game/board';
+import { normalContent } from '@/game/content';
 import { canSteal } from '@/game/scoring';
 import { DIFFICULTIES, type Settings } from '@/game/types';
 import { categoryWordCount, listCategories } from '@/services/packs';
@@ -363,9 +364,9 @@ const hintValueMode = computed({
 });
 const stepIndex = computed(() => steps.indexOf(step.value));
 const categories = computed(() =>
-  listCategories(setup.contentLang).map((c) => ({
+  listCategories(normalContent(setup.contentLang)).map((c) => ({
     ...c,
-    words: categoryWordCount(setup.contentLang, c.id),
+    words: categoryWordCount(normalContent(setup.contentLang), c.id),
   })),
 );
 
@@ -438,7 +439,7 @@ function start() {
     categoryIds: [...setup.categoryIds],
     mode: setup.mode,
     settings: JSON.parse(JSON.stringify(setup.settings)) as Settings,
-    lang: setup.contentLang,
+    content: normalContent(setup.contentLang),
   });
   void router.push('/board');
 }

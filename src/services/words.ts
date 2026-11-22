@@ -1,5 +1,6 @@
-import { DIFFICULTIES, type Difficulty } from '@/game/types';
+import { DIFFICULTIES, type Content, type Difficulty } from '@/game/types';
 import { compareKey, GOLD_ID, hasWord, type Placement } from '@/services/customData';
+import { learningHint, mergedLearningWords } from '@/services/learningPacks';
 import { useCustomStore } from '@/stores/custom';
 
 interface CategoryPack {
@@ -28,17 +29,26 @@ function find(lang: string, file: string): CategoryPack | undefined {
 /** The difficulty all gold words are at. */
 export const GOLD_LEVEL: Difficulty = 1;
 
-/** Number of built-in words of one category and difficulty. */
-export function builtinWords(lang: string, categoryId: string, difficulty: Difficulty): string[] {
-  return find(lang, categoryId)?.words[String(difficulty)] ?? [];
+/**
+ * Number of built-in words of one category and difficulty. For learning content these are the
+ * words of all selected levels, merged.
+ */
+export function builtinWords(content: Content, categoryId: string, difficulty: Difficulty): string[] {
+  if (content.kind === 'learning') {
+    return mergedLearningWords(content.lang, content.levels, categoryId, difficulty);
+  }
+  return find(content.lang, categoryId)?.words[String(difficulty)] ?? [];
 }
 
 /**
  * The acting tip a built-in word has, or null when it has none (custom words never do). Words are
  * matched the way the word lists compare them, so spelling variants still find their tip.
  */
-export function hintFor(lang: string, categoryId: string, word: string): string | null {
-  const hints = find(lang, categoryId)?.hints;
+export function hintFor(content: Content, categoryId: string, word: string): string | null {
+  if (content.kind === 'learning') {
+    return learningHint(content.lang, content.levels, categoryId, word);
+  }
+  const hints = find(content.lang, categoryId)?.hints;
   if (!hints) return null;
   const key = compareKey(word);
   const entry = Object.entries(hints).find(([w]) => compareKey(w) === key);
@@ -46,18 +56,21 @@ export function hintFor(lang: string, categoryId: string, word: string): string 
 }
 
 /** The difficulty the pack gave a built-in word, or null when the category has no such word. */
-export function nativeLevel(lang: string, categoryId: string, word: string): Difficulty | null {
-  return DIFFICULTIES.find((d) => hasWord(builtinWords(lang, categoryId, d), word)) ?? null;
+export function nativeLevel(content: Content, categoryId: string, word: string): Difficulty | null {
+  return DIFFICULTIES.find((d) => hasWord(builtinWords(content, categoryId, d), word)) ?? null;
 }
 
 /**
  * Built-in words a game draws at one difficulty: the pack's words as the user placed them. Hidden
- * words are left out, moved words count at the difficulty they were moved to.
+ * words are left out, moved words count at the difficulty they were moved to. Learning words are
+ * not placed yet (see step 5 of docs/learning-packs.md).
  */
-export function builtinPool(lang: string, categoryId: string, difficulty: Difficulty): string[] {
+export function builtinPool(content: Content, categoryId: string, difficulty: Difficulty): string[] {
+  if (content.kind === 'learning') return builtinWords(content, categoryId, difficulty);
+  const lang = content.lang;
   const custom = useCustomStore();
   return DIFFICULTIES.flatMap((native) =>
-    builtinWords(lang, categoryId, native).filter((w) => {
+    builtinWords(content, categoryId, native).filter((w) => {
       const placement = custom.placementOf(lang, categoryId, w);
       return (placement === 'native' ? native : placement) === difficulty;
     }),
@@ -65,11 +78,12 @@ export function builtinPool(lang: string, categoryId: string, difficulty: Diffic
 }
 
 /** Words of one category and difficulty: the built-in ones as placed, plus the user's custom words. */
-export function getPool(lang: string, categoryId: string, difficulty: Difficulty): string[] {
+export function getPool(content: Content, categoryId: string, difficulty: Difficulty): string[] {
+  if (content.kind === 'learning') return builtinPool(content, categoryId, difficulty);
   const seen = new Set<string>();
   return [
-    ...builtinPool(lang, categoryId, difficulty),
-    ...useCustomStore().wordsOf(lang, categoryId, difficulty),
+    ...builtinPool(content, categoryId, difficulty),
+    ...useCustomStore().wordsOf(content.lang, categoryId, difficulty),
   ].filter((w) => {
     const key = compareKey(w);
     if (seen.has(key)) return false;
@@ -105,14 +119,17 @@ export interface PoolChange {
  * `listCategories`) until a word is put back.
  */
 export function changePoolWord(
-  lang: string,
+  content: Content,
   categoryId: string,
   level: Difficulty,
   word: string,
   target: Target,
 ): PoolChange | null {
+  // Learning words cannot be hidden or moved yet (step 5 of docs/learning-packs.md).
+  if (content.kind === 'learning') return null;
+  const lang = content.lang;
   const custom = useCustomStore();
-  const isBuiltin = hasWord(builtinPool(lang, categoryId, level), word);
+  const isBuiltin = hasWord(builtinPool(content, categoryId, level), word);
   const isCustom = custom.wordsOf(lang, categoryId, level).includes(word);
   if (!isBuiltin && !isCustom) return null;
   if (target === level) return null;
@@ -120,7 +137,7 @@ export function changePoolWord(
   if (target === 'native' && (!isBuiltin || custom.placementOf(lang, categoryId, word) === 'native')) {
     return null;
   }
-  const native = nativeLevel(lang, categoryId, word);
+  const native = nativeLevel(content, categoryId, word);
   // A built-in word moved to where the pack put it needs no entry at all.
   const place: Placement = target === native ? 'native' : target;
 
@@ -160,6 +177,8 @@ export function revertPoolChange(change: PoolChange) {
 }
 
 /** The words of the gold round: the gold category's pool at its one difficulty. */
-export function getGoldPool(lang: string): string[] {
-  return getPool(lang, GOLD_ID, GOLD_LEVEL);
+export function getGoldPool(content: Content): string[] {
+  // No gold round for learning packs: no pool fits a level.
+  if (content.kind === 'learning') return [];
+  return getPool(content, GOLD_ID, GOLD_LEVEL);
 }

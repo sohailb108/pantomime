@@ -10,6 +10,7 @@ import { useSetupStore } from '@/stores/setup';
 import { listCategories } from '@/services/packs';
 import { stubLocalStorage } from '../helpers/storage';
 import { hasButton, mountPage, press } from '../helpers/mountPage';
+import { normalContent } from '@/game/content';
 
 const en = messages.en.setup;
 
@@ -31,7 +32,7 @@ describe('SetupPage', () => {
   it('starts with two teams and every category selected', async () => {
     const { wrapper, setup } = await openSetup();
     expect(setup.teamCount).toBe(2);
-    expect(setup.categoryIds).toEqual(listCategories('en').map((c) => c.id));
+    expect(setup.categoryIds).toEqual(listCategories(normalContent('en')).map((c) => c.id));
     expect(wrapper.findAll('.team-circle')).toHaveLength(2);
   });
 
@@ -45,7 +46,7 @@ describe('SetupPage', () => {
     expect(useSettingsStore().language).toBe('en');
     expect(wrapper.text()).toContain('Tiere');
     expect(wrapper.text()).not.toContain('Animals');
-    expect(setup.categoryIds).toEqual(listCategories('de').map((c) => c.id));
+    expect(setup.categoryIds).toEqual(listCategories(normalContent('de')).map((c) => c.id));
     await press(wrapper, en.start);
     await flushPromises();
     expect(game.lang).toBe('de');

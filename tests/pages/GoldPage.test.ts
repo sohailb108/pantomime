@@ -11,6 +11,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { playAllTiles, startGame } from '../helpers/game';
 import { hasButton, mountPage, press } from '../helpers/mountPage';
 import { stubLocalStorage } from '../helpers/storage';
+import { normalContent } from '@/game/content';
 
 vi.mock('@/services/feedback', () => ({ cue: vi.fn(), timerCue: () => null }));
 
@@ -83,7 +84,7 @@ describe('GoldPage', () => {
   }
 
   it('hides a built-in word from the gold result screen, and can undo it', async () => {
-    const word = builtinWords('en', GOLD_ID, GOLD_LEVEL)[0]!;
+    const word = builtinWords(normalContent('en'), GOLD_ID, GOLD_LEVEL)[0]!;
     const { wrapper } = await openGold({ deck: [word] });
     const custom = useCustomStore();
     await reachResult(wrapper);

@@ -175,13 +175,13 @@ The tile preview, the trimmed-tiles note and the minimum-categories rule do not 
 Each step leaves the app working and the tests green. Run `npm run lint`, the unit tests and the
 e2e smoke test after each. No step commits on its own.
 
-1. **Add German as a word language, normal packs only.** (Started 2026-11-22.)
+1. **Add German as a word language, normal packs only.** (Done 2026-11-22.)
    - Add `src/packs/de/` (index, categories, gold) with a first small set so the pack tests have data.
    - The word language list (`src/i18n/languages.ts` has the interface languages) needs a separate list
      of word languages, since German has no interface. Add `src/config/wordLanguages.ts`.
    - Tests: extend `tests/content/packs.test.ts` to cover `de`.
 
-2. **Separate word language from interface language.**
+2. **Separate word language from interface language.** (Done 2026-11-22.)
    - Add `wordLanguage` to the setup store (remembered), defaulting to the interface language.
    - Replace `settings.language` with the word language where it selects content: `SetupPage.vue`
      (`listCategories`, `categoryWordCount`, the `start` call), the game store's `lang`, `PacksPage.vue`,
@@ -192,15 +192,21 @@ e2e smoke test after each. No step commits on its own.
    - Tests: setup store, `SetupPage` (changing the word language changes the category list), game store.
 
 3. **Introduce `Content` and thread it through the services.**
-   - Add the `Content` type (section 4.1) in `game/types.ts`. `lang` arguments in `services/words.ts` and
-     `services/packs.ts` become `Content` where the level matters. Normal behaviour stays identical.
+   - Add the `Content` type (section 4.1) in `game/types.ts`. Normal behaviour stays identical.
    - Game store: `SavedGame.content`, migration for old saves, history namespace helper.
    - Tests: old save loads as normal, history namespaces differ per level set.
+   - Done (2026-11-22): the type, `src/game/content.ts` helpers, game store and tests. The `lang`
+     arguments in `services/words.ts` and `services/packs.ts` were **not** changed yet: nothing there
+     depends on the level before the learning loader exists, so that part moved to step 4.
 
 4. **Learning pack loader.**
    - `services/learningPacks.ts`: glob `@/packs/*/learning/*/*.json` and the learning indexes, expose
      `listLearningCategories(lang, levels)`, `learningWords(lang, level, categoryId, difficulty)`.
-   - Extend `builtinPacks.ts` and `words.ts` with the merged pool (section 4.3).
+   - Extend `builtinPacks.ts` and `words.ts` with the merged pool (section 4.3). This is also where the
+     `lang` arguments in `services/words.ts` and `services/packs.ts` (`getPool`, `listCategories`,
+     `categoryWordCount`, `hintFor`, `nativeLevel`) become `Content`, postponed from step 3. Callers
+     (`game.content` in the game store, the setup draft) then pass the content. Normal behaviour stays
+     identical.
    - Tests: merge of two levels, a category that disappears when one difficulty is empty, dedupe.
 
 5. **Storage keys for learning.** (Follows decisions 2 and 6 in section 3.)

@@ -21,7 +21,7 @@
         <div>{{ t('packs.emptyBuiltinHint') }}</div>
       </div>
 
-      <WordList v-for="d in levels" :key="d" :title="isGold ? t('packs.gold') : t(`packs.difficulty${d}`)" :tone="isGold ? GOLD_TONE : TONES[d]" :words="custom.wordsOf(lang, id, d)" :builtin-count="customCategory ? undefined : builtinPool(lang, id, d).length" :on-add="(w) => custom.addWord(lang, id, d, w)" @remove="(w) => removeWord(d, w)" />
+      <WordList v-for="d in levels" :key="d" :title="isGold ? t('packs.gold') : t(`packs.difficulty${d}`)" :tone="isGold ? GOLD_TONE : TONES[d]" :words="custom.wordsOf(lang, id, d)" :builtin-count="customCategory ? undefined : builtinPool(normalContent(lang), id, d).length" :on-add="(w) => custom.addWord(lang, id, d, w)" @remove="(w) => removeWord(d, w)" />
       <HiddenWords v-if="!customCategory && custom.hiddenOf(lang, id).length > 0" :words="custom.hiddenOf(lang, id)" @unhide="(w) => custom.placeWord(lang, id, w, 'native')" />
     </div>
 
@@ -75,6 +75,7 @@ import WordList from '@/components/WordList.vue';
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { isolate } from '@/services/format';
+import { normalContent } from '@/game/content';
 import { listAllCategories } from '@/services/packs';
 import { builtinPool, GOLD_LEVEL, getPool } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
@@ -94,7 +95,7 @@ const id = computed(() => String(route.params.id));
 const isGold = computed(() => id.value === GOLD_ID);
 /** Gold has one list; the other categories have a list per difficulty. */
 const levels = computed<readonly Difficulty[]>(() => (isGold.value ? [GOLD_LEVEL] : DIFFICULTIES));
-const info = computed(() => listAllCategories(lang.value).find((c) => c.id === id.value));
+const info = computed(() => listAllCategories(normalContent(lang.value)).find((c) => c.id === id.value));
 const ready = computed(() => isGold.value || !!info.value);
 const customCategory = computed(() => custom.findCategory(lang.value, id.value));
 const complete = computed(() => !!customCategory.value && isComplete(customCategory.value));
@@ -103,7 +104,7 @@ const builtinEmpty = computed(
   () =>
     !isGold.value &&
     !customCategory.value &&
-    DIFFICULTIES.some((d) => getPool(lang.value, id.value, d).length === 0),
+    DIFFICULTIES.some((d) => getPool(normalContent(lang.value), id.value, d).length === 0),
 );
 const title = computed(() => (isGold.value ? t('packs.gold') : (info.value?.name ?? '')));
 

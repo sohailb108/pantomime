@@ -12,6 +12,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { playAllTiles, playTiles, startGame } from '../helpers/game';
 import { hasButton, mountPage, press } from '../helpers/mountPage';
 import { stubLocalStorage } from '../helpers/storage';
+import { normalContent } from '@/game/content';
 
 const en = messages.en;
 
@@ -120,7 +121,7 @@ describe('BoardPage', () => {
     it('only lets the team keep its points when every gold word is hidden', async () => {
       const { wrapper } = await openBoard(() => {
         const custom = useCustomStore();
-        for (const w of builtinWords('en', GOLD_ID, GOLD_LEVEL)) custom.placeWord('en', GOLD_ID, w, 'hidden');
+        for (const w of builtinWords(normalContent('en'), GOLD_ID, GOLD_LEVEL)) custom.placeWord('en', GOLD_ID, w, 'hidden');
         playAllTiles(useGameStore());
       });
       const start = wrapper.findAll('button').find((b) => b.text() === en.turn.start)!;

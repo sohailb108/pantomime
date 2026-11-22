@@ -12,6 +12,7 @@ import {
   getPool,
   revertPoolChange,
 } from '@/services/words';
+import { normalContent } from '@/game/content';
 
 function memoryStorage() {
   const data = new Map<string, string>();
@@ -42,13 +43,13 @@ describe('custom store', () => {
 
   it('adds extra words to built-in categories and gold, and removes them', () => {
     const s = fresh();
-    expect(getPool('en', 'animals', 1)).not.toContain('quokka');
+    expect(getPool(normalContent('en'), 'animals', 1)).not.toContain('quokka');
     s.addWord('en', 'animals', 1, 'quokka');
-    expect(getPool('en', 'animals', 1)).toContain('quokka');
+    expect(getPool(normalContent('en'), 'animals', 1)).toContain('quokka');
     s.removeWord('en', 'animals', 1, 'quokka');
-    expect(getPool('en', 'animals', 1)).not.toContain('quokka');
+    expect(getPool(normalContent('en'), 'animals', 1)).not.toContain('quokka');
     s.addWord('en', GOLD_ID, 1, 'numbat');
-    expect(getGoldPool('en')).toContain('numbat');
+    expect(getGoldPool(normalContent('en'))).toContain('numbat');
   });
 
   it('offers a custom category for games only when complete', () => {
@@ -56,20 +57,20 @@ describe('custom store', () => {
     const id = s.addCategory('en', 'Sports')!.id;
     s.addWord('en', id, 1, 'a');
     s.addWord('en', id, 2, 'b');
-    expect(listCategories('en').some((c) => c.id === id)).toBe(false);
+    expect(listCategories(normalContent('en')).some((c) => c.id === id)).toBe(false);
     s.addWord('en', id, 3, 'c');
-    expect(listCategories('en').some((c) => c.id === id)).toBe(true);
+    expect(listCategories(normalContent('en')).some((c) => c.id === id)).toBe(true);
     s.removeCategory('en', id);
-    expect(listCategories('en').some((c) => c.id === id)).toBe(false);
+    expect(listCategories(normalContent('en')).some((c) => c.id === id)).toBe(false);
   });
 
   it('does not offer a built-in category whose words are all hidden', () => {
     const s = fresh();
-    expect(listCategories('en').some((c) => c.id === 'animals')).toBe(true);
+    expect(listCategories(normalContent('en')).some((c) => c.id === 'animals')).toBe(true);
     // A crafted import can hide every word of a pool, which the UI itself refuses to do.
-    for (const w of builtinWords('en', 'animals', 1)) s.placeWord('en', 'animals', w, 'hidden');
-    expect(getPool('en', 'animals', 1)).toEqual([]);
-    expect(listCategories('en').some((c) => c.id === 'animals')).toBe(false);
+    for (const w of builtinWords(normalContent('en'), 'animals', 1)) s.placeWord('en', 'animals', w, 'hidden');
+    expect(getPool(normalContent('en'), 'animals', 1)).toEqual([]);
+    expect(listCategories(normalContent('en')).some((c) => c.id === 'animals')).toBe(false);
   });
 
   it('imports into the right language only', () => {
@@ -89,32 +90,32 @@ describe('hiding built-in words', () => {
 
   it('leaves hidden words out of the pool, and restores them', async () => {
     const s = fresh();
-    const all = getPool('en', 'food', 1);
+    const all = getPool(normalContent('en'), 'food', 1);
     expect(all.length).toBeGreaterThan(1);
     const word = all[0]!;
     s.placeWord('en', 'food', word, 'hidden');
-    expect(getPool('en', 'food', 1)).not.toContain(word);
+    expect(getPool(normalContent('en'), 'food', 1)).not.toContain(word);
     await nextTick();
     expect(fresh().hiddenOf('en', 'food')).toEqual([word]);
     s.placeWord('en', 'food', word, 'native');
-    expect(getPool('en', 'food', 1)).toContain(word);
+    expect(getPool(normalContent('en'), 'food', 1)).toContain(word);
   });
 
   it('can hide the last word, which takes the category out of new games', () => {
     fresh();
-    for (const w of getPool('en', 'food', 1)) changePoolWord('en', 'food', 1, w, 'hidden');
-    expect(getPool('en', 'food', 1)).toHaveLength(0);
-    expect(listCategories('en').some((c) => c.id === 'food')).toBe(false);
+    for (const w of getPool(normalContent('en'), 'food', 1)) changePoolWord(normalContent('en'), 'food', 1, w, 'hidden');
+    expect(getPool(normalContent('en'), 'food', 1)).toHaveLength(0);
+    expect(listCategories(normalContent('en')).some((c) => c.id === 'food')).toBe(false);
   });
 
   it('removes a custom word when hiding it, and restores it', () => {
     const s = fresh();
     s.addWord('en', 'food', 1, 'zzcustom');
-    const change = changePoolWord('en', 'food', 1, 'zzcustom', 'hidden')!;
+    const change = changePoolWord(normalContent('en'), 'food', 1, 'zzcustom', 'hidden')!;
     expect(change.before).toBeNull();
-    expect(getPool('en', 'food', 1)).not.toContain('zzcustom');
+    expect(getPool(normalContent('en'), 'food', 1)).not.toContain('zzcustom');
     revertPoolChange(change);
-    expect(getPool('en', 'food', 1)).toContain('zzcustom');
+    expect(getPool(normalContent('en'), 'food', 1)).toContain('zzcustom');
   });
 
   it('fills the new fields for data saved before hiding existed', () => {

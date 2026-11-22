@@ -200,7 +200,7 @@ function toggleHide() {
     revertPoolChange(hideChange);
     hideChange = null;
   } else {
-    hideChange = changePoolWord(game.lang, GOLD_ID, GOLD_LEVEL, w, 'hidden');
+    hideChange = changePoolWord(game.content, GOLD_ID, GOLD_LEVEL, w, 'hidden');
   }
   wordHidden.value = hideChange !== null;
 }

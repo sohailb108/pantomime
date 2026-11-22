@@ -7,6 +7,7 @@ import { defineComponent, h } from 'vue';
 import { createI18n } from 'vue-i18n';
 import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
+import { normalContent } from '@/game/content';
 import messages from '@/i18n';
 import TurnPage from '@/pages/TurnPage.vue';
 import { builtinWords, getPool } from '@/services/words';
@@ -41,7 +42,7 @@ async function openTurn(mode: Mode, deckOf: string[] | ((game: ReturnType<typeof
     categoryIds: ['animals', 'movies'],
     mode,
     settings: structuredClone(DEFAULT_GAME_SETTINGS),
-    lang: 'en',
+    content: normalContent('en'),
   });
   game.pick(0);
   const deck = typeof deckOf === 'function' ? deckOf(game) : deckOf;
@@ -386,13 +387,13 @@ describe('TurnPage', () => {
         native = other(level);
         const custom = useCustomStore();
         if (options.movedIn) {
-          word = builtinWords('en', cat, native)[0]!;
+          word = builtinWords(normalContent('en'), cat, native)[0]!;
           custom.placeWord('en', cat, word, level);
         } else {
-          word = getPool('en', cat, level)[0]!;
+          word = getPool(normalContent('en'), cat, level)[0]!;
         }
         if (options.keepOnly) {
-          for (const w of getPool('en', cat, level)) {
+          for (const w of getPool(normalContent('en'), cat, level)) {
             if (w !== word) custom.placeWord('en', cat, w, 'hidden');
           }
         }
@@ -427,10 +428,10 @@ describe('TurnPage', () => {
     it('hides a word, and undo brings it back', async () => {
       const { wrapper, word, cat, level } = await toResult();
       await choose(wrapper, word, en.hideWord);
-      expect(getPool('en', cat, level)).not.toContain(word);
+      expect(getPool(normalContent('en'), cat, level)).not.toContain(word);
       expect(row(wrapper, word).text()).toContain(en.statusHidden);
       await choose(wrapper, word, en.undoChange);
-      expect(getPool('en', cat, level)).toContain(word);
+      expect(getPool(normalContent('en'), cat, level)).toContain(word);
       expect(row(wrapper, word).text()).not.toContain(en.statusHidden);
     });
 
@@ -439,8 +440,8 @@ describe('TurnPage', () => {
       const spy = vi.spyOn(game, 'markTileSeen');
       const to = other(level);
       await choose(wrapper, word, en.moveTo.replace('{level}', en[`level${to}`]));
-      expect(getPool('en', cat, level)).not.toContain(word);
-      expect(getPool('en', cat, to)).toContain(word);
+      expect(getPool(normalContent('en'), cat, level)).not.toContain(word);
+      expect(getPool(normalContent('en'), cat, to)).toContain(word);
       expect(spy).toHaveBeenCalledWith(cat, to, word);
       expect(row(wrapper, word).text()).toContain(en.statusMoved.replace('{level}', en[`level${to}`]));
       expect(useCustomStore().wordsOf('en', cat, to)).toEqual([]);
@@ -460,11 +461,11 @@ describe('TurnPage', () => {
       const to = other(level);
       await choose(wrapper, word, en.moveTo.replace('{level}', en[`level${to}`]));
       await choose(wrapper, word, en.hideWord);
-      expect(getPool('en', cat, to)).not.toContain(word);
-      expect(getPool('en', cat, level)).not.toContain(word);
+      expect(getPool(normalContent('en'), cat, to)).not.toContain(word);
+      expect(getPool(normalContent('en'), cat, level)).not.toContain(word);
       await choose(wrapper, word, en.undoChange);
-      expect(getPool('en', cat, level)).toContain(word);
-      expect(getPool('en', cat, to)).not.toContain(word);
+      expect(getPool(normalContent('en'), cat, level)).toContain(word);
+      expect(getPool(normalContent('en'), cat, to)).not.toContain(word);
       expect(useCustomStore().of('en').overrides).toEqual({});
     });
 
@@ -479,16 +480,16 @@ describe('TurnPage', () => {
         .click();
       await vi.advanceTimersByTimeAsync(500);
       expect(useCustomStore().placementOf('en', cat, word)).toBe('native');
-      expect(getPool('en', cat, native)).toContain(word);
+      expect(getPool(normalContent('en'), cat, native)).toContain(word);
       expect(row(wrapper, word).text()).toContain(en.statusOriginal);
       await choose(wrapper, word, en.undoChange);
-      expect(getPool('en', cat, native)).not.toContain(word);
+      expect(getPool(normalContent('en'), cat, native)).not.toContain(word);
     });
 
     it('warns when the change leaves the list without words', async () => {
       const { wrapper, word, cat, level } = await toResult({ keepOnly: true });
       await choose(wrapper, word, en.hideWord);
-      expect(getPool('en', cat, level)).toEqual([]);
+      expect(getPool(normalContent('en'), cat, level)).toEqual([]);
       expect(wrapper.text()).toContain(messages.en.packs.emptiedHint);
       await choose(wrapper, word, en.undoChange);
       expect(wrapper.text()).not.toContain(messages.en.packs.emptiedHint);

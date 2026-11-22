@@ -151,7 +151,7 @@ const columns = computed(() => {
   const tiles = state.value?.tiles ?? [];
   const indexOf = new Map(tiles.map((tile, i) => [`${tile.categoryId}:${tile.difficulty}`, i]));
   const ids = [...new Set(tiles.map((tile) => tile.categoryId))];
-  const all = listAllCategories(game.lang);
+  const all = listAllCategories(game.content);
   return ids.map((id) => {
     const cat = categoryOrFallback(all, id);
     const cells = DIFFICULTIES.map((d) => {
@@ -226,7 +226,7 @@ const noGoldWords = ref(false);
 watch(
   goldTeamId,
   (id) => {
-    noGoldWords.value = id !== undefined && getGoldPool(game.lang).length === 0;
+    noGoldWords.value = id !== undefined && getGoldPool(game.content).length === 0;
   },
   { immediate: true },
 );

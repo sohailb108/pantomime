@@ -79,6 +79,7 @@ import WordLanguagePicker from '@/components/WordLanguagePicker.vue';
 import { DIFFICULTIES } from '@/game/types';
 import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { formatNumber } from '@/services/format';
+import { normalContent } from '@/game/content';
 import { listAllCategories } from '@/services/packs';
 import { GOLD_LEVEL } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
@@ -96,7 +97,7 @@ const custom = useCustomStore();
 
 const lang = computed(() => setup.contentLang);
 const fmt = (n: number) => formatNumber(n, settings.language);
-const categories = computed(() => listAllCategories(lang.value));
+const categories = computed(() => listAllCategories(normalContent(lang.value)));
 const initial = (name: string) => [...name.trim()][0] ?? '?';
 
 function complete(id: string): boolean {
