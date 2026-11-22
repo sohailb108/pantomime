@@ -248,8 +248,8 @@
           <div v-if="enoughCategories" class="text-grey-7">
             {{ t('setup.tiles', { n: fmt(setup.tileCount) }) }}
           </div>
-          <div v-if="enoughCategories && setup.trimmedCount > 0" class="text-grey-7">
-            {{ t('setup.trimmed', { n: fmt(setup.trimmedCount) }, setup.trimmedCount) }}
+          <div v-if="enoughCategories" class="text-grey-7" :style="{ visibility: setup.trimmedCount > 0 ? 'visible' : 'hidden' }" :aria-hidden="setup.trimmedCount > 0 ? undefined : 'true'">
+            {{ t('setup.trimmed', { n: fmt(Math.max(setup.trimmedCount, 1)) }, Math.max(setup.trimmedCount, 1)) }}
           </div>
         </div>
         <div class="row justify-center q-mb-md">
