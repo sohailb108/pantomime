@@ -17,8 +17,9 @@ Non-goals (v1): online multiplayer, accounts, leaderboards, monetization, AI-gen
 
 ### 2.1 Setup
 
+0. Choose the **word language** and the **pack type** (see 3.4): Normal, or Learning with one or more CEFR levels. Home's language setting stays the interface language only.
 1. Pick 2 to 6 teams. A team is identified by a **color** chosen from a fixed palette (no free-text names); each team needs a different color.
-2. Choose categories. The minimum is `ceil(teams / 3)` (for example 2 teams need 1 category, 4 teams need 2, 6 teams need 2), so every team gets at least one tile. The Start button stays disabled with a hint until the minimum is met.
+2. Choose categories (built from the chosen content). The minimum is `ceil(teams / 3)` (for example 2 teams need 1 category, 4 teams need 2, 6 teams need 2), so every team gets at least one tile. The Start button stays disabled with a hint until the minimum is met.
 3. Choose the mode (multi-word or single-word) and adjust its settings.
 
 ### 2.2 Board
@@ -58,7 +59,7 @@ Before every turn a **"Pass to actor"** screen shows the team, the chosen tile a
 - Settings:
   - Timer per difficulty (for example 30/60/90 s).
   - Steal chance: after a failure, the opposing team gets one guess for the points. The judge resolves it with Correct or Wrong. Steal is only available in games with exactly 2 teams (with more teams only one of the others would get the chance, which is unfair). In setup the switch is locked off for 3 or more teams.
-  - Acting hint: once per turn, only while the word is shown before Start (so reading it costs no timer time), the actor may tap a button to see a short written tip on how to act the word. Costs half of the tile points, rounded up, by default (`single.hintHalf`), or a fixed penalty (`single.hintPenalty`, 0 means free) when that is switched off, deducted from the team's score and listed in the result breakdown. Only built-in words with a tip in their pack (`hints`, see section 3.1) have the button; custom words never do and there is no generic fallback tip. A hint belongs to its word: after a reroll the tip is gone and no second hint is offered. Not available in multi-word mode or the gold round.
+  - Acting hint: once per turn, only while the word is shown before Start (so reading it costs no timer time), the actor may tap a button to see a short written tip on how to act the word. Costs half of the tile points, rounded up, by default (`single.hintHalf`), or a fixed penalty (`single.hintPenalty`, 0 means free) when that is switched off, deducted from the team's score and listed in the result breakdown. Only built-in words with a tip in their pack (`hints`, see section 3.1) have the button; custom words never do and there is no generic fallback tip. A hint belongs to its word: after a reroll the tip is gone and no second hint is offered. In Learning games the hint is the word's translation instead (see 3.4). Not available in multi-word mode or the gold round.
   - Reroll word: one swap per turn, allowed only before Start. Costs a configurable penalty (default 1 point, 0 means free) deducted from the team's score. If no other word is left in the category, the button is replaced by a short hint saying so.
   - Fast-guess bonus: configurable threshold (seconds) and bonus points. A correct guess within the threshold adds the bonus points.
 
@@ -130,7 +131,20 @@ A final comeback chance for the teams that are not clearly leading (or are tied 
 - Stored in localStorage (a few strings per pool, read synchronously).
 - A word is recorded as used the moment it is drawn, and **Undo does not remove it from the history** (same principle as hiding: Undo reverts the turn's scoring, not stored word data). The word goes back on the turn's deck, and if the turn ends before it is shown again it counts as used. This is by design, so it is not a bug.
 
-### 3.4 Remote pack updates (later, optional)
+### 3.4 Learning packs
+
+Packs for language learners, starting with German at A1, A2 and B1. The full plan, decisions and content status are in `docs/learning-packs.md`; this is the summary.
+
+- **Content descriptor:** a game's words come from `Content { lang, kind: 'normal' | 'learning', levels }` (`src/game/types.ts`, helpers in `src/game/content.ts`). `settings.language` is the interface language only. The game saves the `Content` it started with; a save without one is read as normal content.
+- **Files:** `src/packs/<lang>/learning/index.json` lists the categories and the levels each has; `src/packs/<lang>/learning/<level>/<category>.json` has the usual pack shape plus `level`, and optional `hints` (acting tips) and `glosses`. The folder is separate so the normal-pack glob never picks learning files up.
+- **Words:** nouns carry their article (`der Hund`), plural-only nouns end in `(Pl.)` (`die Nudeln (Pl.)`), verbs have none. The word string is the key everywhere, including `glosses`. 10 to 20 words (currently 12 to 15) per difficulty per category per level; a word is in only one level of a category (a test enforces it). Difficulty 1 to 3 is how hard a word is to act out, not a CEFR measure. Own lists, with the Goethe-Institut lists as a reference only (they are not copied or committed).
+- **Pools:** a category's pool is the union of the selected levels, in level order, without repeats. A category appears only if the merged pool has a word at every difficulty.
+- **Hint = translation:** the hint button shows the word's translation into the interface language (`glosses.<appLang>`), as one plain string with the common meanings listed ("castle / lock", "مگس، پاپیون"). Without a translation it falls back to the acting tip, else there is no hint. Cost and once-per-turn rules are the normal hint rules. English and Persian translations exist for all German words.
+- **Not in Learning (v1):** no gold round, no custom words or categories, no German interface.
+- **Storage:** hidden or moved built-in words are kept in `pantomime:learning`, per `lang/level/category`, so a word hidden at A1 stays hidden in every combination with A1. Word history is kept per language and level set (`de:learning:a1+a2`) so one combination does not erase another's history. Custom data export and import stay Normal only.
+- **Review needed:** the German lists, articles and Persian translations still need a native speaker's review.
+
+### 3.5 Remote pack updates (later, optional)
 
 - A static `packs-manifest.json` plus pack files on any static host or CDN. The app checks for new versions when online and caches them. No server code is needed.
 
@@ -176,7 +190,7 @@ Adding a language = add `src/i18n/<lang>/`, add `src/packs/<lang>/`, and add one
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Home              | Logo and title, New game (Resume game when one is saved), a card linking Word packs and Help, a Settings card (theme swatches, dark mode, sound, vibration), then Install and Share |
 | Setup: Teams      | 2 to 6 teams, each with a color from the palette                                                                                                                                    |
-| Setup: Categories | Pick categories, preview the board                                                                                                                                                  |
+| Setup: Categories | Word language and pack type (Normal or Learning, with level chips A1 to B1), pick categories, preview the board                                                                    |
 | Setup: Mode       | Mode cards, a settings summary and a settings dialog (scoring, mode rules, gold round)                                                                                              |
 | Board             | Tiles by category x difficulty, scores, whose turn                                                                                                                                  |
 | Pass to actor     | Handoff screen                                                                                                                                                                      |
@@ -241,6 +255,7 @@ Implementation notes:
 
 ### 5.5 Word packs screens (milestone 7)
 
+- When the language has learning packs, `/packs` also shows a short note that Learning packs are chosen in Setup, and the learning words the user hid, grouped by level, each with a button to show it again. Learning words cannot be added, edited or exported.
 - Home's **Categories and words** opens `/packs`: the current language's categories (built-in and custom, with the number of custom words), a **Gold words** entry, **New category**, **Export** and **Import**.
 - Tapping a category opens `/packs/:id`: for each difficulty (easy, medium, hard) the number of built-in words, the list of custom words with a delete button, and an input to add a word. Custom categories also have rename and delete. `/packs/gold` is the same for the gold pool (one list).
 - Deleting a category or a word asks nothing for single words and asks for confirmation for a whole category.
@@ -265,12 +280,13 @@ Implementation notes:
 
 ### 6.3 State and persistence
 
-- Pinia stores: `settings`, `game`, `packs`, `history`.
+- Pinia stores: `settings`, `game`, `packs`, `history`, `custom`, `learning`.
 - Settings, the active game, the word history and custom words live in localStorage (`pantomime:settings`, `pantomime:game`, `pantomime:history`, `pantomime:custom`). IndexedDB is not used, see 3.2.
 - **Auto-save** whenever the game state changes (every finished turn, gold attempt and the start of a game). Saved data carries a `version`, and unreadable or mismatched data is ignored.
 - A "Resume game" button appears on Home while a saved game is unfinished; it goes to the board, which redirects to the gold round if that is due. A finished game is not resumable (its results page is only reachable right after the game). Of the setup draft only the mode and game settings are saved.
 - **A turn interrupted mid-play is not saved**: on resume the picked tile is still unplayed and the team picks again. Words already shown stay in the history, so they count as used.
 - Word history persists across games and is saved as words are shown.
+- The saved game also stores its `Content` (word language, pack type, levels). Hidden or moved learning words are in `pantomime:learning` (see 3.4).
 
 ### 6.4 Folder structure (planned)
 
@@ -281,6 +297,7 @@ src/
   i18n/languages.ts      # per-language config: dir, font, numerals
   i18n/<lang>/           # UI strings
   packs/<lang>/          # bundled word packs
+  packs/<lang>/learning/ # learning packs by CEFR level (see 3.4)
   game/                  # pure TS logic: board, scoring, selection, rules
   stores/                # Pinia stores
   pages/ components/ layouts/

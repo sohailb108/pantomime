@@ -3,6 +3,13 @@
 A free, offline-first Pantomime (charades) party game, built as a PWA with Quasar, Vue 3 and TypeScript.
 See [DESIGN.md](DESIGN.md) for the full design.
 
+## Learning packs
+
+Besides the normal packs, the game has **Learning** packs for language learners: German at levels A1, A2
+and B1 (CEFR), in six categories. In Setup choose the word language, then Learning, then the levels.
+The hint shows the word's translation (English or Persian). Learning words are built in; the lists still
+need a native speaker's review. See [docs/learning-packs.md](docs/learning-packs.md).
+
 ## License
 
 Free to use, change and share for noncommercial purposes under the
@@ -44,5 +51,6 @@ at `https://<user>.github.io/<repo>/`. To move to your own host, copy the same `
 1. Add `src/i18n/<code>/index.ts` and register it in `src/i18n/index.ts`.
 2. Add an entry (direction, font, numerals, Quasar pack) to `src/i18n/languages.ts`.
 3. Add word packs under `src/packs/<code>/`.
+4. Optional: add learning packs under `src/packs/<code>/learning/` (see `docs/learning-packs.md`).
 
 The app name lives in `src/config/app.ts`.

@@ -197,7 +197,7 @@ a translation helps more than an acting description.
 - Custom words and categories inside Learning mode.
 - Translations (glosses) and a review screen (section 7).
 - Gold round for Learning packs.
-- Remote pack updates for learning packs (the existing section 3.4 idea in `DESIGN.md` still applies
+- Remote pack updates for learning packs (the existing section 3.5 idea in `DESIGN.md` still applies
   later).
 
 ## 6. Implementation plan
@@ -338,7 +338,7 @@ e2e smoke test after each. No step commits on its own.
       words kept under the hybrid rule. They include the "B1 candidates" above, except Tierärztin and
       Gewürz, which stay at A2. No B1 word repeats an A1 or A2 word. B1 needs a German speaker's review.
 
-11. **Docs and release.**
+11. **Docs and release.** (Done 2026-11-22, version 0.9.0; not yet committed or released.)
     - Update `DESIGN.md` (sections 2, 3 and 4: setup flow, pack format, storage, screens) and the
       README.
     - Bump the version and note the new feature.
