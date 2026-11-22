@@ -12,7 +12,6 @@
       "fangen",
       "schieben",
       "ziehen",
-      "biegen",
       "stolpern",
       "gähnen",
       "niesen",
@@ -24,7 +23,6 @@
     ],
     "2": [
       "bügeln",
-      "kehren",
       "backen",
       "schneiden",
       "schälen",
@@ -49,11 +47,9 @@
       "angeln",
       "segeln",
       "reiten",
-      "rodeln",
       "tauchen",
       "zittern",
       "schwitzen",
-      "verbeugen",
       "Rad fahren"
     ]
   }

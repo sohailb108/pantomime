@@ -314,6 +314,20 @@ e2e smoke test after each. No step commits on its own.
       `learning/index.json` lists them at `a1` and `a2`. Like A1 it was written from general knowledge and
       is **not** checked against the Goethe A2 list: the same check as in step 9 applies (including words
       that belong to A1 or B1). A combined A1+A2 play test is still to do. B1 is not started.
+    - Done (2026-11-22): A2 checked against the Goethe A2 list (PDF, no licence statement, local reference
+      only), with the same hybrid rule as A1. Only 47 of the 285 draft words were on the list (animals 0,
+      food 5, general verbs 11, jobs 2, objects 8, places 21), so most are kept as common, concrete words.
+      Removed as too specialised or hard to act out, and kept here as **B1 candidates** (not enough yet to
+      make a B1 category, which needs 10 or more words per difficulty):
+      - animals: Truthahn, Biber, Maulwurf, Seepferdchen, Hummer, Heuschrecke, Dachs, Wildschwein, Specht,
+        Tintenfisch, Seestern, Salamander
+      - food: Semmel, Maultasche, Aufschnitt, Gewürz
+      - verbs: biegen, kehren, rodeln, verbeugen
+      - jobs: Tierärztin, Näherin, Wächter, Zirkusartist, Bankkaufmann, Geschäftsführer, Fliesenleger,
+        Pastor, Moderator
+      - objects: Harke, Schubkarre, Wäscheklammer, Zange
+      - places: Spielzimmer, Waschsalon, Skipiste, Gärtnerei, Leuchtturm
+    - A2 has no translations yet and still needs a German speaker's review.
 
 11. **Docs and release.**
     - Update `DESIGN.md` (sections 2, 3 and 4: setup flow, pack format, storage, screens) and the

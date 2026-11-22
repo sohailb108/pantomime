@@ -31,10 +31,7 @@
       "der Dachdecker",
       "der Bademeister",
       "der Rettungssanitäter",
-      "der Wächter",
-      "der Zirkusartist",
       "der Taxifahrer",
-      "die Näherin",
       "der Kapitän",
       "der Fischer",
       "der Ingenieur",
@@ -47,17 +44,12 @@
       "der Hausmeister",
       "der Landwirt",
       "der Förster",
-      "der Geschäftsführer",
       "der Dolmetscher",
-      "der Bankkaufmann",
-      "der Fliesenleger",
       "der Optiker",
-      "der Pastor",
       "der Müllmann",
       "der Bergführer",
       "der Schiedsrichter",
-      "der Trainer",
-      "der Moderator"
+      "der Trainer"
     ]
   }
 }

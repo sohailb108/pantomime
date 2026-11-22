@@ -7,7 +7,6 @@
   "name": "Orte",
   "words": {
     "1": [
-      "das Spielzimmer",
       "das Wohnzimmer",
       "das Schlafzimmer",
       "das Badezimmer",
@@ -52,13 +51,9 @@
       "der Friedhof",
       "das Kaufhaus",
       "das Reisebüro",
-      "der Waschsalon",
       "die Metzgerei",
-      "die Gärtnerei",
-      "die Skipiste",
       "das Freibad",
       "der Rummelplatz",
-      "der Leuchtturm",
       "der Bauernhof"
     ]
   }
