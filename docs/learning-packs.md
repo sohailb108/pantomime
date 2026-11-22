@@ -199,7 +199,7 @@ e2e smoke test after each. No step commits on its own.
      arguments in `services/words.ts` and `services/packs.ts` were **not** changed yet: nothing there
      depends on the level before the learning loader exists, so that part moved to step 4.
 
-4. **Learning pack loader.**
+4. **Learning pack loader.** (Done 2026-11-22.)
    - `services/learningPacks.ts`: glob `@/packs/*/learning/*/*.json` and the learning indexes, expose
      `listLearningCategories(lang, levels)`, `learningWords(lang, level, categoryId, difficulty)`.
    - Extend `builtinPacks.ts` and `words.ts` with the merged pool (section 4.3). This is also where the
@@ -209,12 +209,12 @@ e2e smoke test after each. No step commits on its own.
      identical.
    - Tests: merge of two levels, a category that disappears when one difficulty is empty, dedupe.
 
-5. **Storage keys for learning.** (Follows decisions 2 and 6 in section 3.)
+5. **Storage keys for learning.** (Done 2026-11-22.) (Follows decisions 2 and 6 in section 3.)
    - Placement keys per level, history namespace with the level set, hide support from the result
      screen in Learning mode, custom add/remove disabled in Learning mode.
    - Tests: hiding a word in A1 does not affect A2; history survives switching level sets.
 
-6. **Setup UI.**
+6. **Setup UI.** (Done 2026-11-22.)
    - Pack type toggle and level chips (section 4.5), remembered in the setup store.
    - Gold round hidden or disabled for Learning (decision 1 in section 3). Check `GoldPage` entry points and
      the settings screen's gold options.

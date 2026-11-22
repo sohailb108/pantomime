@@ -64,6 +64,12 @@ export default {
     selectAll: 'Add all categories',
     clearAll: 'Clear selection',
     wordLanguage: 'Words in',
+    packType: 'Word list',
+    packNormal: 'Normal',
+    packLearning: 'Learning',
+    levelsTitle: 'Levels (CEFR)',
+    levelsHint: 'Words from the chosen levels are mixed.',
+    goldLearningOff: 'The gold round is not played with learning words.',
     categoriesHint: 'Pick at least {min}. Selected: {n}',
     tiles: 'Board: {n} tiles',
     tilesTrimmed: 'Board: {n} tiles, {removed} easy removed',
@@ -359,6 +365,10 @@ export default {
           {
             t: 'Changing the word',
             b: 'Before pressing Start, the actor may change the word once for a penalty of {rerollPenalty} point by default. If no other word is left in the category, the button is replaced by a short note saying so. After a change, a second button changes back to the original word (and again to the new one) for free, so the penalty stays; the setting below can turn it off.',
+          },
+          {
+            t: 'Learning words',
+            b: 'For language learners. In Setup, pick a language that has learning packs, then choose Learning instead of Normal and tick the levels (A1 is the easiest). Words from all ticked levels are mixed, and the categories are the ones that have words at those levels. Learning games have no gold round, and you cannot add your own words to them. You can still hide or move a word from the result screen.',
           },
           {
             t: 'Gold round',

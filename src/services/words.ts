@@ -1,7 +1,9 @@
-import { DIFFICULTIES, type Content, type Difficulty } from '@/game/types';
+import { sortLevels } from '@/game/content';
+import { DIFFICULTIES, type Content, type Difficulty, type Level } from '@/game/types';
 import { compareKey, GOLD_ID, hasWord, type Placement } from '@/services/customData';
-import { learningHint, mergedLearningWords } from '@/services/learningPacks';
+import { learningHint, learningWords, mergedLearningWords } from '@/services/learningPacks';
 import { useCustomStore } from '@/stores/custom';
+import { useLearningStore } from '@/stores/learning';
 
 interface CategoryPack {
   id: string;
@@ -31,7 +33,7 @@ export const GOLD_LEVEL: Difficulty = 1;
 
 /**
  * Number of built-in words of one category and difficulty. For learning content these are the
- * words of all selected levels, merged.
+ * words of all selected levels, merged, as the packs have them (not as the user placed them).
  */
 export function builtinWords(content: Content, categoryId: string, difficulty: Difficulty): string[] {
   if (content.kind === 'learning') {
@@ -60,13 +62,49 @@ export function nativeLevel(content: Content, categoryId: string, word: string):
   return DIFFICULTIES.find((d) => hasWord(builtinWords(content, categoryId, d), word)) ?? null;
 }
 
+/** Words of one learning level and difficulty, as the user placed them. */
+function levelPool(lang: string, level: Level, categoryId: string, difficulty: Difficulty): string[] {
+  const learning = useLearningStore();
+  return DIFFICULTIES.flatMap((native) =>
+    learningWords(lang, level, categoryId, native).filter((w) => {
+      const placement = learning.placementOf(lang, level, categoryId, w);
+      return (placement === 'native' ? native : placement) === difficulty;
+    }),
+  );
+}
+
+/**
+ * Where the user put a built-in word: `native` while it is where the pack put it. For learning
+ * content the placement is the one at the first of the levels that has the word.
+ */
+export function placementIn(content: Content, categoryId: string, word: string): Placement {
+  if (content.kind === 'normal') return useCustomStore().placementOf(content.lang, categoryId, word);
+  const learning = useLearningStore();
+  for (const level of sortLevels(content.levels)) {
+    if (DIFFICULTIES.some((d) => hasWord(learningWords(content.lang, level, categoryId, d), word))) {
+      return learning.placementOf(content.lang, level, categoryId, word);
+    }
+  }
+  return 'native';
+}
+
 /**
  * Built-in words a game draws at one difficulty: the pack's words as the user placed them. Hidden
  * words are left out, moved words count at the difficulty they were moved to. Learning words are
- * not placed yet (see step 5 of docs/learning-packs.md).
+ * placed per level, so a word hidden at A1 is out of every combination that has A1.
  */
 export function builtinPool(content: Content, categoryId: string, difficulty: Difficulty): string[] {
-  if (content.kind === 'learning') return builtinWords(content, categoryId, difficulty);
+  if (content.kind === 'learning') {
+    const seen = new Set<string>();
+    return sortLevels(content.levels)
+      .flatMap((level) => levelPool(content.lang, level, categoryId, difficulty))
+      .filter((w) => {
+        const key = compareKey(w);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }
   const lang = content.lang;
   const custom = useCustomStore();
   return DIFFICULTIES.flatMap((native) =>
@@ -79,6 +117,7 @@ export function builtinPool(content: Content, categoryId: string, difficulty: Di
 
 /** Words of one category and difficulty: the built-in ones as placed, plus the user's custom words. */
 export function getPool(content: Content, categoryId: string, difficulty: Difficulty): string[] {
+  // Learning packs have no custom words.
   if (content.kind === 'learning') return builtinPool(content, categoryId, difficulty);
   const seen = new Set<string>();
   return [
@@ -102,6 +141,8 @@ export interface PoolChange {
   word: string;
   /** The difficulty the word was shown at. */
   level: Difficulty;
+  /** The learning level the word belongs to, or null for words of normal packs. */
+  pack: Level | null;
   /** The built-in word's place before the change, or null when it is not a built-in word. */
   before: Placement | null;
   /** The custom word of that name: whether it was taken out of `level`, and where it was added. */
@@ -125,8 +166,7 @@ export function changePoolWord(
   word: string,
   target: Target,
 ): PoolChange | null {
-  // Learning words cannot be hidden or moved yet (step 5 of docs/learning-packs.md).
-  if (content.kind === 'learning') return null;
+  if (content.kind === 'learning') return changeLearningWord(content, categoryId, level, word, target);
   const lang = content.lang;
   const custom = useCustomStore();
   const isBuiltin = hasWord(builtinPool(content, categoryId, level), word);
@@ -159,15 +199,45 @@ export function changePoolWord(
     categoryId,
     word,
     level,
+    pack: null,
     before,
     custom: isCustom && target !== 'native' ? { addedTo: customAddedTo } : null,
     now,
   };
 }
 
+/**
+ * Hides a learning word or moves it to another difficulty. The placement is kept for the level the
+ * word belongs to, so it holds for every combination of levels with that level.
+ */
+function changeLearningWord(
+  content: Content,
+  categoryId: string,
+  level: Difficulty,
+  word: string,
+  target: Target,
+): PoolChange | null {
+  const { lang } = content;
+  const pack = sortLevels(content.levels).find((l) => hasWord(levelPool(lang, l, categoryId, level), word));
+  if (!pack || target === level) return null;
+  const learning = useLearningStore();
+  const before = learning.placementOf(lang, pack, categoryId, word);
+  if (target === 'native' && before === 'native') return null;
+  const native = DIFFICULTIES.find((d) => hasWord(learningWords(lang, pack, categoryId, d), word)) ?? null;
+  learning.placeWord(lang, pack, categoryId, word, target === native ? 'native' : target);
+  const now = target === 'hidden' ? null : target === 'native' ? native : target;
+  return { lang, categoryId, word, level, pack, before, custom: null, now };
+}
+
 /** Takes a change back: the word is where it was before. */
 export function revertPoolChange(change: PoolChange) {
   const { lang, categoryId, word, level } = change;
+  if (change.pack !== null) {
+    if (change.before !== null) {
+      useLearningStore().placeWord(lang, change.pack, categoryId, word, change.before);
+    }
+    return;
+  }
   const custom = useCustomStore();
   if (change.before !== null) custom.placeWord(lang, categoryId, word, change.before);
   if (change.custom) {

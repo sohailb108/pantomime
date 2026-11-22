@@ -4,7 +4,18 @@ import { normalContent } from '@/game/content';
 import type * as learningPacks from '@/services/learningPacks';
 import type { Content } from '@/game/types';
 import { categoryWordCount, listAllCategories, listCategories } from '@/services/packs';
-import { builtinWords, changePoolWord, getGoldPool, getPool, hintFor, nativeLevel } from '@/services/words';
+import { useCustomStore } from '@/stores/custom';
+import { useLearningStore } from '@/stores/learning';
+import {
+  builtinWords,
+  changePoolWord,
+  getGoldPool,
+  getPool,
+  hintFor,
+  nativeLevel,
+  placementIn,
+  revertPoolChange,
+} from '@/services/words';
 
 vi.mock('@/services/learningPacks', async () => {
   const actual = await vi.importActual<Pick<typeof learningPacks, 'createLearningPacks'>>('@/services/learningPacks');
@@ -42,9 +53,47 @@ describe('learning content', () => {
     expect(nativeLevel(learn('a1'), 'food', 'Nudel')).toBeNull();
   });
 
-  it('has no gold pool and no hiding yet', () => {
+  it('has no gold pool', () => {
     expect(getGoldPool(learn('a1'))).toEqual([]);
-    expect(changePoolWord(learn('a1'), 'food', 1, 'Brot', 'hidden')).toBeNull();
+  });
+
+  describe('hiding and moving', () => {
+    it('hides a word at its own level only, in every combination with that level', () => {
+      const change = changePoolWord(learn('a1', 'a2'), 'food', 1, 'Brot', 'hidden');
+      expect(change).toMatchObject({ pack: 'a1', now: null, before: 'native' });
+      expect(getPool(learn('a1'), 'food', 1)).toEqual(['Apfel']);
+      // The fixture also has "brot" at A2, which the A1 placement does not touch.
+      expect(getPool(learn('a1', 'a2'), 'food', 1)).toEqual(['Apfel', 'Käse', 'brot']);
+      expect(getPool(learn('a2'), 'food', 1)).toEqual(['Käse', 'brot']);
+    });
+
+    it('moves a word to another difficulty and back', () => {
+      const change = changePoolWord(learn('a1'), 'food', 1, 'Apfel', 2)!;
+      expect(change.now).toBe(2);
+      expect(getPool(learn('a1'), 'food', 2)).toEqual(['Apfel', 'Suppe']);
+      expect(placementIn(learn('a1', 'a2'), 'food', 'Apfel')).toBe(2);
+      expect(changePoolWord(learn('a1'), 'food', 2, 'Apfel', 'native')?.now).toBe(1);
+      expect(getPool(learn('a1'), 'food', 1)).toEqual(['Brot', 'Apfel']);
+    });
+
+    it('takes a change back', () => {
+      const change = changePoolWord(learn('a1'), 'food', 1, 'Brot', 'hidden')!;
+      revertPoolChange(change);
+      expect(getPool(learn('a1'), 'food', 1)).toEqual(['Brot', 'Apfel']);
+    });
+
+    it('refuses a word that is not in the pool, or a move to where it is', () => {
+      expect(changePoolWord(learn('a1'), 'food', 1, 'Käse', 'hidden')).toBeNull();
+      expect(changePoolWord(learn('a1'), 'food', 1, 'Brot', 1)).toBeNull();
+      expect(changePoolWord(learn('a1'), 'food', 1, 'Brot', 'native')).toBeNull();
+    });
+
+    it('keeps placements in their own storage, apart from normal packs', () => {
+      changePoolWord(learn('a1'), 'food', 1, 'Brot', 'hidden');
+      expect(useCustomStore().placementOf('de', 'food', 'Brot')).toBe('native');
+      expect(useLearningStore().hiddenOf('de', 'a1', 'food')).toEqual(['Brot']);
+      expect(useLearningStore().hiddenOf('de', 'a2', 'food')).toEqual([]);
+    });
   });
 
   it('leaves normal content alone', () => {

@@ -241,11 +241,11 @@ import {
   changePoolWord,
   hintFor,
   getPool,
+  placementIn,
   revertPoolChange,
   type PoolChange,
   type Target,
 } from '@/services/words';
-import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -609,8 +609,6 @@ const breakdown = computed(() =>
     .map((b) => ({ ...b, value: signed(b.n) })),
 );
 
-const custom = useCustomStore();
-
 /** Where the word is now: the tile's difficulty, or the one it was moved to. */
 function levelOf(w: string): Difficulty {
   return changes.value[w]?.change.now ?? tile.value?.difficulty ?? 1;
@@ -619,7 +617,7 @@ const isHidden = (w: string) => changes.value[w]?.change.now === null;
 const moveTargets = (w: string) => DIFFICULTIES.filter((d) => d !== levelOf(w));
 /** A word that was placed elsewhere earlier can go back to where the pack put it. */
 function canRestore(w: string): boolean {
-  if (!tile.value || custom.placementOf(game.lang, tile.value.categoryId, w) === 'native') {
+  if (!tile.value || placementIn(game.content, tile.value.categoryId, w) === 'native') {
     return false;
   }
   return changes.value[w]?.change.before !== 'native';

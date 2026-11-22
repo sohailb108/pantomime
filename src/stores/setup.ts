@@ -3,8 +3,10 @@ import { computed, ref, watch } from 'vue';
 import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
 import { firstFreeColor, TEAM_COLORS } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS, minCategoriesFor, trimmedTileCount } from '@/game/board';
-import { DIFFICULTIES, type Mode, type Settings } from '@/game/types';
+import { normalContent, sortLevels } from '@/game/content';
+import { DIFFICULTIES, type Content, type Level, type Mode, type PackKind, type Settings } from '@/game/types';
 import { getWordLanguage } from '@/config/wordLanguages';
+import { hasLearning, learningLevels } from '@/services/learningPacks';
 import { loadJson, saveJson } from '@/services/storage';
 import { useSettingsStore } from './settings';
 
@@ -13,6 +15,10 @@ const SETUP_STORAGE_KEY = 'pantomime:setup';
 interface SavedSetup {
   /** Language the words are in, or missing to follow the interface language. */
   wordLanguage?: string | null;
+  /** Normal or learning packs; missing means normal. */
+  packKind?: PackKind;
+  /** CEFR levels picked for learning packs. */
+  levels?: Level[];
   mode: Mode;
   settings: Partial<Settings>;
   teamColors?: string[];
@@ -72,6 +78,23 @@ export const useSetupStore = defineStore('setup', () => {
   );
   /** Language of the words a game draws from (and of the packs screens). */
   const contentLang = computed(() => wordLanguage.value ?? settingsStore.language);
+  const packKind = ref<PackKind>(saved?.packKind === 'learning' ? 'learning' : 'normal');
+  const levels = ref<Level[]>(sortLevels(Array.isArray(saved?.levels) ? saved.levels : []));
+  /** Whether the word language has learning packs, so the pack type can be chosen. */
+  const learningAvailable = computed(() => hasLearning(contentLang.value));
+  /** Levels the word language has words for. */
+  const availableLevels = computed(() => learningLevels(contentLang.value));
+  /** Picked levels that exist for the language; the first available one when none of them do. */
+  const activeLevels = computed<Level[]>(() => {
+    const picked = levels.value.filter((l) => availableLevels.value.includes(l));
+    return picked.length > 0 ? picked : availableLevels.value.slice(0, 1);
+  });
+  /** Words a game draws from. Learning only applies where the language has learning packs. */
+  const content = computed<Content>(() =>
+    packKind.value === 'learning' && learningAvailable.value && activeLevels.value.length > 0
+      ? { lang: contentLang.value, kind: 'learning', levels: activeLevels.value }
+      : normalContent(contentLang.value),
+  );
   const teamColors = ref<string[]>(validColors(saved?.teamColors));
   const categoryIds = ref<string[]>(
     Array.isArray(saved?.categoryIds) ? saved.categoryIds.filter((c) => typeof c === 'string') : [],
@@ -83,10 +106,12 @@ export const useSetupStore = defineStore('setup', () => {
   const settings = ref<Settings>(mergedSettings(saved?.settings));
 
   watch(
-    [wordLanguage, mode, settings, teamColors, categoryIds, knownCategoryIds],
+    [wordLanguage, packKind, levels, mode, settings, teamColors, categoryIds, knownCategoryIds],
     () =>
       saveJson(SETUP_STORAGE_KEY, {
         wordLanguage: wordLanguage.value,
+        packKind: packKind.value,
+        levels: levels.value,
         mode: mode.value,
         settings: settings.value,
         teamColors: teamColors.value,
@@ -105,6 +130,19 @@ export const useSetupStore = defineStore('setup', () => {
 
   function setWordLanguage(code: string) {
     if (getWordLanguage(code)) wordLanguage.value = code;
+  }
+  function setPackKind(kind: PackKind) {
+    packKind.value = kind;
+  }
+  /** Adds or removes a level; at least one stays picked, and only levels with words count. */
+  function toggleLevel(level: Level) {
+    if (!availableLevels.value.includes(level)) return;
+    const current = activeLevels.value;
+    if (current.includes(level)) {
+      if (current.length > 1) levels.value = current.filter((l) => l !== level);
+    } else {
+      levels.value = sortLevels([...current, level]);
+    }
   }
   function addTeam() {
     if (teamColors.value.length < MAX_TEAMS) {
@@ -155,6 +193,13 @@ export const useSetupStore = defineStore('setup', () => {
     wordLanguage,
     contentLang,
     setWordLanguage,
+    packKind,
+    activeLevels,
+    availableLevels,
+    learningAvailable,
+    content,
+    setPackKind,
+    toggleLevel,
     teamColors,
     categoryIds,
     mode,

@@ -198,7 +198,8 @@
                 <div class="settings-heading text-primary text-weight-bold q-mt-md">
                   {{ t('setup.sectionGold') }}
                 </div>
-                <q-list class="settings-list">
+                <div v-if="isLearning" class="text-grey-7 q-mx-sm">{{ t('setup.goldLearningOff') }}</div>
+                <q-list v-else class="settings-list">
                   <q-item tag="label">
                     <q-item-section>{{ t('setup.goldEnabled') }}</q-item-section>
                     <q-item-section side><q-toggle v-model="setup.settings.gold.enabled" /></q-item-section>
@@ -239,6 +240,19 @@
         <div class="q-mb-md">
           <div class="text-subtitle2 text-grey-7 q-mb-xs">{{ t('setup.wordLanguage') }}</div>
           <WordLanguagePicker />
+        </div>
+        <div v-if="setup.learningAvailable" class="q-mb-md">
+          <div class="text-subtitle2 text-grey-7 q-mb-xs">{{ t('setup.packType') }}</div>
+          <div class="row justify-center">
+            <q-btn-toggle class="pack-kind-toggle" :model-value="setup.packKind" rounded unelevated no-caps toggle-color="primary" :options="packKinds" :aria-label="t('setup.packType')" @update:model-value="setup.setPackKind" />
+          </div>
+          <template v-if="setup.packKind === 'learning'">
+            <div class="text-subtitle2 text-grey-7 q-mt-md q-mb-xs">{{ t('setup.levelsTitle') }}</div>
+            <div class="row justify-center q-gutter-sm level-chips" role="group" :aria-label="t('setup.levelsTitle')">
+              <q-chip v-for="l in setup.availableLevels" :key="l" clickable :outline="!setup.activeLevels.includes(l)" color="primary" :text-color="setup.activeLevels.includes(l) ? 'white' : 'primary'" :aria-pressed="setup.activeLevels.includes(l)" @click="setup.toggleLevel(l)">{{ l.toUpperCase() }}</q-chip>
+            </div>
+            <div class="text-grey-7 text-caption q-mt-xs text-center">{{ t('setup.levelsHint') }}</div>
+          </template>
         </div>
         <div class="q-mb-md">
           <div class="q-mb-xs" :class="{ 'text-primary text-weight-bold': !enoughCategories }">
@@ -294,9 +308,8 @@ import NumberStepper from '@/components/NumberStepper.vue';
 import WordLanguagePicker from '@/components/WordLanguagePicker.vue';
 import { TEAM_COLORS, teamHex } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS } from '@/game/board';
-import { normalContent } from '@/game/content';
 import { canSteal } from '@/game/scoring';
-import { DIFFICULTIES, type Settings } from '@/game/types';
+import { DIFFICULTIES, type PackKind, type Settings } from '@/game/types';
 import { categoryWordCount, listCategories } from '@/services/packs';
 import { formatNumber } from '@/services/format';
 import { useGameStore } from '@/stores/game';
@@ -363,10 +376,15 @@ const hintValueMode = computed({
   set: (v: string) => (setup.settings.single.hintHalf = v === 'half'),
 });
 const stepIndex = computed(() => steps.indexOf(step.value));
+const packKinds = computed<{ label: string; value: PackKind }[]>(() => [
+  { label: t('setup.packNormal'), value: 'normal' },
+  { label: t('setup.packLearning'), value: 'learning' },
+]);
+const isLearning = computed(() => setup.content.kind === 'learning');
 const categories = computed(() =>
-  listCategories(normalContent(setup.contentLang)).map((c) => ({
+  listCategories(setup.content).map((c) => ({
     ...c,
-    words: categoryWordCount(normalContent(setup.contentLang), c.id),
+    words: categoryWordCount(setup.content, c.id),
   })),
 );
 
@@ -394,7 +412,7 @@ const summary = computed(() => {
     parts.push(t('setup.sumTimers', { a, b, c }));
     parts.push(g.single.steal && stealAllowed.value ? t('setup.sumSteal') : t('setup.sumNoSteal'));
   }
-  parts.push(g.gold.enabled ? t('setup.sumGoldOn') : t('setup.sumGoldOff'));
+  if (!isLearning.value) parts.push(g.gold.enabled ? t('setup.sumGoldOn') : t('setup.sumGoldOff'));
   return parts.join(' - ');
 });
 
@@ -427,19 +445,22 @@ onMounted(() => {
 
 // Selected categories must exist in the current word language's pack.
 watch(categories, (list) => setup.pruneCategories(list.map((c) => c.id)));
-// A new word language starts as the last game in that language had it (all selected the first time).
+// A new word language, pack type or level set starts as the last game with it had it (all selected the first time).
 watch(
-  () => setup.contentLang,
+  () => [setup.contentLang, setup.content.kind, setup.content.levels.join()],
   () => setup.syncCategories(categories.value.map((c) => c.id)),
 );
 
 function start() {
+  const gameSettings = JSON.parse(JSON.stringify(setup.settings)) as Settings;
+  // Learning packs have no gold words; the saved setting stays as the player left it.
+  if (isLearning.value) gameSettings.gold.enabled = false;
   game.start({
     teamColors: [...setup.teamColors],
     categoryIds: [...setup.categoryIds],
     mode: setup.mode,
-    settings: JSON.parse(JSON.stringify(setup.settings)) as Settings,
-    content: normalContent(setup.contentLang),
+    settings: gameSettings,
+    content: { ...setup.content, levels: [...setup.content.levels] },
   });
   void router.push('/board');
 }
@@ -662,6 +683,11 @@ function start() {
   .q-item.sub-option {
     padding-inline-start: 32px;
   }
+}
+
+.pack-kind-toggle {
+  border: 1px solid var(--q-primary);
+  border-radius: 28px;
 }
 
 .select-all-btn {
