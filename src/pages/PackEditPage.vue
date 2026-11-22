@@ -4,7 +4,7 @@
       <div class="row items-center q-mb-md no-wrap">
         <q-btn flat round icon="arrow_back" class="flip-rtl" :aria-label="t('setup.back')" to="/packs" />
         <q-icon v-if="isGold" name="emoji_events" color="amber" size="sm" class="q-mx-sm" />
-        <div class="text-h5 text-weight-bold col ellipsis">{{ title }}</div>
+        <div class="text-h5 text-weight-bold col ellipsis" dir="auto">{{ title }}</div>
         <template v-if="customCategory">
           <q-btn outline round dense icon="edit" color="primary" class="q-mx-xs" :aria-label="t('packs.edit')" @click="openEdit" />
           <q-btn outline round dense icon="delete_outline" color="primary" :aria-label="t('packs.deleteCategory')" @click="deleteOpen = true" />
@@ -46,7 +46,7 @@
         <div class="dialog-head">
           <div class="dialog-icon"><q-icon name="delete" size="22px" /></div>
           <div>
-            {{ inActiveGame ? t('packs.deleteInGame') : t('packs.deleteConfirm', { name: title }) }}
+            {{ inActiveGame ? t('packs.deleteInGame') : t('packs.deleteConfirm', { name: isolate(title) }) }}
           </div>
         </div>
         <div class="dialog-actions">
@@ -74,21 +74,22 @@ import HiddenWords from '@/components/HiddenWords.vue';
 import WordList from '@/components/WordList.vue';
 import { DIFFICULTIES, type Difficulty } from '@/game/types';
 import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
+import { isolate } from '@/services/format';
 import { listAllCategories } from '@/services/packs';
 import { builtinPool, GOLD_LEVEL, getPool } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
-import { useSettingsStore } from '@/stores/settings';
+import { useSetupStore } from '@/stores/setup';
 
 const { t } = useI18n();
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
-const settings = useSettingsStore();
+const setup = useSetupStore();
 const custom = useCustomStore();
 const game = useGameStore();
 
-const lang = computed(() => settings.language);
+const lang = computed(() => setup.contentLang);
 const id = computed(() => String(route.params.id));
 const isGold = computed(() => id.value === GOLD_ID);
 /** Gold has one list; the other categories have a list per difficulty. */

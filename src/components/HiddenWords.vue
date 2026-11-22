@@ -4,7 +4,7 @@
       {{ t('packs.hiddenWords', { n: fmt(words.length) }) }}
     </div>
     <div class="row q-gutter-xs">
-      <q-chip v-for="w in words" :key="w" clickable icon-right="visibility" class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: w })" @click="pending = w">
+      <q-chip v-for="w in words" :key="w" dir="auto" clickable icon-right="visibility" class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: w })" @click="pending = w">
         {{ w }}
       </q-chip>
     </div>
@@ -13,7 +13,7 @@
       <q-card flat class="dialog-card">
         <div class="dialog-head">
           <div class="dialog-icon"><q-icon name="visibility" size="22px" /></div>
-          <div>{{ t('packs.showConfirm', { word: pending }) }}</div>
+          <div>{{ t('packs.showConfirm', { word: isolate(pending) }) }}</div>
         </div>
         <div class="dialog-actions">
           <q-btn v-close-popup outline rounded no-caps color="primary" :label="t('setup.close')" />
@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { formatNumber } from '@/services/format';
+import { formatNumber, isolate } from '@/services/format';
 import { useSettingsStore } from '@/stores/settings';
 
 /** The built-in words the user hid. Only these are listed, the rest of the built-in words stay unseen. */

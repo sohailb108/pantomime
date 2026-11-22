@@ -24,7 +24,7 @@
       <div class="text-subtitle1 text-weight-bold" :style="colorStyle(team?.color)">
         {{ t('gold.attempt', { team: teamName(team?.color) }) }}
       </div>
-      <div class="word-card text-h3 text-weight-bold" :class="longWordClass(word)">
+      <div class="word-card text-h3 text-weight-bold" dir="auto" v-bind="wordFit(word, game.lang)">
         {{ word }}
       </div>
       <q-btn color="primary" size="xl" rounded no-caps :label="t('turn.start')" @click="startPlay" />
@@ -58,7 +58,7 @@
 
         <q-card flat class="soft-card q-pa-md column items-center text-center">
           <div class="text-subtitle1 wrap-anywhere">
-            {{ t('turn.wordWas', { word }) }}
+            {{ t('turn.wordWas', { word: isolate(word) }) }}
             <div v-if="wordHidden" class="text-caption text-grey-7">{{ t('turn.statusHidden') }}</div>
           </div>
           <q-btn class="q-mt-sm" outline rounded no-caps color="primary" :icon="wordHidden ? 'undo' : 'visibility_off'" :label="wordHidden ? t('turn.undoChange') : t('turn.hideWord')" @click="toggleHide" />
@@ -91,8 +91,8 @@ import { useLeaveGuard } from '@/composables/leaveGuard';
 import { useWakeLock } from '@/composables/wakelock';
 import { cue, timerCue } from '@/services/feedback';
 import { goldTeam } from '@/game/game';
-import { longWordClass } from '@/config/limits';
-import { formatNumber, formatSigned } from '@/services/format';
+import { wordFit } from '@/config/limits';
+import { formatNumber, formatSigned, isolate } from '@/services/format';
 import { GOLD_ID } from '@/services/customData';
 import { changePoolWord, GOLD_LEVEL, revertPoolChange, type PoolChange } from '@/services/words';
 import { useGameStore } from '@/stores/game';

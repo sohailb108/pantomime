@@ -82,6 +82,9 @@ body.body--dark .action-bar {
     font-size: 2rem;
     line-height: 2.4rem;
   }
+  .game-page .text-h3.fit-word {
+    --cap: 2rem;
+  }
   .game-page .q-gutter-y-md,
   .game-page .q-gutter-y-lg {
     margin-top: 0 !important;
@@ -136,14 +139,33 @@ body.body--dark .action-bar {
   background: color-mix(in srgb, var(--q-primary) 12%, transparent);
 }
 
-// Long words (see config/limits.ts): smaller text, so up to 80 characters still fit.
+// Words shown big (see `wordFit` in config/limits.ts). The longest word decides the font size: a
+// bold letter is about 0.65em wide and the card is the viewport minus about 88px of margins, so
+// the size is the width divided by letters and 0.65, between a floor and the heading's own size
+// (--cap). A word still too long at the floor is hyphenated (the element has the word's `lang`),
+// and `overflow-wrap` breaks it anywhere as the very last resort.
 // Must stay after the landscape media query above: both have the same specificity.
 .wrap-anywhere {
   overflow-wrap: anywhere;
 }
-.game-page .text-h3.long-word,
-.text-h3.long-word,
-.text-h4.long-word {
-  font-size: 1.6rem;
-  line-height: 2.2rem;
+.fit-word {
+  hyphens: auto;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+.text-h3.fit-word {
+  --cap: 3rem;
+}
+.text-h4.fit-word {
+  --cap: 2.125rem;
+}
+// Long phrases: smaller text, so up to 80 characters still fit.
+.text-h3.fit-word.long-word,
+.text-h4.fit-word.long-word {
+  --cap: 1.6rem;
+}
+.game-page .text-h3.fit-word,
+.text-h3.fit-word,
+.text-h4.fit-word {
+  font-size: max(1.15rem, min(var(--cap), calc((100vw - 88px) / (var(--word-chars, 1) * 0.65))));
 }

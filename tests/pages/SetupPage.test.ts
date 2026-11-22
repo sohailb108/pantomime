@@ -35,6 +35,22 @@ describe('SetupPage', () => {
     expect(wrapper.findAll('.team-circle')).toHaveLength(2);
   });
 
+  it('lists the categories of the chosen word language and starts the game in it', async () => {
+    const { wrapper, setup, game } = await openSetup();
+    await press(wrapper, en.next);
+    expect(wrapper.text()).toContain('Animals');
+    await press(wrapper, 'Deutsch');
+    await flushPromises();
+    expect(setup.contentLang).toBe('de');
+    expect(useSettingsStore().language).toBe('en');
+    expect(wrapper.text()).toContain('Tiere');
+    expect(wrapper.text()).not.toContain('Animals');
+    expect(setup.categoryIds).toEqual(listCategories('de').map((c) => c.id));
+    await press(wrapper, en.start);
+    await flushPromises();
+    expect(game.lang).toBe('de');
+  });
+
   it('adds teams up to the maximum and then disables the button', async () => {
     const { wrapper, setup } = await openSetup();
     const add = () => wrapper.find(`[aria-label="${en.addTeam}"]`);
@@ -89,6 +105,18 @@ describe('SetupPage', () => {
       new Set(setup.categoryIds),
     );
     expect(router.currentRoute.value.path).toBe('/board');
+  });
+
+  it('tells in the tiles line how many easy tiles were removed', async () => {
+    const { wrapper, setup } = await openSetup();
+    await press(wrapper, en.next);
+    setup.categoryIds = setup.categoryIds.slice(0, 3);
+    await flushPromises();
+    expect(wrapper.text()).toContain('Board: 8 tiles, 1 easy removed');
+    setup.categoryIds = setup.categoryIds.slice(0, 2);
+    await flushPromises();
+    expect(wrapper.text()).toContain('Board: 6 tiles');
+    expect(wrapper.text()).not.toContain('removed');
   });
 
   it('disables Start with too few categories', async () => {

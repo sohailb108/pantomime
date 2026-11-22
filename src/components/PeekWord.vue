@@ -1,6 +1,6 @@
 <template>
   <q-card flat bordered class="peek column items-center justify-center text-center q-pa-lg" :class="{ covered: !shown }" @pointerdown.prevent="shown = true" @pointerup="shown = false" @pointerleave="shown = false" @pointercancel="shown = false" @contextmenu.prevent>
-    <div v-if="shown" class="text-h4 text-weight-bold" :class="longWordClass(word)">
+    <div v-if="shown" class="text-h4 text-weight-bold" dir="auto" v-bind="wordFit(word, game.lang)">
       {{ word }}
     </div>
     <template v-else>
@@ -12,9 +12,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { longWordClass } from '@/config/limits';
+import { wordFit } from '@/config/limits';
+import { useGameStore } from '@/stores/game';
 
 defineProps<{ word: string; label: string }>();
+const game = useGameStore();
 const shown = ref(false);
 </script>
 

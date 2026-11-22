@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { saveJson } from '@/services/storage';
+import { useSettingsStore } from '@/stores/settings';
 import { useSetupStore } from '@/stores/setup';
 
 describe('setup store', () => {
@@ -13,6 +14,38 @@ describe('setup store', () => {
       removeItem: (k: string) => void data.delete(k),
     });
     setActivePinia(createPinia());
+  });
+
+  describe('word language', () => {
+    it('follows the interface language until one is picked', () => {
+      const settings = useSettingsStore();
+      const s = useSetupStore();
+      settings.language = 'en';
+      expect(s.contentLang).toBe('en');
+      settings.language = 'fa';
+      expect(s.contentLang).toBe('fa');
+      s.setWordLanguage('de');
+      settings.language = 'en';
+      expect(s.contentLang).toBe('de');
+    });
+
+    it('ignores a language that has no packs', () => {
+      const s = useSetupStore();
+      s.setWordLanguage('xx');
+      expect(s.wordLanguage).toBeNull();
+    });
+
+    it('is remembered for the next game, and a saved unknown language is dropped', async () => {
+      const first = useSetupStore();
+      first.setWordLanguage('de');
+      await nextTick();
+      setActivePinia(createPinia());
+      expect(useSetupStore().wordLanguage).toBe('de');
+
+      saveJson('pantomime:setup', { wordLanguage: 'xx', mode: 'single', settings: {} });
+      setActivePinia(createPinia());
+      expect(useSetupStore().wordLanguage).toBeNull();
+    });
   });
 
   it('computes the minimum categories from the team count', () => {

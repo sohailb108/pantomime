@@ -237,6 +237,10 @@
 
       <q-step name="categories" :title="t('setup.steps.categories')" icon="category">
         <div class="q-mb-md">
+          <div class="text-subtitle2 text-grey-7 q-mb-xs">{{ t('setup.wordLanguage') }}</div>
+          <WordLanguagePicker />
+        </div>
+        <div class="q-mb-md">
           <div class="q-mb-xs" :class="{ 'text-primary text-weight-bold': !enoughCategories }">
             {{
               t('setup.categoriesHint', {
@@ -246,10 +250,11 @@
             }}
           </div>
           <div v-if="enoughCategories" class="text-grey-7">
-            {{ t('setup.tiles', { n: fmt(setup.tileCount) }) }}
-          </div>
-          <div v-if="enoughCategories" class="text-grey-7" :style="{ visibility: setup.trimmedCount > 0 ? 'visible' : 'hidden' }" :aria-hidden="setup.trimmedCount > 0 ? undefined : 'true'">
-            {{ t('setup.trimmed', { n: fmt(Math.max(setup.trimmedCount, 1)) }, Math.max(setup.trimmedCount, 1)) }}
+            {{
+              setup.trimmedCount > 0
+                ? t('setup.tilesTrimmed', { n: fmt(setup.tileCount), removed: fmt(setup.trimmedCount) })
+                : t('setup.tiles', { n: fmt(setup.tileCount) })
+            }}
           </div>
         </div>
         <div class="row justify-center q-mb-md">
@@ -286,6 +291,7 @@ import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import NumberStepper from '@/components/NumberStepper.vue';
+import WordLanguagePicker from '@/components/WordLanguagePicker.vue';
 import { TEAM_COLORS, teamHex } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS } from '@/game/board';
 import { canSteal } from '@/game/scoring';
@@ -357,9 +363,9 @@ const hintValueMode = computed({
 });
 const stepIndex = computed(() => steps.indexOf(step.value));
 const categories = computed(() =>
-  listCategories(settings.language).map((c) => ({
+  listCategories(setup.contentLang).map((c) => ({
     ...c,
-    words: categoryWordCount(settings.language, c.id),
+    words: categoryWordCount(setup.contentLang, c.id),
   })),
 );
 
@@ -418,11 +424,16 @@ onMounted(() => {
   setup.syncCategories(categories.value.map((c) => c.id));
 });
 
-// Selected categories must exist in the current language's pack.
+// Selected categories must exist in the current word language's pack.
 watch(categories, (list) => {
   const ids = new Set(list.map((c) => c.id));
   setup.categoryIds = setup.categoryIds.filter((id) => ids.has(id));
 });
+// A new word language starts as the last game in that language had it (all selected the first time).
+watch(
+  () => setup.contentLang,
+  () => setup.syncCategories(categories.value.map((c) => c.id)),
+);
 
 function start() {
   game.start({
@@ -430,7 +441,7 @@ function start() {
     categoryIds: [...setup.categoryIds],
     mode: setup.mode,
     settings: JSON.parse(JSON.stringify(setup.settings)) as Settings,
-    lang: settings.language,
+    lang: setup.contentLang,
   });
   void router.push('/board');
 }

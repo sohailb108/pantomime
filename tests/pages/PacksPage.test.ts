@@ -9,6 +9,7 @@ import { buildExport, emptyWords, normalizeLang } from '@/services/customData';
 import { listBuiltinCategories } from '@/services/builtinPacks';
 import { useCustomStore } from '@/stores/custom';
 import { useSettingsStore } from '@/stores/settings';
+import { useSetupStore } from '@/stores/setup';
 import { startGame } from '../helpers/game';
 import { mountPage } from '../helpers/mountPage';
 import { stubLocalStorage } from '../helpers/storage';
@@ -53,6 +54,12 @@ describe('PacksPage', () => {
     notify.mockReset();
   });
   afterEach(() => void (document.body.innerHTML = ''));
+
+  it('lists the categories of the chosen word language, not the interface language', async () => {
+    const { wrapper } = await openPacks(() => useSetupStore().setWordLanguage('de'));
+    expect(wrapper.text()).toContain('Tiere');
+    expect(wrapper.text()).not.toContain('Animals');
+  });
 
   it('lists every built-in category and the gold round', async () => {
     const { wrapper } = await openPacks();

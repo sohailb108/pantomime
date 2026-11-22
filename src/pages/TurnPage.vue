@@ -9,7 +9,7 @@
       <div class="tile-chip text-body2">
         {{
           t('turn.tileInfo', {
-            category: category.name,
+            category: isolate(category.name),
             points: t('board.points', { n: fmt(tileValue) }),
           })
         }}
@@ -45,7 +45,7 @@
 
     <!-- Single mode: word shown before start -->
     <div v-else-if="phase === 'prep'" class="col column items-center justify-center q-gutter-y-lg">
-      <div class="word-card text-h3 text-weight-bold text-center" :class="longWordClass(word)">
+      <div class="word-card text-h3 text-weight-bold text-center" dir="auto" v-bind="wordFit(word, game.lang)">
         {{ word }}
       </div>
       <div v-if="hintWord === word && hintText" class="acting-hint text-body1 text-center">
@@ -73,7 +73,7 @@
           {{ t('turn.finishWord') }}
         </div>
         <div class="col column items-center justify-center">
-          <div class="word-card text-h3 text-weight-bold text-center" :class="longWordClass(word)">
+          <div class="word-card text-h3 text-weight-bold text-center" dir="auto" v-bind="wordFit(word, game.lang)">
             {{ word }}
           </div>
         </div>
@@ -155,7 +155,7 @@
           <q-list v-if="shown.length > 0" class="words-list" separator>
             <q-item v-for="w in shown" :key="w">
               <q-item-section class="text-subtitle1 wrap-anywhere">
-                {{ w }}
+                <span dir="auto">{{ w }}</span>
                 <q-item-label v-if="statusOf(w)" caption>{{ statusOf(w) }}</q-item-label>
               </q-item-section>
               <q-item-section side>
@@ -187,7 +187,7 @@
             </q-item>
           </q-list>
           <div v-else-if="!isMulti && word" class="q-pa-md text-subtitle1 wrap-anywhere">
-            {{ t('turn.wordWas', { word }) }}
+            {{ t('turn.wordWas', { word: isolate(word) }) }}
           </div>
           <div v-if="emptiedMsg" class="q-px-md q-py-sm text-body2">
             {{ t('packs.emptiedHint') }}
@@ -234,9 +234,9 @@ import {
   stealTeam,
 } from '@/game/scoring';
 import { DIFFICULTIES, type Difficulty, type ScoreDelta } from '@/game/types';
-import { formatNumber, formatSigned } from '@/services/format';
+import { formatNumber, formatSigned, isolate } from '@/services/format';
 import { categoryOrFallback, listAllCategories } from '@/services/packs';
-import { longWordClass } from '@/config/limits';
+import { wordFit } from '@/config/limits';
 import {
   changePoolWord,
   hintFor,

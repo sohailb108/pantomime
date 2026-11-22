@@ -171,7 +171,7 @@ describe('PackEditPage', () => {
       const { wrapper, custom, router, id } = await openEdit('', make);
       await wrapper.find(`[aria-label="${en.deleteCategory}"]`).trigger('click');
       await flushPromises();
-      expect(document.body.textContent).toContain('Delete the category "Cars"');
+      expect(document.body.textContent).toContain('Delete the category "\u2068Cars\u2069"');
       dialogButton(en.deleteCategory)!.click();
       await flushPromises();
       expect(custom.findCategory('en', id)).toBeUndefined();

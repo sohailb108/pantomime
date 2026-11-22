@@ -54,7 +54,7 @@
       </div>
 
       <div v-for="cat in columns" :key="cat.id" class="board-row">
-        <div class="cat-title text-weight-bold">{{ cat.name }}</div>
+        <div class="cat-title text-weight-bold" dir="auto">{{ cat.name }}</div>
         <div class="tile-row">
           <template v-for="cell in cat.cells" :key="cell.d">
             <q-btn v-if="cell.index !== undefined" class="full-width tile" :class="{ played: !!cell.played }" :style="cell.played ? { background: cell.played.hex } : undefined" unelevated no-caps :aria-disabled="!!cell.played" :aria-label="t('board.points', { n: fmt(pointsOf(cell.d)) })" @click="pickTile(cell.index)">

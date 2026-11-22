@@ -25,3 +25,12 @@ export function formatNumber(value: number, lang: string): string {
 export function formatSigned(value: number, lang: string): string {
   return formatterFor(lang, true).format(value);
 }
+
+/**
+ * Wraps text of another language (a word, a category name) in Unicode isolates, so it keeps its
+ * own direction without flipping the sentence around it. Use it for words put inside UI strings.
+ */
+export function isolate(text: string | null): string {
+  if (text === null) return '';
+  return `\u2068${text}\u2069`;
+}

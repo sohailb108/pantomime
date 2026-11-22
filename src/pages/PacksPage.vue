@@ -6,13 +6,17 @@
     </div>
 
     <div class="packs-col">
+      <div class="q-mb-md">
+        <div class="text-subtitle2 text-grey-7 q-mb-xs">{{ t('setup.wordLanguage') }}</div>
+        <WordLanguagePicker />
+      </div>
       <div class="pack-list q-mb-lg">
         <q-item v-for="c in categories" :key="c.id" clickable class="pack-card" :to="`/packs/${c.id}`">
           <q-item-section avatar>
             <div class="pack-avatar">{{ initial(c.name) }}</div>
           </q-item-section>
           <q-item-section>
-            <q-item-label class="text-weight-bold">{{ c.name }}</q-item-label>
+            <q-item-label class="text-weight-bold" dir="auto">{{ c.name }}</q-item-label>
             <q-item-label v-if="c.custom && !complete(c.id)" caption class="text-primary">
               {{ t('packs.incomplete') }}
             </q-item-label>
@@ -71,6 +75,7 @@ import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import WordLanguagePicker from '@/components/WordLanguagePicker.vue';
 import { DIFFICULTIES } from '@/game/types';
 import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { formatNumber } from '@/services/format';
@@ -79,16 +84,18 @@ import { GOLD_LEVEL } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
 import { useSettingsStore } from '@/stores/settings';
+import { useSetupStore } from '@/stores/setup';
 
 const { t } = useI18n();
 const $q = useQuasar();
 const game = useGameStore();
 const router = useRouter();
 const settings = useSettingsStore();
+const setup = useSetupStore();
 const custom = useCustomStore();
 
-const lang = computed(() => settings.language);
-const fmt = (n: number) => formatNumber(n, lang.value);
+const lang = computed(() => setup.contentLang);
+const fmt = (n: number) => formatNumber(n, settings.language);
 const categories = computed(() => listAllCategories(lang.value));
 const initial = (name: string) => [...name.trim()][0] ?? '?';
 

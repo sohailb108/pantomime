@@ -63,10 +63,10 @@ export default {
     removeTeam: 'Remove team',
     selectAll: 'Add all categories',
     clearAll: 'Clear selection',
-    categoriesHint: 'Pick at least {min}. Selected: {n}.',
+    wordLanguage: 'Words in',
+    categoriesHint: 'Pick at least {min}. Selected: {n}',
     tiles: 'Board: {n} tiles',
-    trimmed:
-      '{n} easy tile removed so every team gets equal turns. | {n} easy tiles removed so every team gets equal turns.',
+    tilesTrimmed: 'Board: {n} tiles, {removed} easy removed',
     modeMulti: 'Multi-word',
     modeMultiDesc:
       'Act out as many words as you can before time runs out. A player from another team holds the phone as judge.',

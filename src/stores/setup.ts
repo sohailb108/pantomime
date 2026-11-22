@@ -4,11 +4,15 @@ import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
 import { firstFreeColor, TEAM_COLORS } from '@/config/teamColors';
 import { MAX_TEAMS, MIN_TEAMS, minCategoriesFor, trimmedTileCount } from '@/game/board';
 import { DIFFICULTIES, type Mode, type Settings } from '@/game/types';
+import { getWordLanguage } from '@/config/wordLanguages';
 import { loadJson, saveJson } from '@/services/storage';
+import { useSettingsStore } from './settings';
 
 const SETUP_STORAGE_KEY = 'pantomime:setup';
 
 interface SavedSetup {
+  /** Language the words are in, or missing to follow the interface language. */
+  wordLanguage?: string | null;
   mode: Mode;
   settings: Partial<Settings>;
   teamColors?: string[];
@@ -61,6 +65,13 @@ function mergedSettings(saved: Partial<Settings> | undefined): Settings {
  */
 export const useSetupStore = defineStore('setup', () => {
   const saved = loadJson<SavedSetup>(SETUP_STORAGE_KEY);
+  const settingsStore = useSettingsStore();
+  /** The word language the player picked, or null while the words follow the interface language. */
+  const wordLanguage = ref<string | null>(
+    saved?.wordLanguage && getWordLanguage(saved.wordLanguage) ? saved.wordLanguage : null,
+  );
+  /** Language of the words a game draws from (and of the packs screens). */
+  const contentLang = computed(() => wordLanguage.value ?? settingsStore.language);
   const teamColors = ref<string[]>(validColors(saved?.teamColors));
   const categoryIds = ref<string[]>(
     Array.isArray(saved?.categoryIds) ? saved.categoryIds.filter((c) => typeof c === 'string') : [],
@@ -72,9 +83,10 @@ export const useSetupStore = defineStore('setup', () => {
   const settings = ref<Settings>(mergedSettings(saved?.settings));
 
   watch(
-    [mode, settings, teamColors, categoryIds, knownCategoryIds],
+    [wordLanguage, mode, settings, teamColors, categoryIds, knownCategoryIds],
     () =>
       saveJson(SETUP_STORAGE_KEY, {
+        wordLanguage: wordLanguage.value,
         mode: mode.value,
         settings: settings.value,
         teamColors: teamColors.value,
@@ -91,6 +103,9 @@ export const useSetupStore = defineStore('setup', () => {
   const trimmedCount = computed(() => trimmedTileCount(categoryIds.value.length, teamCount.value));
   const tileCount = computed(() => categoryIds.value.length * DIFFICULTIES.length - trimmedCount.value);
 
+  function setWordLanguage(code: string) {
+    if (getWordLanguage(code)) wordLanguage.value = code;
+  }
   function addTeam() {
     if (teamColors.value.length < MAX_TEAMS) {
       teamColors.value.push(firstFreeColor(teamColors.value));
@@ -127,6 +142,9 @@ export const useSetupStore = defineStore('setup', () => {
   }
 
   return {
+    wordLanguage,
+    contentLang,
+    setWordLanguage,
     teamColors,
     categoryIds,
     mode,

@@ -15,7 +15,7 @@
 
     <div v-if="words.length === 0" class="text-grey-7">{{ t('packs.noCustomWords') }}</div>
     <div v-else class="row q-gutter-xs">
-      <q-chip v-for="w in words" :key="w" removable class="word-chip" :remove-aria-label="t('packs.removeWord', { word: w })" @remove="emit('remove', w)">
+      <q-chip v-for="w in words" :key="w" dir="auto" removable class="word-chip" :remove-aria-label="t('packs.removeWord', { word: w })" @remove="emit('remove', w)">
         {{ w }}
       </q-chip>
     </div>
