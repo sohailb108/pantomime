@@ -260,12 +260,12 @@ e2e smoke test after each. No step commits on its own.
      fallback to the acting tip.
    - To do: translations for the other categories and levels, after step 9 verifies the word lists.
 
-7. **Content tests.**
+7. **Content tests.** (Done 2026-11-22.)
    - `tests/content/learning.test.ts`: file shape, `level` matches the folder, index matches files, no
      word in two levels of one category, `hints` keys exist in `words`, size minimums per level.
 
-8. **Packs screen.**
-   - `PacksPage.vue` shows the Normal packs of the selected word language. A short note links to Setup for
+8. **Packs screen.** (Done 2026-11-22: a note that Learning packs are chosen in Setup (no button, since the Setup screen is the "New game" screen), and the hidden learning words by level, shown again with the same confirm as Normal packs. A word hidden in two categories of one level is listed once and restored in both.)
+   - `PacksPage.vue` shows the Normal packs of the selected word language. A short note points to Setup for
      Learning packs, and the hidden words of learning packs can be shown again there (grouped by
      level), because hiding is allowed in Learning mode.
    - Tests: `PacksPage` for German, hidden learning words listed and restorable.

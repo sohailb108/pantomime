@@ -40,6 +40,17 @@
         </q-item>
       </div>
 
+      <div v-if="learningAvailable" class="learning-note q-mb-lg">
+        <div class="row no-wrap items-start">
+          <q-icon name="school" size="24px" color="primary" class="note-icon" />
+          <div>{{ t('packs.learningNote') }}</div>
+        </div>
+        <div v-for="g in hiddenLearning" :key="g.level" class="level-group">
+          <div class="level-label">{{ g.level.toUpperCase() }}</div>
+          <HiddenWords :words="g.words" @unhide="(w) => unhideLearning(g.level, w)" />
+        </div>
+      </div>
+
       <q-btn class="full-width q-mb-sm" color="primary" size="lg" rounded no-caps icon="add" :label="t('packs.newCategory')" @click="openNew" />
       <div class="row no-wrap q-gutter-sm">
         <q-btn class="col" outline rounded no-caps color="primary" icon="download" :label="t('packs.export')" @click="doExport" />
@@ -75,15 +86,18 @@ import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import HiddenWords from '@/components/HiddenWords.vue';
 import WordLanguagePicker from '@/components/WordLanguagePicker.vue';
-import { DIFFICULTIES } from '@/game/types';
+import { DIFFICULTIES, type Level } from '@/game/types';
 import { GOLD_ID, isComplete, MAX_NAME_LENGTH } from '@/services/customData';
 import { formatNumber } from '@/services/format';
 import { normalContent } from '@/game/content';
+import { hasLearning } from '@/services/learningPacks';
 import { listAllCategories } from '@/services/packs';
 import { GOLD_LEVEL } from '@/services/words';
 import { useCustomStore } from '@/stores/custom';
 import { useGameStore } from '@/stores/game';
+import { useLearningStore } from '@/stores/learning';
 import { useSettingsStore } from '@/stores/settings';
 import { useSetupStore } from '@/stores/setup';
 
@@ -94,6 +108,7 @@ const router = useRouter();
 const settings = useSettingsStore();
 const setup = useSetupStore();
 const custom = useCustomStore();
+const learning = useLearningStore();
 
 const lang = computed(() => setup.contentLang);
 const fmt = (n: number) => formatNumber(n, settings.language);
@@ -108,6 +123,26 @@ function complete(id: string): boolean {
 function extraCount(id: string, isCustom: boolean): number {
   const total = DIFFICULTIES.reduce((sum, d) => sum + custom.wordsOf(lang.value, id, d).length, 0);
   return isCustom ? 0 : total;
+}
+
+const learningAvailable = computed(() => hasLearning(lang.value));
+/** The words the user hid in learning packs, by level, each word once. */
+const hiddenLearning = computed(() => {
+  const byLevel = new Map<Level, string[]>();
+  for (const { level, word } of learning.hiddenList(lang.value)) {
+    const words = byLevel.get(level) ?? [];
+    if (!words.includes(word)) words.push(word);
+    byLevel.set(level, words);
+  }
+  return [...byLevel].map(([level, words]) => ({ level, words }));
+});
+/** Puts a word back at a level, in every category of the level that has it hidden. */
+function unhideLearning(level: Level, word: string) {
+  for (const h of learning.hiddenList(lang.value)) {
+    if (h.level === level && h.word === word) {
+      learning.placeWord(lang.value, level, h.categoryId, word, 'native');
+    }
+  }
 }
 
 const goldCount = computed(() => custom.wordsOf(lang.value, GOLD_ID, GOLD_LEVEL).length);
@@ -198,6 +233,26 @@ async function doImport(event: Event) {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.learning-note {
+  border-radius: 16px;
+  padding: 12px 16px;
+  line-height: 1.5;
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.level-group {
+  margin-top: 16px;
+}
+
+.level-label {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.note-icon {
+  margin-inline-end: 8px;
 }
 
 .pack-card {

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
+import { LEVELS } from '@/game/content';
 import type { Level } from '@/game/types';
 import {
   emptyLang,
@@ -51,6 +52,16 @@ export const useLearningStore = defineStore('learning', () => {
   function hiddenOf(lang: string, level: Level, categoryId: string): string[] {
     return of(lang, level).overrides[categoryId]?.hidden ?? [];
   }
-  return { data, placementOf, placeWord, hiddenOf };
+  /** Every hidden word of a language, by level (CEFR order) then category, for the Packs screen. */
+  function hiddenList(lang: string): { level: Level; categoryId: string; word: string }[] {
+    const found: { level: Level; categoryId: string; word: string }[] = [];
+    for (const level of LEVELS) {
+      for (const [categoryId, o] of Object.entries(of(lang, level).overrides)) {
+        for (const word of o.hidden) found.push({ level, categoryId, word });
+      }
+    }
+    return found;
+  }
+  return { data, placementOf, placeWord, hiddenOf, hiddenList };
 });
 

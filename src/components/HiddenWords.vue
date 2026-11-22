@@ -1,11 +1,12 @@
 <template>
   <div>
-    <div class="text-caption text-grey-7">
+    <div class="text-caption text-grey-7 caption">
       {{ t('packs.hiddenWords', { n: fmt(words.length) }) }}
     </div>
-    <div class="row q-gutter-xs">
-      <q-chip v-for="w in words" :key="w" dir="auto" clickable icon-right="visibility" class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: w })" @click="pending = w">
-        {{ w }}
+    <div class="chips">
+      <q-chip v-for="w in words" :key="w" clickable class="word-chip hidden-word" :aria-label="t('packs.showWord', { word: w })" @click="pending = w">
+        <span dir="auto" class="word">{{ w }}</span>
+        <q-icon name="visibility" size="18px" class="eye" />
       </q-chip>
     </div>
 
@@ -46,22 +47,40 @@ function confirmShow() {
 </script>
 
 <style scoped lang="scss">
+.caption {
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .word-chip {
-  margin: 2px;
+  margin: 0;
   height: auto;
-  min-height: 32px;
-  overflow-wrap: anywhere;
+  min-height: 36px;
+  padding: 4px 14px;
+  background: rgba(128, 128, 128, 0.2);
+  color: inherit;
 
   :deep(.q-chip__content) {
     white-space: normal;
+    gap: 10px;
   }
+}
 
-  background: rgba(128, 128, 128, 0.2);
-  color: inherit;
+.word {
+  overflow-wrap: anywhere;
+}
+
+.eye {
+  flex: none;
 }
 
 .hidden-word {
-  text-decoration: line-through;
   opacity: 0.7;
 }
 </style>

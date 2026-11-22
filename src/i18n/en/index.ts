@@ -241,6 +241,8 @@ export default {
   },
   packs: {
     title: 'Categories and words',
+    learningNote:
+      'Learning packs are chosen in Setup, with the levels. Their words are built in and cannot be edited, but you can hide a word on the result screen and show it again here.',
     builtinCount: '{n} built-in',
     hiddenWords: 'Hidden built-in words ({n}). Tap one to show it again.',
     showWord: 'Show {word}',
