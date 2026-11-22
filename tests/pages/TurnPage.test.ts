@@ -322,7 +322,7 @@ describe('TurnPage', () => {
       wrapper.findAll('button').find((b) => b.text().includes(label));
 
     it('offers the translation instead of an acting hint, and shows it', async () => {
-      const { wrapper } = await open('Schlange');
+      const { wrapper } = await open('die Schlange');
       await press(wrapper, en.showWord);
       expect(find(wrapper, 'Acting hint')).toBeUndefined();
       expect(wrapper.text()).not.toContain('snake / queue');
@@ -332,7 +332,7 @@ describe('TurnPage', () => {
     });
 
     it('says the translation is free when the hint costs nothing', async () => {
-      const { wrapper, game } = await open('Hund');
+      const { wrapper, game } = await open('der Hund');
       game.state!.settings.single.hintHalf = false;
       game.state!.settings.single.hintPenalty = 0;
       await press(wrapper, en.showWord);

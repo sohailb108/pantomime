@@ -277,7 +277,22 @@ e2e smoke test after each. No step commits on its own.
      general; 12 to 15 words per difficulty) and `learning/index.json`. The words were written from general
      knowledge, **not** checked against any CEFR list, so they are a draft and not yet real A1. Known
      doubtful words: Programmierer, Ingenieur, Architekt, Eichhörnchen, Krokodil, Briefträger, and others.
-   - **Still to do: make the words real A1.**
+   - Done (2026-11-22): checked against the Goethe A1 list (a PDF with no licence statement, so used as a
+     local reference only and not committed). Decision: hybrid. Every on-list word is kept; an off-list word
+     stays only if it is common, concrete and easy to act out. "A1" in this game means A1 vocabulary that
+     fits the game, with the Goethe list as a floor, not a ceiling. Obscure or hard-to-act words were removed
+     (Handwerker, Mitarbeiter, Rentner, Mittagessen, Abendessen) or moved to A2 (Programmierer, Ingenieur,
+     Architekt, Krokodil, Eichhörnchen, Fabrik, Brücke and others). On-list words were added (Telefon,
+     Bleistift, Brief, Zeitung, Fahrkarte, Geld, Briefmarke, Kugelschreiber, Meer, Kindergarten, Disco, Kiosk,
+     Birne, Obst). Jobs were rebalanced across difficulties. Birne was removed from the A2 draft because it
+     is A1. Only 3 of 41 animals and 7 of 41 jobs are on the list; the rest stay under the hybrid rule.
+   - Done (2026-11-22): every noun in the German A1 and A2 files now carries its article ("der Hund",
+     "die Katze", "das Pferd"; plural-only words are marked "(Pl.)": "die Nudeln (Pl.)", "die Spaghetti (Pl.)"; Schuh uses the singular), because articles are best learned with the noun.
+     The article is part of the word string, so glosses keys carry it too. Genders on the Goethe list were
+     taken from the list; the others were written from general knowledge and need the German speaker's check.
+     Fixed the typo Kängeguru to Känguru. Verbs are unchanged.
+   - Still to do: a German speaker should review A1.
+   - (Original to-do list, kept for reference:)
      1. Check the licence of the Goethe-Institut "Wortliste Goethe-Zertifikat A1: Start Deutsch 1" (decision 5
         in section 3). If copying is not allowed, use it only as a reference to look words up in, and write
         our own entries; do not copy the list or its example sentences.
