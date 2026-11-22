@@ -607,7 +607,7 @@ const breakdown = computed(() =>
     { icon: 'bolt', color: 'primary', label: t('turn.fastBonus'), n: bonus.value },
     { icon: 'skip_next', color: 'primary', label: t('turn.skipsCost'), n: -skipCost.value },
     { icon: 'autorenew', color: 'primary', label: t('turn.rerollCost'), n: -rerollCost.value },
-    { icon: 'lightbulb', color: 'primary', label: t('turn.hintCost'), n: -hintCost.value },
+    { icon: 'lightbulb', color: 'primary', label: t(game.content.kind === 'learning' ? 'turn.translationCost' : 'turn.hintCost'), n: -hintCost.value },
   ]
     .filter((b) => b.n !== 0)
     .map((b) => ({ ...b, value: signed(b.n) })),

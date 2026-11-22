@@ -96,7 +96,7 @@ export default {
     stealTwoOnly: 'Only available with 2 teams: with more, only one of the other teams would get the guess.',
     rerollPenalty: 'Change word penalty',
     allowRevert: 'Allow changing back to the original word',
-    hint: 'Acting hint',
+    hint: 'Hint',
     hintValue: 'Hint cost',
     hintFixed: 'Fixed cost',
     hintHalfOption: 'Half of the tile points (rounded up)',
@@ -198,6 +198,7 @@ export default {
     skipsCost: 'Skips',
     rerollCost: 'Word change',
     hintCost: 'Acting hint',
+    translationCost: 'Translation hint',
     next: 'Continue',
   },
   pause: {
@@ -422,8 +423,8 @@ export default {
             b: 'Shows a button after a word change that goes back to the original word. The change penalty is not refunded. On by default.',
           },
           {
-            t: 'Acting hint / Hint cost',
-            b: 'Turns the acting hint on or off (default: on). The cost is the points lost when the actor asks for a hint before starting (once per turn). Default: half of the tile points, rounded up. Choose a fixed number instead if you prefer; set it to 0 for a free hint.',
+            t: 'Hint / Hint cost',
+            b: 'Turns the hint on or off (default: on). In normal games it is an acting hint; in Learning games it is the translation of the word. The cost is the points lost when the actor asks for a hint before starting (once per turn). Default: half of the tile points, rounded up. Choose a fixed number instead if you prefer; set it to 0 for a free hint.',
           },
           {
             t: 'Steal chance for the other team',
