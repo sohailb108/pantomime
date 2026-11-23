@@ -233,7 +233,7 @@ import {
   stealPoints,
   stealTeam,
 } from '@/game/scoring';
-import { DIFFICULTIES, type Difficulty, type ScoreDelta } from '@/game/types';
+import { DIFFICULTIES, type Difficulty, type ScoreDelta, type TurnWord, type WordOutcome } from '@/game/types';
 import { formatNumber, formatSigned, isolate } from '@/services/format';
 import { categoryOrFallback, listAllCategories } from '@/services/packs';
 import { wordFit } from '@/config/limits';
@@ -282,6 +282,10 @@ const deck = ref<string[]>([]);
 const word = ref<string | null>(null);
 /** Every word shown this turn, for the hide buttons on the result screen. */
 const shown = ref<string[]>([]);
+/** How each word ended, for the review screen. Multi-word: marked on Correct and Skip. Single: see `singleOutcome`. */
+const marks = ref<Record<string, WordOutcome | undefined>>({});
+/** How the single word ended: guessed, given up, or stolen. Null until the turn is decided. */
+const singleOutcome = ref<WordOutcome | null>(null);
 /** Words hidden or moved on the result screen, with what that changed so it can be undone. */
 const changes = ref<Record<string, { change: PoolChange; target: Target } | undefined>>({});
 /** Shown when a change emptied the word list, so the category is left out of new games. */
@@ -415,6 +419,7 @@ const snap = (): MultiSnap => ({ word: word.value, ...tally.value });
 
 function multiCorrect() {
   const before = snap();
+  if (before.word) marks.value[before.word] = 'guessed';
   tally.value.correct++;
   cue('good');
   if (phase.value === 'timeup') return endMulti(before);
@@ -426,6 +431,7 @@ function multiSkip() {
   const before = snap();
   // A skip with no replacement word has no effect, so it is not counted or charged.
   if (!drawOrEnd()) return;
+  if (before.word) marks.value[before.word] = 'skipped';
   tally.value.skips++;
   history.value.push({ ...before, drawn: word.value! });
   cue('skip');
@@ -439,6 +445,7 @@ function undoLast() {
   const i = shown.value.lastIndexOf(last.drawn);
   if (i >= 0) shown.value.splice(i, 1);
   word.value = last.word;
+  if (last.word) marks.value[last.word] = undefined;
   tally.value = { correct: last.correct, skips: last.skips };
 }
 function done() {
@@ -450,6 +457,7 @@ function undoEnd() {
   multiEnd.value = null;
   deltas.value = [];
   word.value = before.word;
+  if (before.word) marks.value[before.word] = undefined;
   tally.value = { correct: before.correct, skips: before.skips };
   phase.value = 'timeup';
 }
@@ -525,6 +533,7 @@ interface UndoSnap {
   phase: Phase;
   deltas: ScoreDelta[];
   bonus: number;
+  outcome: WordOutcome | null;
 }
 /** One snapshot per tap that can be taken back, newest last. Empty when nothing can be undone. */
 const undoStack = ref<UndoSnap[]>([]);
@@ -533,6 +542,7 @@ function rememberForUndo() {
     phase: phase.value,
     deltas: deltas.value.map((d) => ({ ...d })),
     bonus: bonus.value,
+    outcome: singleOutcome.value,
   });
 }
 function undo() {
@@ -540,6 +550,7 @@ function undo() {
   if (!snap) return;
   deltas.value = snap.deltas;
   bonus.value = snap.bonus;
+  singleOutcome.value = snap.outcome;
   giveUpTap.reset();
   phase.value = snap.phase;
   if (snap.phase === 'play') countdown.resume();
@@ -550,6 +561,7 @@ function guessed() {
   rememberForUndo();
   countdown.pause();
   bonus.value = score.bonus;
+  singleOutcome.value = 'guessed';
   deltas.value.push({ teamId: team.value!.id, points: score.total });
   phase.value = 'result';
 }
@@ -566,11 +578,13 @@ function failSingle(timeUp = false) {
     countdown.pause();
   }
   giveUpTap.reset();
+  singleOutcome.value = 'failed';
   phase.value = stealer.value === null ? 'result' : 'steal';
 }
 function steal(right: boolean) {
   rememberForUndo();
   if (right && stealer.value !== null) {
+    singleOutcome.value = 'stolen';
     deltas.value.push({ teamId: stealer.value, points: stealValue.value });
   }
   phase.value = 'result';
@@ -655,9 +669,22 @@ function choose(w: string, target: Target | null) {
   emptiedMsg.value = getPool(game.content, t.categoryId, t.difficulty).length === 0;
 }
 
+/** Every word the turn showed with how it ended, in the order they were shown. */
+function turnWords(): TurnWord[] {
+  return shown.value.map((w) => ({
+    word: w,
+    outcome: isMulti.value
+      ? (marks.value[w] ?? 'unanswered')
+      : w === word.value
+        ? (singleOutcome.value ?? 'unanswered')
+        : 'rerolled',
+    hinted: hintWord.value === w,
+  }));
+}
+
 function finish() {
   leave.allow();
-  game.finish(deltas.value);
+  game.finish(deltas.value, turnWords());
   const status = state.value?.status;
   void router.replace(status === 'finished' ? '/results' : '/board');
 }

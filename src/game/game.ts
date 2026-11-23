@@ -1,6 +1,6 @@
 import { buildBoard, MAX_TEAMS, MIN_TEAMS } from './board';
 import { buildGoldQueue } from './gold';
-import type { GameState, Mode, Rng, ScoreDelta, Settings } from './types';
+import type { GameState, Mode, Rng, ScoreDelta, Settings, TurnWord } from './types';
 
 export interface NewGameOptions {
   /** One color id per team, in turn order. */
@@ -37,6 +37,7 @@ export function createGame(options: NewGameOptions): GameState {
     goldResults: [],
     status: 'playing',
     startRevealed: false,
+    played: [],
   };
 }
 
@@ -63,6 +64,8 @@ export function finishTurn(
   tileIndex: number,
   deltas: readonly ScoreDelta[],
   rng: Rng,
+  /** The words the turn showed; kept in `played` for the review screen. */
+  words: readonly TurnWord[] = [],
 ): GameState {
   if (state.status !== 'playing') throw new Error('The game is not in the normal phase');
   const tile = state.tiles[tileIndex];
@@ -82,6 +85,15 @@ export function finishTurn(
     tiles,
     teams: applyDeltas(state, deltas),
     currentTeam: (state.currentTeam + 1) % state.teams.length,
+    played: [
+      ...state.played,
+      ...words.map((w) => ({
+        ...w,
+        categoryId: tile.categoryId,
+        difficulty: tile.difficulty,
+        teamId: state.currentTeam,
+      })),
+    ],
   };
   if (remainingTiles(next).length > 0) return next;
 

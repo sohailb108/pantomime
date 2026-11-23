@@ -347,6 +347,77 @@ describe('TurnPage', () => {
     });
   });
 
+  describe('words kept for the review screen', () => {
+    const learning: Content = { lang: 'de', kind: 'learning', levels: ['a1'] };
+    const open = (mode: Mode, deck: string[]) =>
+      openTurn(mode, deck, { content: learning, categoryIds: ['animals'] });
+    const outcomes = (game: ReturnType<typeof useGameStore>) =>
+      game.state!.played.map((p) => [p.word, p.outcome, p.hinted]);
+
+    it('marks guessed, skipped and the word on screen when the turn is ended', async () => {
+      const { wrapper, game } = await open('multi', ['alpha', 'beta', 'gamma']);
+      await press(wrapper, en.startTurn);
+      await vi.advanceTimersByTimeAsync(3100);
+      await press(wrapper, en.correct);
+      await press(wrapper, en.skip);
+      await vi.advanceTimersByTimeAsync(61_000);
+      await press(wrapper, en.done);
+      await press(wrapper, en.next);
+      await flushPromises();
+      expect(outcomes(game)).toEqual([
+        ['alpha', 'guessed', false],
+        ['beta', 'skipped', false],
+        ['gamma', 'unanswered', false],
+      ]);
+    });
+
+    it('forgets the mark of a word when Undo last takes the tap back', async () => {
+      const { wrapper, game } = await open('multi', ['alpha', 'beta']);
+      await press(wrapper, en.startTurn);
+      await vi.advanceTimersByTimeAsync(3100);
+      await press(wrapper, en.correct);
+      await press(wrapper, en.undoLast);
+      await press(wrapper, en.skip);
+      await vi.advanceTimersByTimeAsync(61_000);
+      await press(wrapper, en.done);
+      await press(wrapper, en.next);
+      await flushPromises();
+      expect(outcomes(game)).toEqual([
+        ['alpha', 'skipped', false],
+        ['beta', 'unanswered', false],
+      ]);
+    });
+
+    it('marks a swapped word, and a word the other team stole', async () => {
+      const { wrapper, game } = await open('single', ['alpha', 'beta']);
+      await press(wrapper, en.showWord);
+      await wrapper.findAll('button').find((b) => b.text().includes('Change word'))!.trigger('click');
+      await press(wrapper, en.start);
+      await press(wrapper, en.giveUp);
+      await press(wrapper, en.giveUpConfirm);
+      await press(wrapper, en.stealRight);
+      await press(wrapper, en.next);
+      await flushPromises();
+      expect(outcomes(game)).toEqual([
+        ['alpha', 'rerolled', false],
+        ['beta', 'stolen', false],
+      ]);
+    });
+
+    it('keeps the guess when a give-up is undone first', async () => {
+      const { wrapper, game } = await open('single', ['alpha']);
+      await press(wrapper, en.showWord);
+      await press(wrapper, en.start);
+      await press(wrapper, en.giveUp);
+      await press(wrapper, en.giveUpConfirm);
+      await press(wrapper, en.undo);
+      await press(wrapper, en.guessed);
+      await press(wrapper, en.next);
+      await flushPromises();
+      expect(outcomes(game)).toEqual([['alpha', 'guessed', false]]);
+    });
+  });
+
   describe('acting hint', () => {
     const hintButton = 'Acting hint (-1)';
     const findHint = (wrapper: VueWrapper, label = hintButton) =>

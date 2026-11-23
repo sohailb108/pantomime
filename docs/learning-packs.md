@@ -195,7 +195,7 @@ a translation helps more than an acting description.
 - A German interface translation.
 - Learning packs for English and Persian.
 - Custom words and categories inside Learning mode.
-- Translations (glosses) and a review screen (section 7).
+- A list of words kept for later games (decided against). The review screen of the last game exists, see `DESIGN.md`.
 - Gold round for Learning packs.
 - Remote pack updates for learning packs (the existing section 3.5 idea in `DESIGN.md` still applies
   later).

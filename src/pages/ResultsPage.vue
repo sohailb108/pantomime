@@ -24,6 +24,7 @@
       <div class="column q-gutter-y-sm q-mt-lg q-pb-md">
         <q-btn color="primary" size="lg" rounded no-caps icon="replay" :label="t('results.playAgain')" to="/setup" />
         <q-btn outline color="primary" size="lg" rounded no-caps icon="grid_view" :label="t('results.board')" to="/board" />
+        <q-btn v-if="canReview" outline color="primary" size="lg" rounded no-caps icon="spellcheck" :label="t('results.review')" to="/review" />
         <q-btn outline color="primary" size="lg" rounded no-caps :label="t('results.home')" to="/" />
       </div>
     </div>
@@ -47,6 +48,8 @@ const game = useGameStore();
 const state = computed(() => game.state);
 
 const ranking = computed(() => (state.value ? rankTeams(state.value.teams) : []));
+/** Learning games keep the words they showed, so they can be reviewed. */
+const canReview = computed(() => game.content.kind === 'learning' && (state.value?.played.length ?? 0) > 0);
 const winners = computed(() => ranking.value.filter((r) => r.rank === 1));
 const { teamName, teamHex } = useTeamDisplay();
 const fmt = (n: number) => formatNumber(n, settings.language);

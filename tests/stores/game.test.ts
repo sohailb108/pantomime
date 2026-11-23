@@ -145,6 +145,25 @@ describe('game store persistence', () => {
     expect(b.lang).toBe('de');
   });
 
+  it('keeps the shown words of Learning games only, and reads old saves without them', () => {
+    const turn = [{ word: 'cat', outcome: 'guessed' as const, hinted: false }];
+    const a = freshStore();
+    a.start(options);
+    a.pick(0);
+    a.finish([], turn);
+    expect(a.state!.played).toEqual([]);
+
+    a.start({ ...options, content: { lang: 'en', kind: 'learning', levels: ['a1'] } });
+    a.pick(0);
+    a.finish([], turn);
+    expect(a.state!.played).toMatchObject([{ word: 'cat', teamId: a.state!.starter }]);
+
+    const old = JSON.parse(JSON.stringify(a.state)) as Record<string, unknown>;
+    delete old.played;
+    saveJson('pantomime:game', { state: old, content: a.content });
+    expect(freshStore().state!.played).toEqual([]);
+  });
+
   it('keeps history apart per level set', async () => {
     const a = freshStore();
     a.start({ ...options, content: { lang: 'en', kind: 'learning', levels: ['a1'] } });

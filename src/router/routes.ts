@@ -11,6 +11,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'turn', component: () => import('@/pages/TurnPage.vue') },
       { path: 'gold', component: () => import('@/pages/GoldPage.vue') },
       { path: 'results', component: () => import('@/pages/ResultsPage.vue') },
+      { path: 'review', component: () => import('@/pages/ReviewPage.vue') },
       { path: 'packs', component: () => import('@/pages/PacksPage.vue') },
       { path: 'packs/:id', component: () => import('@/pages/PackEditPage.vue') },
       { path: 'help', component: () => import('@/pages/HelpPage.vue') },

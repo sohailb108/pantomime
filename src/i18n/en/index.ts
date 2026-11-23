@@ -303,6 +303,21 @@ export default {
     board: 'View the board',
     playAgain: 'Play again',
     home: 'Home',
+    review: 'Review the words',
+  },
+  review: {
+    title: 'Words of this game',
+    back: 'Back to the results',
+    empty: 'No words were played in this game.',
+    hinted: 'translation shown',
+    outcome: {
+      guessed: 'Guessed',
+      stolen: 'Guessed by the other team',
+      skipped: 'Skipped',
+      failed: 'Not guessed',
+      unanswered: 'Time ran out',
+      rerolled: 'Swapped for another word',
+    },
   },
   help: {
     title: 'Help',

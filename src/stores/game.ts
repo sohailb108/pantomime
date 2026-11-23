@@ -4,7 +4,7 @@ import { DEFAULT_GAME_SETTINGS } from '@/config/defaults';
 import { TEAM_COLORS } from '@/config/teamColors';
 import { createGame, declineGoldAttempt, finishTurn, resolveGoldAttempt } from '@/game/game';
 import { historyNamespace, readContent } from '@/game/content';
-import type { Content, Difficulty, GameState, Mode, ScoreDelta, Settings } from '@/game/types';
+import type { Content, Difficulty, GameState, Mode, ScoreDelta, Settings, TurnWord } from '@/game/types';
 import { buildDeck, isPoolExhausted } from '@/game/words';
 import { loadJson, removeKey, saveJson } from '@/services/storage';
 import { getGoldPool, getPool } from '@/services/words';
@@ -42,6 +42,8 @@ export const useGameStore = defineStore('game', () => {
     state.value.starter ??= 0;
     // Games saved before gold results were kept have none.
     state.value.goldResults ??= [];
+    // Games saved before the review screen kept no words.
+    state.value.played ??= [];
     state.value.settings.gold.timerSeconds ??= DEFAULT_GAME_SETTINGS.gold.timerSeconds;
     // Games saved when teams still had names get palette colors by team order.
     state.value.teams.forEach((team, i) => {
@@ -124,9 +126,11 @@ export const useGameStore = defineStore('game', () => {
     markSeen(GOLD_KEY, word);
   }
 
-  function finish(deltas: ScoreDelta[]) {
+  function finish(deltas: ScoreDelta[], words: readonly TurnWord[] = []) {
     if (!state.value || pickedTile.value === null) return;
-    state.value = finishTurn(state.value, pickedTile.value, deltas, Math.random);
+    // Only Learning games review their words.
+    const kept = content.value.kind === 'learning' ? words : [];
+    state.value = finishTurn(state.value, pickedTile.value, deltas, Math.random, kept);
     pickedTile.value = null;
   }
 

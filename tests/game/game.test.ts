@@ -79,6 +79,20 @@ describe('createGame', () => {
 });
 
 describe('finishTurn', () => {
+  it('keeps the words of the turn with their tile, difficulty and team', () => {
+    const g = newGame();
+    const words = [
+      { word: 'a', outcome: 'guessed' as const, hinted: true },
+      { word: 'b', outcome: 'unanswered' as const, hinted: false },
+    ];
+    const g2 = finishTurn(g, 0, [], rng(), words);
+    expect(g2.played).toEqual(
+      words.map((w) => ({ ...w, categoryId: g.tiles[0]!.categoryId, difficulty: g.tiles[0]!.difficulty, teamId: 0 })),
+    );
+    expect(finishTurn(g, 0, [], rng()).played).toEqual([]);
+    expect(g.played).toEqual([]); // input untouched
+  });
+
   it('marks the tile, applies deltas and alternates teams', () => {
     const g = newGame();
     const g2 = finishTurn(g, 0, [{ teamId: 0, points: 3 }], rng());

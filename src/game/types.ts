@@ -92,6 +92,28 @@ export interface GoldAttempt {
   points: number;
 }
 
+/**
+ * How a word of a turn ended: guessed, skipped (multi-word), not guessed, guessed by the stealing team,
+ * on screen when the time ran out or the turn was ended, or swapped away by the reroll.
+ */
+export type WordOutcome = 'guessed' | 'skipped' | 'failed' | 'stolen' | 'unanswered' | 'rerolled';
+
+/** A word shown during one turn, as the Turn page reports it. */
+export interface TurnWord {
+  word: string;
+  outcome: WordOutcome;
+  /** The actor took the hint (the translation in Learning games) on this word. */
+  hinted: boolean;
+}
+
+/** A word shown during the game, kept for the review screen (Learning games only). */
+export interface PlayedWord extends TurnWord {
+  categoryId: string;
+  difficulty: Difficulty;
+  /** The team that acted it. */
+  teamId: number;
+}
+
 export type GameStatus = 'playing' | 'gold' | 'finished';
 
 export interface GameState {
@@ -109,6 +131,8 @@ export interface GameState {
   status: GameStatus;
   /** The "who goes first" card on the board has been shown. */
   startRevealed: boolean;
+  /** Words shown so far in play order. Only Learning games keep them, for the review screen. */
+  played: PlayedWord[];
 }
 
 /** A score change for one team. Negative values are penalties, scores may go below zero. */
